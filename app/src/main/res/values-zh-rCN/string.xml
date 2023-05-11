@@ -1,0 +1,38 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">简看</string>
+
+    <string name="navigation_view_header_title">可用事项</string>
+
+    <string name="tasks_header_image_content_description">任务标题图像</string>
+
+    <!--模块名称-->
+    <string name="video_title">视频</string>
+    <string name="music_title">音乐</string>
+    <string name="novel_title">小说</string>
+    <string name="ai_title">聊天机器人</string>
+
+    <string name="list_title">任务列表</string>
+    <string name="statistics_title">统计</string>
+
+
+    <string name="hello_blank_fragment">你好空白片段！</string>
+
+    <string name="no_tasks_all">您没有视频！</string>
+    <string name="no_tasks_image_content_description">无任务图像</string>
+
+    <string name="skip_back_10s">Skip back 10s</string>
+    <string name="skip_forward_10s">Skip forward 10s</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+
+    <string name="menu_music_queue">Queue</string>
+    <string name="album_art_alt">Album art</string>
+    <string name="duration_unknown">--:--</string>
+    <string name="duration_format">%d:%02d</string>
+
+    <string name="cast_context_error">Failed to get Cast context. Try updating Google Play Services and restart the app.</string>
+
+
+    <string name="notification_channel_name">Music Channel</string>
+    <string name="notification_channel_description">Shows the currently playing music</string>
+</resources>
