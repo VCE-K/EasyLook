@@ -15,11 +15,11 @@
 
 排行榜
 
-![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200446914.png)
+![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200501030.png)
 
 排行榜-排行榜详情
 
-![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200501030.png)
+![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200446914.png)
 
 播放控制页面
 
