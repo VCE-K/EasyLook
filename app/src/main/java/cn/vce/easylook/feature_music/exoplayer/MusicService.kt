@@ -7,6 +7,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -63,8 +64,8 @@ class MusicService : MediaBrowserServiceCompat() {
             firebaseMusicSource.fetchMediaData()
         }
 
-        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, 0)
+        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {sessionIntent ->
+            PendingIntent.getActivity(this, 0, sessionIntent, 0)
         }
 
         mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
@@ -90,7 +91,6 @@ class MusicService : MediaBrowserServiceCompat() {
                 true
             )
         }
-
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(musicPlaybackPreparer)
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator())
@@ -149,7 +149,10 @@ class MusicService : MediaBrowserServiceCompat() {
                     if(isInitialized) {
                         result.sendResult(firebaseMusicSource.asMediaItems())
                         if(!isPlayerInitialized && firebaseMusicSource.songs.isNotEmpty()) {
-                            preparePlayer(firebaseMusicSource.songs, firebaseMusicSource.songs[0], false)
+                            //放入主线程执行
+                            serviceScope.launch {
+                                preparePlayer(firebaseMusicSource.songs, firebaseMusicSource.songs[0], false)
+                            }
                             isPlayerInitialized = true
                         }
                     } else {

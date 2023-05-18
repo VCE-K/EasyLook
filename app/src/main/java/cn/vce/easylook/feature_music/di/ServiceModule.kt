@@ -20,8 +20,8 @@ object ServiceModule {
 
     /*@ServiceScoped//成为跨服务实例共享的单例
     @Provides
-    fun provideMusicDatabase() = MusicDatabase()
-*/
+    fun provideMusicDatabase() = MusicDatabase()*/
+
     //该实例定义音频属性，如内容类型和用途，以便 ExoPlayer 可以根据这些属性来处理播放和控制媒体。
     @ServiceScoped
     @Provides

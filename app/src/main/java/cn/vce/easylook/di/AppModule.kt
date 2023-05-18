@@ -2,17 +2,18 @@ package cn.vce.easylook.di
 
 import android.content.Context
 import cn.vce.easylook.R
+import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
+import cn.vce.easylook.feature_music.data.remote.MusicDatabase
+import cn.vce.easylook.feature_music.exoplayer.FirebaseMusicSource
+import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
-import cn.vce.easylook.feature_music.data.remote.MusicDatabase
-import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
+import com.cyl.musicapi.BaseApiImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -25,6 +26,12 @@ object AppModule {
     @Singleton//成为跨服务实例共享的单例
     @Provides
     fun provideMusicDatabase() = MusicDatabase()
+
+
+    @Singleton
+    @Provides
+    fun provideFirebaseMusicSource(musicDatabase: MusicDatabase) =
+        FirebaseMusicSource(musicDatabase)
 
 
     //Music

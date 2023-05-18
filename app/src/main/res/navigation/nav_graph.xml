@@ -12,17 +12,15 @@
     </fragment>
 
 
+    <!--Music相关跳转 -->
     <fragment
         android:id="@+id/music_fragment_dest"
         android:name="cn.vce.easylook.feature_music.ui.fragments.HomeFragment"
         android:label="@string/music_title">
+        <action
+            android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
+            app:destination="@id/my_music_fragment_dest" />
     </fragment>
-
-    <fragment
-        android:id="@+id/novel_fragment_dest"
-        android:label="@string/novel_title">
-    </fragment>
-
 
     <action android:id="@+id/globalActionToSongFragment"
         app:destination="@id/songFragment" />
@@ -31,6 +29,26 @@
         android:name="cn.vce.easylook.feature_music.ui.fragments.SongFragment"
         android:label="SongFragment">
     </fragment>
+
+    <fragment
+        android:id="@+id/my_music_fragment_dest"
+        android:name="cn.vce.easylook.feature_music.ui.fragments.MyMusicFragment"
+        android:label="MyMusicFragment">
+        <argument
+            android:name="id"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+
+    <!--小说相关跳转 -->
+    <fragment
+        android:id="@+id/novel_fragment_dest"
+        android:label="@string/novel_title">
+    </fragment>
+
+
+
+
 
 
 </navigation>

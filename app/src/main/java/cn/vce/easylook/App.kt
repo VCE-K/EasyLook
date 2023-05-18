@@ -3,6 +3,7 @@ package cn.vce.easylook
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.cyl.musicapi.BaseApiImpl
 import dagger.hilt.android.HiltAndroidApp
 import java.util.*
 
@@ -17,6 +18,8 @@ class App: Application(){
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+        //网易云初始化
+        BaseApiImpl.initWebView(context)
         setLocale()
     }
     //根据系统语言切换显示文字

@@ -11,8 +11,20 @@
     <string name="novel_title">小说</string>
     <string name="ai_title">聊天机器人</string>
 
-    <string name="list_title">任务列表</string>
-    <string name="statistics_title">统计</string>
+    <!--video_title-->
+    <!--music_title所用-->
+    <string name="tab_my">我的</string>
+    <string name="tab_charts">排行榜</string>
+
+    <string name="song_list_item_title_1">1.%1$s - %2$s</string>
+    <string name="song_list_item_title_2">2.%1$s - %2$s</string>
+    <string name="song_list_item_title_3">3.%1$s - %2$s</string>
+
+    <!--novel_title-->
+    <!--ai_title-->
+
+
+
 
 
     <string name="hello_blank_fragment">你好空白片段！</string>

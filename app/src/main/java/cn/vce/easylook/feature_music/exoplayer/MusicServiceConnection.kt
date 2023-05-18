@@ -41,7 +41,9 @@ class MusicServiceConnection(
         ),
         mediaBrowserConnectionCallback,
         null
-    ).apply { connect() }
+    ).apply {
+        connect()
+    }
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -64,6 +66,7 @@ class MusicServiceConnection(
         override fun onConnected() {
             Log.d("MusicServiceConnection", "CONNECTED")
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
+                //为媒体控制器注册回调接口
                 registerCallback(MediaContollerCallback())
             }
             _isConnected.postValue(Event(Resource.success(true)))

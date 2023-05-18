@@ -5,7 +5,9 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
+import android.util.Log
 import androidx.core.net.toUri
+import cn.vce.easylook.feature_music.data.entities.Song
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -15,16 +17,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class FirebaseMusicSource @Inject constructor(
+class FirebaseMusicSource(
     private val musicDatabase: MusicDatabase
 ){
 
     var songs = emptyList<MediaMetadataCompat>()
-
     suspend fun fetchMediaData() = withContext(Dispatchers.IO) {
         state = STATE_INITIALIZING
         val allSongs = musicDatabase.getAllSongs()
-        songs = allSongs.map { song ->
+        songs = transSongs(allSongs)
+        state = STATE_INITIALIZED
+    }
+
+    fun transSongs(allSongs: List<Song>): List<MediaMetadataCompat> {
+        return allSongs.map { song ->
             MediaMetadataCompat.Builder()
                 .putString(METADATA_KEY_ARTIST, song.subtitle)
                 .putString(METADATA_KEY_MEDIA_ID, song.mediaId)
@@ -37,7 +43,19 @@ class FirebaseMusicSource @Inject constructor(
                 .putString(METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
                 .build()
         }
-        state = STATE_INITIALIZED
+    }
+    fun transSong(song: Song): MediaMetadataCompat {
+        return MediaMetadataCompat.Builder()
+            .putString(METADATA_KEY_ARTIST, song.subtitle)
+            .putString(METADATA_KEY_MEDIA_ID, song.mediaId)
+            .putString(METADATA_KEY_TITLE, song.title)
+            .putString(METADATA_KEY_DISPLAY_TITLE, song.title)
+            .putString(METADATA_KEY_DISPLAY_ICON_URI, song.imageUrl)
+            .putString(METADATA_KEY_MEDIA_URI, song.songUrl)
+            .putString(METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
+            .putString(METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
+            .putString(METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
+            .build()
     }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSourceFactory): ConcatenatingMediaSource {
@@ -64,8 +82,9 @@ class FirebaseMusicSource @Inject constructor(
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 
     private var state: State = STATE_CREATED
+        @Synchronized
         set(value) {
-            if(value == STATE_INITIALIZED || value == STATE_ERROR) {
+            if(value == STATE_INITIALIZED || value == STATE_ERROR) {//初始化好了或者错误都会走下面，但是只有STATE_INITIALIZED才会走回调
                 synchronized(onReadyListeners) {
                     field = value
                     onReadyListeners.forEach { listener ->
@@ -78,12 +97,12 @@ class FirebaseMusicSource @Inject constructor(
         }
 
     fun whenReady(action: (Boolean) -> Unit): Boolean {
-        if(state == STATE_CREATED || state == STATE_INITIALIZING) {
+        return if(state == STATE_CREATED || state == STATE_INITIALIZING) {
             onReadyListeners += action
-            return false
+            false
         } else {
             action(state == STATE_INITIALIZED)
-            return true
+            true
         }
     }
 }
