@@ -11,13 +11,21 @@
 
 2023-05-10
 
-排行榜页面-排行榜歌单页面-播放控制页面（目前存在问题，作者未显示）
+排行榜页面-排行榜详情-播放控制页面
 
-![image-20230518200501030](C:\Users\VCE\AndroidStudioProjects\EasyLook\image\image-20230518200501030.png)
+排行榜
 
-![image-20230518200446914](C:\Users\VCE\AndroidStudioProjects\EasyLook\image\image-20230518200446914.png)
+![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200446914.png)
 
-![image-20230518200522342](C:\Users\VCE\AndroidStudioProjects\EasyLook\image\image-20230518200522342.png)
+排行榜-排行榜详情
+
+![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200501030.png)
+
+播放控制页面
+
+![image](https://github.com/VCE-K/EasyLook/blob/main/image/image-20230518200522342.png)
+
+
 
 参考项目:
 
