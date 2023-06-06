@@ -20,20 +20,20 @@ class MusicDatabase {
     private val remoteJsonSource: Uri =
         Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
 
-    suspend fun getAllSongs(): List<Song> {
+    suspend fun getAllSongs(): MutableList<Song> {
         return try {
             val mediaSource  = downloadJson(remoteJsonSource)
-            val songs = ArrayList<Song>()
+            val songs = mutableListOf<Song>()
             mediaSource.music.map { music ->
                 music.apply {
                     val song = Song(id, title, "", source, image)
                     songs.add(song)
                 }
             }
-            songCollection.get().await().toObjects(Song::class.java)
+            //songCollection.get().await().toObjects(Song::class.java)
             songs
         } catch(e: Exception) {
-            emptyList()
+            mutableListOf()
         }
     }
 

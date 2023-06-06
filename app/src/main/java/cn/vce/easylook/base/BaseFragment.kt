@@ -1,4 +1,4 @@
-package cn.vce.noteapp.feature_note.base
+package cn.vce.easylook.base
 
 import android.content.Context
 import android.os.Bundle
@@ -8,12 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
-open class BaseFragment(@LayoutRes id: Int): Fragment(id) {
+open class BaseFragment(): Fragment() {
     companion object {
         const val TAG = "BaseFragment"
     }
 
+    // 获取当前Fragment的NavController对象
+    val navController by lazy { findNavController() }
 
     private val className: String = javaClass.simpleName
     override fun onAttach(context: Context) {

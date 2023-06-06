@@ -1,14 +1,12 @@
 package cn.vce.easylook.feature_music.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import cn.vce.easylook.MainActivity
 import cn.vce.easylook.R
 import cn.vce.easylook.databinding.FragmentMyMusicBinding
 import cn.vce.easylook.databinding.ListItemBinding
@@ -17,7 +15,7 @@ import cn.vce.easylook.feature_music.data.entities.Song
 import cn.vce.easylook.feature_music.exoplayer.FirebaseMusicSource
 import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_music.ui.viewmodels.MainViewModel
-import cn.vce.noteapp.feature_note.base.BaseFragment
+import cn.vce.easylook.base.BaseFragment
 import com.bumptech.glide.RequestManager
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.linear
@@ -27,7 +25,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MyMusicFragment : BaseFragment(R.layout.fragment_my_music) {
+class MyMusicFragment : BaseFragment() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -88,12 +86,12 @@ class MyMusicFragment : BaseFragment(R.layout.fragment_my_music) {
                     binding.apply {
                         allSongsProgressBar.isVisible = false
                         result.data?.let { songs ->
+                            (activity as MainActivity).swipeSongAdapter.songs = songs
                             when (val adapter = rvAllSongs.adapter) {
                                 is BindingAdapter -> adapter.models = songs
                             }
                         }
                     }
-
                 }
                 Status.ERROR -> Unit
                 Status.LOADING -> binding.allSongsProgressBar.isVisible = true

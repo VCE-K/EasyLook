@@ -6,9 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import cn.vce.easylook.R
 import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 
@@ -61,6 +64,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState : Bundle){
         super.onSaveInstanceState(outState)
     }
+
 
     fun toastLongScan(info: String){
         runOnUiThread{

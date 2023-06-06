@@ -1,51 +1,55 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
+<!--
     <style name="Theme.EasyLook" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Primary brand color. -->
+        &lt;!&ndash; Primary brand color. &ndash;&gt;
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
+        &lt;!&ndash; Secondary brand color. &ndash;&gt;
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+        &lt;!&ndash; Status bar color. &ndash;&gt;
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        &lt;!&ndash; Customize your theme here. &ndash;&gt;
     </style>
 
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Light" />
 
 
-    <!-- Base application theme. -->
+    &lt;!&ndash; Base application theme. &ndash;&gt;
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        &lt;!&ndash; Customize your theme here. &ndash;&gt;
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+-->
 
-    <style name="TextAppearance.Uamp.Title" parent="@style/TextAppearance.AppCompat.Title">
-        <item name="android:textColor">?android:textColorSecondary</item>
+
+    <style name="AppTheme" parent="Base.AppTheme" />
+
+    <style name="AppTheme.OverlapSystemBar" parent="Base.AppTheme" />
+
+    <style name="Base.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- For Android sdk versions 26+. -->
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/opensans_font</item>
+        <!-- Target Android sdk versions < 26 and > 14. -->
+        <item name="fontFamily">@font/opensans_font</item>
+        <!-- sets the style for the overflow button -->
+        <item name="actionOverflowButtonStyle">@style/actionOverflowButtonStyle</item>
     </style>
 
-    <style name="TextAppearance.Uamp.Subtitle" parent="@style/TextAppearance.AppCompat.Small">
-        <item name="android:textColor">?android:textColorSecondary</item>
+    <!-- This style defines the tint color of the overflow menu button -->
+    <style name="actionOverflowButtonStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/colorAccent</item>
     </style>
 
-    <style name="MediaStateIcon">
-        <item name="tint">@color/mediaControlColor</item>
-        <item name="android:layout_margin">@dimen/media_item_control_margin</item>
-    </style>
 
-    <style name="MediaItemList">
-        <item name="android:background">@color/mediaListBackground</item>
-        <item name="android:paddingBottom">2dp</item>
-        <!-- In order to account for optical illusions,
-        make the end padding a bit larger so it visually looks the same. -->
-        <item name="android:paddingEnd">3dp</item>
-        <item name="android:paddingStart">2dp</item>
-        <item name="android:paddingTop">2dp</item>
-    </style>
+    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

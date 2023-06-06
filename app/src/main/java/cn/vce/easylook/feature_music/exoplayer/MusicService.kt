@@ -1,5 +1,6 @@
 package cn.vce.easylook.feature_music.exoplayer
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
@@ -7,21 +8,25 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import androidx.media.MediaBrowserServiceCompat
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import cn.vce.easylook.feature_music.data.Repository
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlaybackPreparer
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerEventListener
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerNotificationListener
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
+import cn.vce.easylook.utils.LogE
+import cn.vce.easylook.utils.id
+import com.google.android.exoplayer2.ControlDispatcher
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
+
 
 private const val SERVICE_TAG = "MusicService"
 
@@ -58,6 +63,7 @@ class MusicService : MediaBrowserServiceCompat() {
             private set
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate() {
         super.onCreate()
         serviceScope.launch {
@@ -65,14 +71,13 @@ class MusicService : MediaBrowserServiceCompat() {
         }
 
         val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {sessionIntent ->
-            PendingIntent.getActivity(this, 0, sessionIntent, 0)
+            PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
         }
 
         mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
             setSessionActivity(activityIntent)
             isActive = true
         }
-
         sessionToken = mediaSession.sessionToken
 
         musicNotificationManager = MusicNotificationManager(
@@ -102,9 +107,36 @@ class MusicService : MediaBrowserServiceCompat() {
     }
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
+        //确保当用户通过媒体控制器（如前进，后退，手动选择）从媒体序列中选择文件时，系统会提供正确的元数据和标签，这对于用户在应用程序中导航和使用提供良好的体验。
         override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
             return firebaseMusicSource.songs[windowIndex].description
         }
+
+        //上一首
+        override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
+            super.onSkipToPrevious(player, controlDispatcher)
+        }
+
+
+        override fun onSkipToQueueItem(
+            player: Player,
+            controlDispatcher: ControlDispatcher,
+            id: Long
+        ) {
+            super.onSkipToQueueItem(player, controlDispatcher, id)
+        }
+
+        //下一首
+        override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
+            serviceScope.launch {
+                val metadata = firebaseMusicSource.songs[player.nextWindowIndex]
+                withContext(Dispatchers.IO) {
+                    firebaseMusicSource.getUrl(metadata)
+                }
+                super.onSkipToNext(player, controlDispatcher)
+            }
+        }
+
     }
 
     private fun preparePlayer(
@@ -112,7 +144,13 @@ class MusicService : MediaBrowserServiceCompat() {
         itemToPlay: MediaMetadataCompat?,
         playNow: Boolean
     ) {
-        val curSongIndex = if(curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
+        val curSongIndex = if(curPlayingSong == null)
+            0
+        else {
+            songs.indexOfFirst { metadata ->
+                metadata.id == itemToPlay?.id
+            }
+        }
         exoPlayer.prepare(firebaseMusicSource.asMediaSource(dataSourceFactory))
         exoPlayer.seekTo(curSongIndex, 0L)
         exoPlayer.playWhenReady = playNow

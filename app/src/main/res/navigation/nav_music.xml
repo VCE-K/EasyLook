@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/music_fragment_dest"
-        android:name="cn.vce.easylook.feature_music.ui.fragments.HomeFragment"
+        android:name="cn.vce.easylook.feature_music.ui.fragments.HomeMusicFragment"
         android:label="@string/music_title">
     </fragment>
 

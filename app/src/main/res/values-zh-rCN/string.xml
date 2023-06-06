@@ -9,12 +9,19 @@
     <string name="video_title">视频</string>
     <string name="music_title">音乐</string>
     <string name="novel_title">小说</string>
-    <string name="ai_title">聊天机器人</string>
+    <string name="ai_title">ChatGPT</string>
+
+
+    <!-- 通用 -->
+    <string name="menu_other">通用</string>
+    <string name="search">查询</string>
+    <string name="settings">设置</string>
+    <string name="exit">关闭</string>
 
     <!--video_title-->
     <!--music_title所用-->
-    <string name="tab_my">我的</string>
-    <string name="tab_charts">排行榜</string>
+    <string name="music_home_tab_my">我的</string>
+    <string name="music__home_tab_charts">排行榜</string>
 
     <string name="song_list_item_title_1">1.%1$s - %2$s</string>
     <string name="song_list_item_title_2">2.%1$s - %2$s</string>
@@ -22,6 +29,8 @@
 
     <!--novel_title-->
     <!--ai_title-->
+    <string name="ai_home_tab_ai_collection">收藏</string>
+    <string name="ai__home_tab_ai_list">市场</string>
 
 
 

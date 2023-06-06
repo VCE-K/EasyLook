@@ -14,3 +14,33 @@ fun MediaMetadataCompat.toSong(): Song? {
         )
     }
 }
+
+fun MutableList<Song>.transSongs(): MutableList<MediaMetadataCompat> {
+    return map { song ->
+        MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.subtitle)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, song.mediaId)
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, song.title)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, song.imageUrl)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, song.songUrl)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
+            .build()
+    }.toMutableList()
+}
+
+fun Song.transSong(): MediaMetadataCompat {
+    return MediaMetadataCompat.Builder()
+        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, subtitle)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
+        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, imageUrl)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, songUrl)
+        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, imageUrl)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, subtitle)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, subtitle)
+        .build()
+}

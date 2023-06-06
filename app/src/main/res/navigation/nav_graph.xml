@@ -2,24 +2,16 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/video_fragment_dest">
-
-
-    <fragment
-        android:id="@+id/video_fragment_dest"
-        android:name="cn.vce.easylook.VideoFragment"
-        android:label="@string/video_title">
-    </fragment>
-
+    app:startDestination="@id/music_fragment_dest">
 
     <!--Music相关跳转 -->
     <fragment
         android:id="@+id/music_fragment_dest"
-        android:name="cn.vce.easylook.feature_music.ui.fragments.HomeFragment"
+        android:name="cn.vce.easylook.feature_music.ui.fragments.HomeMusicFragment"
         android:label="@string/music_title">
         <action
             android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
-            app:destination="@id/my_music_fragment_dest" />
+            app:destination="@id/MyMusicFragment" />
     </fragment>
 
     <action android:id="@+id/globalActionToSongFragment"
@@ -31,13 +23,19 @@
     </fragment>
 
     <fragment
-        android:id="@+id/my_music_fragment_dest"
+        android:id="@+id/MyMusicFragment"
         android:name="cn.vce.easylook.feature_music.ui.fragments.MyMusicFragment"
         android:label="MyMusicFragment">
         <argument
             android:name="id"
             app:argType="string"
             android:defaultValue=""/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/video_fragment_dest"
+        android:name="cn.vce.easylook.VideoFragment"
+        android:label="@string/video_title">
     </fragment>
 
     <!--小说相关跳转 -->
@@ -47,8 +45,44 @@
     </fragment>
 
 
+    <!--Ai相关跳转 -->
 
+    <fragment
+        android:id="@+id/ai_fragment_dest"
+        android:name="cn.vce.easylook.feature_ai.presentation.HomeAiFragment"
+        android:label="@string/ai_title">
+        <!--<action android:id="@+id/globalActionToAiWebFragment"
+            app:destination="@id/AiWebFragment" />-->
 
+        <action
+            android:id="@+id/globalActionToAiWebFragment"
+            app:destination="@id/AiWebFragment"
+            app:restoreState="true"
+            app:popUpTo="@id/ai_fragment_dest"
+            app:popUpToSaveState="true" />
+    </fragment>
+
+    <!--<fragment
+        android:id="@+id/AiListFragment"
+        android:name="cn.vce.easylook.feature_ai.presentation.ai_list.AiListFragment"
+        android:label="@string/ai_title">
+        <action android:id="@+id/globalActionToAiWebFragment"
+            app:destination="@id/AiWebFragment" />
+    </fragment>-->
+
+    <fragment
+        android:id="@+id/AiWebFragment"
+        android:name="cn.vce.easylook.feature_ai.presentation.ai_web.AiWebFragment"
+        android:label="{title}">
+        <argument
+            android:name="aiUrl"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
 
 
 </navigation>

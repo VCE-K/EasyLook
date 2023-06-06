@@ -4,7 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
-
+    id 'androidx.navigation.safeargs'
 }
 
 android {
@@ -24,6 +24,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 
     buildTypes {
@@ -56,6 +57,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -88,7 +90,6 @@ dependencies {
     //navigation导航
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
-
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
@@ -141,5 +142,11 @@ dependencies {
 
     //Android音乐接口Api， 远程和本地只能保留一个！！
     implementation 'com.github.caiyonglong:musicapi:1.1.4'
+
+    //webView
+    implementation "androidx.webkit:webkit:$webkit_version"
+
+    //jsoup
+    implementation 'org.jsoup:jsoup:1.14.3'
 
 }

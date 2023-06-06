@@ -2,6 +2,7 @@ package cn.vce.easylook.feature_music.exoplayer
 
 import android.content.ComponentName
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -10,13 +11,29 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import cn.vce.easylook.feature_music.data.Repository
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
 import cn.vce.easylook.feature_music.other.Event
 import cn.vce.easylook.feature_music.other.Resource
+import cn.vce.easylook.utils.LogE
+import cn.vce.easylook.utils.id
+import cn.vce.easylook.utils.mediaUri
+import com.google.android.exoplayer2.Player
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MusicServiceConnection(
-    context: Context
+    context: Context,
+    val firebaseMusicSource: FirebaseMusicSource
 ) {
+
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
+
+
     private val _isConnected = MutableLiveData<Event<Resource<Boolean>>>()
     val isConnected: LiveData<Event<Resource<Boolean>>> = _isConnected
 
@@ -62,7 +79,7 @@ class MusicServiceConnection(
         private val context: Context
     ) : MediaBrowserCompat.ConnectionCallback() {
 
-        //连接成功
+        //连接服务成功
         override fun onConnected() {
             Log.d("MusicServiceConnection", "CONNECTED")
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
@@ -122,6 +139,7 @@ class MusicServiceConnection(
                 )
             }
         }
+
 
         override fun onSessionDestroyed() {
             mediaBrowserConnectionCallback.onConnectionSuspended()

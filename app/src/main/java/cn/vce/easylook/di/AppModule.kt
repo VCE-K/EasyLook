@@ -22,6 +22,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    @Singleton
+    @Provides
+    fun provideContext(
+        @ApplicationContext context: Context
+    ) = context
 
     @Singleton//成为跨服务实例共享的单例
     @Provides
@@ -38,8 +43,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMusicServiceConnection(
-        @ApplicationContext context: Context
-    ) = MusicServiceConnection(context)
+        @ApplicationContext context: Context,
+        firebaseMusicSource: FirebaseMusicSource
+    ) = MusicServiceConnection(context, firebaseMusicSource)
 
     @Singleton
     @Provides

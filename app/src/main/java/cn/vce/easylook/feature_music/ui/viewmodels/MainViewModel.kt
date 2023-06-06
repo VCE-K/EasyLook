@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
 
 
     private val _mediaItems = MutableLiveData<Resource<List<Song>>>()
-    val mediaItems: LiveData<Resource<List<Song>>> = _mediaItems
+    val mediaItems = _mediaItems
 
     val isConnected = musicServiceConnection.isConnected
     val networkError = musicServiceConnection.networkError
@@ -35,15 +35,19 @@ class MainViewModel @Inject constructor(
     val playbackState = musicServiceConnection.playbackState
 
     init {
-        initializing()
 
-        state.get<String>("id")?.let {
-            getPlaylistDetail(it)
+        val id = state.get<String>("id")
+
+        if(id != null && id.isNotEmpty()) {
+            getPlaylistDetail(id)
+        }else{
+            initializing()
         }
     }
 
     private fun initializing() {
-        _mediaItems.postValue(Resource.loading(null))
+        LogE(Thread.currentThread().name)
+        _mediaItems.value = Resource.loading(null)
         musicServiceConnection.subscribe(MEDIA_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {
             override fun onChildrenLoaded(
                 parentId: String,
@@ -59,14 +63,15 @@ class MainViewModel @Inject constructor(
                         it.description.iconUri.toString()
                     )
                 }
-                _mediaItems.postValue(Resource.success(items))
+                LogE(Thread.currentThread().name)
+                _mediaItems.value = Resource.success(items)
             }
         })
     }
 
     private fun getPlaylistDetail(idx: String) {
         viewModelScope.launch {
-            Repository.getPlaylistDetail(idx)?.let {
+            Repository.getPlaylistDetail(idx).let {
                 val detail: ArtistItem = it.detail
                 val musicList: List<MusicInfo> = it.songs
                 val songs =  mutableListOf<Song>()
@@ -77,7 +82,7 @@ class MainViewModel @Inject constructor(
                         songs.add(song)
                     }
                 }
-                firebaseMusicSource.songs = firebaseMusicSource.transSongs(songs)
+                firebaseMusicSource.songs = songs.transSongs()
                 initializing()
             }
         }
@@ -86,10 +91,12 @@ class MainViewModel @Inject constructor(
 
     fun skipToNextSong() {
         musicServiceConnection.transportControls.skipToNext()
+        musicServiceConnection.transportControls.play()
     }
 
     fun skipToPreviousSong() {
         musicServiceConnection.transportControls.skipToPrevious()
+        musicServiceConnection.transportControls.play()
     }
 
     fun seekTo(pos: Long) {
@@ -97,28 +104,18 @@ class MainViewModel @Inject constructor(
     }
 
     fun playOrToggleSong(mediaItem: Song, toggle: Boolean = false) {
-        mediaItem.mediaId.let {
-            viewModelScope.launch {
-                if(mediaItem.songUrl.isEmpty()) {
-                    val url = Repository.getMusicUrl(it)
-                    url?.let {
-                        replaceSongUrl(mediaItem, it)
-                    }
-                }
-                val isPrepared = playbackState.value?.isPrepared ?: false
-                if(isPrepared && mediaItem.mediaId ==
-                    curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
-                    playbackState.value?.let { playbackState ->
-                        when {
-                            playbackState.isPlaying -> if(toggle) musicServiceConnection.transportControls.pause()
-                            playbackState.isPlayEnabled -> musicServiceConnection.transportControls.play()
-                            else -> Unit
-                        }
-                    }
-                } else {
-                    musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, null)
+        val isPrepared = playbackState.value?.isPrepared ?: false
+        if(isPrepared && mediaItem.mediaId ==
+            curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
+            playbackState.value?.let { playbackState ->
+                when {
+                    playbackState.isPlaying -> if(toggle) musicServiceConnection.transportControls.pause()
+                    playbackState.isPlayEnabled -> musicServiceConnection.transportControls.play()
+                    else -> Unit
                 }
             }
+        } else {
+            musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, null)
         }
     }
 
@@ -129,18 +126,7 @@ class MainViewModel @Inject constructor(
     }
 
 
-    private fun replaceSongUrl(mediaItem: Song, url: String){
-        mediaItem.songUrl = url
-        var itemSong = firebaseMusicSource.songs.find { it ->
-            mediaItem.mediaId == it.description.mediaId
-        }
-        var mutableSongList = mutableListOf<MediaMetadataCompat>().apply {
-            addAll(firebaseMusicSource.songs)
-        }
-        val playIndex = firebaseMusicSource.songs.indexOf(itemSong)
-        mutableSongList[playIndex] = firebaseMusicSource.transSong(mediaItem)
-        firebaseMusicSource.songs = mutableSongList
-    }
+
 }
 
 

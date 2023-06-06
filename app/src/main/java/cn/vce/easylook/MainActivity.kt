@@ -2,10 +2,15 @@ package cn.vce.easylook
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -49,22 +54,23 @@ class MainActivity : BaseActivity() {
     
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private val binding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityMainBinding.inflate(layoutInflater)
-    }
+    private lateinit var binding: ActivityMainBinding
 
-    @SuppressLint("LogNotTimber")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupNavigationDrawer()
         setSupportActionBar(binding.toolbar)
         val navController: NavController = findNavController(R.id.nav_host_fragment)
         appBarConfiguration =
-            AppBarConfiguration.Builder(R.id.video_fragment_dest, R.id.music_fragment_dest)
+            AppBarConfiguration.Builder(R.id.music_fragment_dest, R.id.video_fragment_dest, R.id.novel_fragment_dest, R.id.ai_fragment_dest)
                 .setDrawerLayout(drawerLayout)
                 .build()
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+
         binding.navView.setupWithNavController(navController)
         binding.musicPlayer.visibility = View.GONE
 
@@ -73,7 +79,7 @@ class MainActivity : BaseActivity() {
                 R.id.video_fragment_dest -> hideBottomBar()
                 R.id.music_fragment_dest -> showBottomBar()
                 R.id.songFragment -> hideBottomBar()
-                else -> showBottomBar()
+                else -> hideBottomBar()
             }
         }
 
@@ -109,6 +115,7 @@ class MainActivity : BaseActivity() {
         }
         
     }
+
 
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration) ||

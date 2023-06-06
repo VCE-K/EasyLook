@@ -9,7 +9,6 @@ import android.widget.SeekBar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import cn.vce.easylook.R
-import cn.vce.easylook.databinding.FragmentHomeBinding
 import cn.vce.easylook.databinding.FragmentSongBinding
 import cn.vce.easylook.feature_music.data.entities.Song
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
@@ -18,14 +17,14 @@ import cn.vce.easylook.feature_music.other.Status.SUCCESS
 import com.bumptech.glide.RequestManager
 import cn.vce.easylook.feature_music.ui.viewmodels.MainViewModel
 import cn.vce.easylook.feature_music.ui.viewmodels.SongViewModel
-import cn.vce.noteapp.feature_note.base.BaseFragment
+import cn.vce.easylook.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SongFragment : BaseFragment(R.layout.fragment_song) {
+class SongFragment : BaseFragment() {
 
     @Inject
     lateinit var glide: RequestManager
