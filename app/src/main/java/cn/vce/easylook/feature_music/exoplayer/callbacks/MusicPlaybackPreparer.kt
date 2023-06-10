@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import cn.vce.easylook.feature_music.exoplayer.FirebaseMusicSource
+import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -14,7 +14,7 @@ import kotlinx.coroutines.*
 
 /*MusicPlaybackPreparer（音乐播放准备器） 类，它的主要作用是以异步方式从 Firebase 数据库中获取音乐数据，并通知应用程序使用新的数据来更新元数据和 UI。*/
 class MusicPlaybackPreparer(
-    private val firebaseMusicSource: FirebaseMusicSource,
+    private val musicSource: MusicSource,
     private val playerPrepared: (MediaMetadataCompat?) -> Unit
 ) : MediaSessionConnector.PlaybackPreparer {
 
@@ -40,19 +40,21 @@ class MusicPlaybackPreparer(
     override fun onPrepare(playWhenReady: Boolean) = Unit
     /*
     onPrepareFromMediaId() 方法会在播放器准备好之后被调用，
-    该函数通过 FirebaseMusicSource 对象获取可播放的音乐列表，
+    该函数通过 MusicSource 对象获取可播放的音乐列表，
     找到与给定的 mediaId 相匹配的元素，
     并在完成之后通过调用 playerPrepared() 函数将该元素传递给钩子函数。
      */
     override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
-        firebaseMusicSource.whenReady {
-            val itemToPlay = firebaseMusicSource.songs.find { mediaId == it.description.mediaId }
-            itemToPlay?.let {
+        musicSource.whenReady {
+            val songIndex = musicSource.songs.indexOfFirst {
+                mediaId == it.description.mediaId
+            }
+            songIndex?.let {
                 serviceScope.launch {
                     withContext(Dispatchers.Default) {
-                        firebaseMusicSource.getUrl(it)
+                        musicSource.fetchSongUrl(songIndex)
                     }
-                    playerPrepared(itemToPlay)
+                    playerPrepared(musicSource.songs[songIndex])
                 }
             }
         }

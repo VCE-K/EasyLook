@@ -1,7 +1,7 @@
 package cn.vce.easylook.feature_music.exoplayer
 
 import android.support.v4.media.MediaMetadataCompat
-import cn.vce.easylook.feature_music.data.entities.Song
+import cn.vce.easylook.feature_music.domain.entities.Song
 
 fun MediaMetadataCompat.toSong(): Song? {
     return description?.let {
@@ -10,7 +10,8 @@ fun MediaMetadataCompat.toSong(): Song? {
             it.title.toString(),
             it.subtitle.toString(),
             it.mediaUri.toString(),
-            it.iconUri.toString()
+            it.iconUri.toString(),
+            playlistId = ""
         )
     }
 }
@@ -27,6 +28,7 @@ fun MutableList<Song>.transSongs(): MutableList<MediaMetadataCompat> {
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
             .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
             .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
+            .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, song.artistNames)
             .build()
     }.toMutableList()
 }
@@ -42,5 +44,6 @@ fun Song.transSong(): MediaMetadataCompat {
         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, imageUrl)
         .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, subtitle)
         .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, subtitle)
+        .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, artistNames)
         .build()
 }

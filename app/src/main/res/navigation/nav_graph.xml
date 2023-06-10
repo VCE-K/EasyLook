@@ -7,30 +7,44 @@
     <!--Music相关跳转 -->
     <fragment
         android:id="@+id/music_fragment_dest"
-        android:name="cn.vce.easylook.feature_music.ui.fragments.HomeMusicFragment"
+        android:name="cn.vce.easylook.feature_music.presentation.home_music.HomeMusicFragment"
         android:label="@string/music_title">
         <action
             android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
             app:destination="@id/MyMusicFragment" />
     </fragment>
 
+
+    <fragment
+        android:id="@+id/MyMusicFragment"
+        android:name="cn.vce.easylook.feature_music.presentation.music_list.MusicListFragment"
+        android:label="{title}">
+        <argument
+            android:name="playlist"
+            app:argType="cn.vce.easylook.feature_music.domain.entities.Playlist"
+            app:nullable="false"/>
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+
     <action android:id="@+id/globalActionToSongFragment"
         app:destination="@id/songFragment" />
     <fragment
         android:id="@+id/songFragment"
-        android:name="cn.vce.easylook.feature_music.ui.fragments.SongFragment"
-        android:label="SongFragment">
-    </fragment>
-
-    <fragment
-        android:id="@+id/MyMusicFragment"
-        android:name="cn.vce.easylook.feature_music.ui.fragments.MyMusicFragment"
-        android:label="MyMusicFragment">
+        android:name="cn.vce.easylook.feature_music.presentation.song.SongFragment"
+        android:label="{title}">
         <argument
-            android:name="id"
+            android:name="song"
+            app:argType="cn.vce.easylook.feature_music.domain.entities.Song"
+            app:nullable="false"/>
+        <argument
+            android:name="title"
             app:argType="string"
             android:defaultValue=""/>
     </fragment>
+
 
     <fragment
         android:id="@+id/video_fragment_dest"

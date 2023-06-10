@@ -1,15 +1,19 @@
 package cn.vce.easylook.di
 
+import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
-import cn.vce.easylook.feature_music.data.remote.MusicDatabase
-import cn.vce.easylook.feature_music.exoplayer.FirebaseMusicSource
+import cn.vce.easylook.feature_music.data.data_source.MusicDatabase
+import cn.vce.easylook.feature_music.data.repository.MusicRepositoryImpl
+import cn.vce.easylook.feature_music.domain.repository.MusicRepository
+import cn.vce.easylook.feature_music.domain.use_case.*
 import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
+import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.cyl.musicapi.BaseApiImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,24 +32,32 @@ object AppModule {
         @ApplicationContext context: Context
     ) = context
 
-    @Singleton//成为跨服务实例共享的单例
-    @Provides
-    fun provideMusicDatabase() = MusicDatabase()
 
 
     @Singleton
     @Provides
-    fun provideFirebaseMusicSource(musicDatabase: MusicDatabase) =
-        FirebaseMusicSource(musicDatabase)
+    fun provideMusicSource() =
+        MusicSource()
 
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(
+        application: Application
+    ): SharedPreferences {
+        //第二个参数是文件的操作模式，主要有MODE_PRIVATE和MODE_APPEND两种模式可选，默
+        //认是MODE_PRIVATE，表示当指定相同文件名的时候，所写入的内容将会覆盖原文件中的内
+        //容，而MODE_APPEND则表示如果该文件已存在，就往文件里面追加内容，不存在就创建新文
+        //件。
+        return application.getSharedPreferences("Easy", Context.MODE_PRIVATE)
+    }
 
     //Music
     @Singleton
     @Provides
     fun provideMusicServiceConnection(
-        @ApplicationContext context: Context,
-        firebaseMusicSource: FirebaseMusicSource
-    ) = MusicServiceConnection(context, firebaseMusicSource)
+        @ApplicationContext context: Context
+    ) = MusicServiceConnection(context)
 
     @Singleton
     @Provides
@@ -61,4 +73,21 @@ object AppModule {
             .error(R.drawable.ic_image)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
     )
+
+    @Provides
+    @Singleton
+    fun provideNoteRepository(db: MusicDatabase): MusicRepository {
+        return MusicRepositoryImpl(db.musicDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNoteUseCases(repository: MusicRepository): MusicUseCases {
+        return MusicUseCases(
+            getPlaylist = GetPlaylist(repository),
+            getPlaylistAndSongs = GetPlaylistAndSongs(repository),
+            insertPlaylist = InsertPlaylist(repository),
+            searchSongInPlaylist = SearchSongInPlaylist(repository)
+        )
+    }
 }

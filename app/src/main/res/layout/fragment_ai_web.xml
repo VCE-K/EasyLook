@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        tools:context=".MainActivity">
+        tools:context=".feature_music.presentation.MainActivity">
 
         <WebView
             android:id="@+id/webview"

@@ -10,7 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import cn.vce.easylook.R
 import cn.vce.easylook.databinding.FragmentPlaylistBinding
-import cn.vce.easylook.feature_music.data.entities.Song
+import cn.vce.easylook.feature_music.domain.entities.Song
 import cn.vce.easylook.base.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -20,7 +20,6 @@ class PlaylistFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -38,7 +37,7 @@ class PlaylistFragment : BaseFragment() {
 
     fun setUpViewPage() = binding.apply {
         pager.adapter = PagerAdapter<Song>(emptyList(), childFragmentManager, lifecycle)
-        TabLayoutMediator(tabs, pager) { tab, position ->
+        TabLayoutMediator(tabs, pager) { _, _ ->
 
         }.attach()
     }

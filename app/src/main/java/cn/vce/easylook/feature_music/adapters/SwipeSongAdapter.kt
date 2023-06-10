@@ -12,9 +12,9 @@ class SwipeSongAdapter : BaseSongAdapter<SwipeItemBinding>(R.layout.swipe_item) 
         val song = songs[position]
         holder.binding.apply {
             this as SwipeItemBinding  // 添加类型转换
-            val text = "${song.title} - ${song.subtitle}"
+            val text = song.title
             tvPrimary.text = text
-
+            tvPrimary2.text =  "${song.artistNames} - ${song.subtitle}"
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)

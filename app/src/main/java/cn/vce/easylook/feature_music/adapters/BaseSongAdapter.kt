@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import cn.vce.easylook.feature_music.data.entities.Song
+import cn.vce.easylook.feature_music.domain.entities.Song
 
 abstract class BaseSongAdapter<T : Any>(
     private val layoutId: Int
@@ -59,4 +59,7 @@ abstract class BaseSongAdapter<T : Any>(
     override fun getItemCount(): Int {
         return songs.size
     }
+
+
+
 }

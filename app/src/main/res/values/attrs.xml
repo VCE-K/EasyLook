@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--音乐条目属性-->
+    <declare-styleable name="LocalItemView">
+        <attr name="tv_name" format="reference|string" />
+        <attr name="iv_icon" format="reference|integer" />
+        <attr name="tv_desc" format="reference|string" />
+        <attr name="iv_icon_color" format="reference|color" />
+    </declare-styleable>
+
+
+
+    <attr name="textColor" format="color" />
+
+</resources>

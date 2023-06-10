@@ -21,18 +21,28 @@
     <!--video_title-->
     <!--music_title所用-->
     <string name="music_home_tab_my">我的</string>
+
+    <!-- 我的 start -->
+    <string name="item_local">本地歌曲</string>
+    <string name="song_num">%1$d 首</string>
+    <string name="default_num">0 首</string>
+
+    <string name="play_history">最近播放</string>
+
+    <string name="collection">收藏</string>
+
     <string name="music__home_tab_charts">排行榜</string>
 
     <string name="song_list_item_title_1">1.%1$s - %2$s</string>
     <string name="song_list_item_title_2">2.%1$s - %2$s</string>
     <string name="song_list_item_title_3">3.%1$s - %2$s</string>
 
+
+
     <!--novel_title-->
     <!--ai_title-->
     <string name="ai_home_tab_ai_collection">收藏</string>
     <string name="ai__home_tab_ai_list">市场</string>
-
-
 
 
 

@@ -5,30 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseFragment
 import cn.vce.easylook.databinding.FragmentAiListBinding
 import cn.vce.easylook.databinding.FragmentAiListItemBinding
 import cn.vce.easylook.feature_ai.data.entites.Ai
-import com.cyl.musicapi.bean.TopListBean
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.grid
 import com.drake.brv.utils.setup
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
-import org.jsoup.internal.StringUtil
-import org.jsoup.nodes.Document
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import kotlin.concurrent.thread
 
 @AndroidEntryPoint
 class AiListFragment : BaseFragment() {

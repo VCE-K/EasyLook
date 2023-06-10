@@ -1,8 +1,6 @@
 package cn.vce.easylook.feature_ai.presentation
 
 import android.os.Bundle
-import android.os.Parcelable
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +12,6 @@ import cn.vce.easylook.base.BaseFragment
 import cn.vce.easylook.databinding.FragmentHomeAiBinding
 import cn.vce.easylook.feature_ai.presentation.ai_collection.AiCollectionFragment
 import cn.vce.easylook.feature_ai.presentation.ai_list.AiListFragment
-import cn.vce.easylook.feature_music.ui.fragments.ChartsFragment
-import cn.vce.easylook.feature_music.ui.fragments.MyMusicFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 
