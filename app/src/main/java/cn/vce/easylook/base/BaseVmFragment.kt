@@ -20,7 +20,7 @@ import cn.vce.easylook.utils.ParamUtil
  * @date 2020/5/9
  * @author zs
  */
-abstract class BaseVmFragment<BD : ViewDataBinding> : Fragment() {
+abstract class BaseVmFragment<BD : ViewDataBinding> : BaseFragment() {
 
     /**
      * 开放给外部使用
@@ -36,6 +36,7 @@ abstract class BaseVmFragment<BD : ViewDataBinding> : Fragment() {
         super.onCreate(savedInstanceState)
         //由于同一个fragment对象可能被activity attach多次(比如viewPager+PagerStateAdapter中)
         //所以fragmentViewModel不能放在onCreateView初始化，否则会产生多个fragmentViewModel
+        initActivityViewModel()
         initFragmentViewModel()
     }
     override fun onAttach(context: Context) {
@@ -79,6 +80,10 @@ abstract class BaseVmFragment<BD : ViewDataBinding> : Fragment() {
      * observe同理
      */
     open fun initViewModel() {
+
+    }
+
+    open fun initActivityViewModel() {
 
     }
 

@@ -1,7 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-
-
     <style name="AppTheme" parent="Base.AppTheme" />
 
     <style name="AppTheme.OverlapSystemBar" parent="Base.AppTheme" />
@@ -24,8 +22,9 @@
 
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="textColor">@color/textColorPrimary</item>
-        <item name="subtitleTextColor">@color/textColorSecondary</item>
-        <item name="android:actionMenuTextColor">@color/textColorPrimary</item>
+
+        <item name="iconColor">@color/iconColor</item>
+        <item name="backgroundColor">@color/window_background</item>
     </style>
 
     <!-- This style defines the tint color of the overflow menu button -->
@@ -34,5 +33,6 @@
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Light" />
+
 
 </resources>

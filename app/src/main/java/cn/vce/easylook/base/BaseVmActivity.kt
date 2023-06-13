@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
  * @date 2020/5/9
  * @author zs
  */
-abstract class BaseVmActivity<BD : ViewDataBinding> : AppCompatActivity() {
+abstract class BaseVmActivity<BD : ViewDataBinding> : BaseActivity() {
 
     private var mActivityProvider: ViewModelProvider? = null
 

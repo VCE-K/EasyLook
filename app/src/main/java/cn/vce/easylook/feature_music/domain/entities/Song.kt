@@ -13,7 +13,7 @@ data class Song(
     var songUrl: String = "",//歌曲url
     val imageUrl: String = "",//图片url
     val artistNames: String = "",//歌手名
-    val playlistId: String //歌单ID
+    val playlistId: String = ""//歌单ID
 ): Serializable
 
 

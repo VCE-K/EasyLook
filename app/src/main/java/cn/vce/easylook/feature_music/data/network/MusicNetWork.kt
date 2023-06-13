@@ -1,5 +1,6 @@
 package cn.vce.easylook.feature_music.data.network
 
+import cn.vce.easylook.feature_music.domain.entities.Song
 import cn.vce.easylook.utils.LogE
 import com.cyl.musicapi.BaseApiImpl
 import com.cyl.musicapi.bean.ArtistSongs
@@ -41,6 +42,59 @@ object MusicNetWork {
         }
     }
 
+
+    suspend fun searchMusic(key: String, limit: Int, page: Int): MutableList<Song> {
+        return suspendCoroutine { continuation ->
+            val type: String = "NETEASE"
+            BaseApiImpl.searchSongSingle(key, type, limit, page, success = {
+                val songs = mutableListOf<Song>()
+                if (it.status) {
+                    try {
+                        LogE("search type", type.toLowerCase())
+                        /*it.data.songs?.forEach { music ->
+                            music.vendor = type.toLowerCase()
+                            if (music.songId != null && music.name != null) {
+                                musicList.add(Song(music.id!!, music.name!!))
+                            }
+                        }*/
+
+                        it.data.songs?.forEach { music ->
+                            music.id?.let {
+                                var artistIds = ""
+                                var artistNames = ""
+                                music.artists?.let {
+                                    artistIds = it[0].id
+                                    artistNames = it[0].name
+                                    for (j in 1 until it.size - 1) {
+                                        artistIds += ",${it[j].id}"
+                                        artistNames += ",${it[j].name}"
+                                    }
+                                }
+                                val coverUrl = music.album?.cover
+                                val subtitle = music.album?.name
+                                val song = Song(
+                                    mediaId = music.id ?: "",
+                                    title = music.name ?: "",
+                                    subtitle = subtitle ?: "",
+                                    songUrl = "",
+                                    imageUrl = coverUrl ?: "",
+                                    artistNames = artistNames
+                                )
+                                songs.add(song)
+                            }
+                        }
+                    } catch (e: Throwable) {
+                        LogE("search", e.message)
+                    }
+                    LogE("search", "结果：" + songs.size)
+                    continuation.resume(songs)
+                } else {
+                    LogE("search", it.msg)
+                    continuation.resumeWithException(RuntimeException("fail is $it"))
+                }
+            })
+        }
+    }
     /**
      * 获取歌曲url信息
      * @param br 音乐品质

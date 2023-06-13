@@ -2,101 +2,22 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/music_fragment_dest">
+    app:startDestination="@id/nav_music">
 
     <!--Music相关跳转 -->
-    <fragment
-        android:id="@+id/music_fragment_dest"
-        android:name="cn.vce.easylook.feature_music.presentation.home_music.HomeMusicFragment"
-        android:label="@string/music_title">
-        <action
-            android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
-            app:destination="@id/MyMusicFragment" />
-    </fragment>
+    <include app:graph="@navigation/nav_music" />
 
 
-    <fragment
-        android:id="@+id/MyMusicFragment"
-        android:name="cn.vce.easylook.feature_music.presentation.music_list.MusicListFragment"
-        android:label="{title}">
-        <argument
-            android:name="playlist"
-            app:argType="cn.vce.easylook.feature_music.domain.entities.Playlist"
-            app:nullable="false"/>
-        <argument
-            android:name="title"
-            app:argType="string"
-            android:defaultValue=""/>
-    </fragment>
-
-    <action android:id="@+id/globalActionToSongFragment"
-        app:destination="@id/songFragment" />
-    <fragment
-        android:id="@+id/songFragment"
-        android:name="cn.vce.easylook.feature_music.presentation.song.SongFragment"
-        android:label="{title}">
-        <argument
-            android:name="song"
-            app:argType="cn.vce.easylook.feature_music.domain.entities.Song"
-            app:nullable="false"/>
-        <argument
-            android:name="title"
-            app:argType="string"
-            android:defaultValue=""/>
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/video_fragment_dest"
-        android:name="cn.vce.easylook.VideoFragment"
-        android:label="@string/video_title">
-    </fragment>
+    <!--Video相关跳转 -->
+    <include app:graph="@navigation/nav_video" />
 
     <!--小说相关跳转 -->
-    <fragment
+    <!--<fragment
         android:id="@+id/novel_fragment_dest"
         android:label="@string/novel_title">
-    </fragment>
-
-
-    <!--Ai相关跳转 -->
-
-    <fragment
-        android:id="@+id/ai_fragment_dest"
-        android:name="cn.vce.easylook.feature_ai.presentation.HomeAiFragment"
-        android:label="@string/ai_title">
-        <!--<action android:id="@+id/globalActionToAiWebFragment"
-            app:destination="@id/AiWebFragment" />-->
-
-        <action
-            android:id="@+id/globalActionToAiWebFragment"
-            app:destination="@id/AiWebFragment"
-            app:restoreState="true"
-            app:popUpTo="@id/ai_fragment_dest"
-            app:popUpToSaveState="true" />
-    </fragment>
-
-    <!--<fragment
-        android:id="@+id/AiListFragment"
-        android:name="cn.vce.easylook.feature_ai.presentation.ai_list.AiListFragment"
-        android:label="@string/ai_title">
-        <action android:id="@+id/globalActionToAiWebFragment"
-            app:destination="@id/AiWebFragment" />
     </fragment>-->
 
-    <fragment
-        android:id="@+id/AiWebFragment"
-        android:name="cn.vce.easylook.feature_ai.presentation.ai_web.AiWebFragment"
-        android:label="{title}">
-        <argument
-            android:name="aiUrl"
-            app:argType="string"
-            android:defaultValue=""/>
-        <argument
-            android:name="title"
-            app:argType="string"
-            android:defaultValue=""/>
-    </fragment>
-
+    <!--Ai相关跳转 -->
+    <include app:graph="@navigation/nav_ai" />
 
 </navigation>

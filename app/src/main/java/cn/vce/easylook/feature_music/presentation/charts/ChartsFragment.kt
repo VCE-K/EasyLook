@@ -29,7 +29,7 @@ import kotlin.math.min
 @AndroidEntryPoint
 class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
 
-    private lateinit var viewModel: ChartsViewModl
+    private lateinit var viewModel: ChartsViewModel
 
     @Inject
     lateinit var glide: RequestManager

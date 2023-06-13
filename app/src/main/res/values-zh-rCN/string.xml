@@ -20,6 +20,10 @@
 
     <!--video_title-->
     <!--music_title所用-->
+
+    <!-- 搜索 start -->
+    <string name="music_home_tab_search">搜索</string>
+
     <string name="music_home_tab_my">我的</string>
 
     <!-- 我的 start -->
@@ -31,7 +35,7 @@
 
     <string name="collection">收藏</string>
 
-    <string name="music__home_tab_charts">排行榜</string>
+    <string name="music_home_tab_charts">排行榜</string>
 
     <string name="song_list_item_title_1">1.%1$s - %2$s</string>
     <string name="song_list_item_title_2">2.%1$s - %2$s</string>

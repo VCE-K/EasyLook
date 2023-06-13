@@ -20,10 +20,11 @@
     <!--video_title-->
 
 
-
-
     <!--music_title所用-->
+
     <string name="music_home_tab_my">My</string>
+    <!-- 搜索 start -->
+    <string name="music_home_tab_search">Search</string>
     <!-- 我的 start -->
     <string name="item_local">local song</string>
     <string name="song_num">%1$d song</string>
@@ -33,12 +34,11 @@
     <string name="play_history">play history</string>
     <string name="collection">collection</string>
 
-    <string name="music__home_tab_charts">Charts</string>
+    <string name="music_home_tab_charts">Charts</string>
     <!-- 排行榜 start -->
     <string name="song_list_item_title_1">1.%1$s - %2$s</string>
     <string name="song_list_item_title_2">2.%1$s - %2$s</string>
     <string name="song_list_item_title_3">3.%1$s - %2$s</string>
-
 
 
     <!--novel_title-->

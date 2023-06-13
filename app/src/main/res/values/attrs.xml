@@ -8,8 +8,12 @@
         <attr name="iv_icon_color" format="reference|color" />
     </declare-styleable>
 
-
-
+    <!--字体颜色 -->
     <attr name="textColor" format="color" />
+
+    <!--背景色-->
+    <!--    <attr name="backgroundColor" format="reference" />-->
+    <!--通用图标色-->
+    <attr name="iconColor" format="reference" />
 
 </resources>

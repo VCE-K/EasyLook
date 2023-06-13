@@ -5,13 +5,15 @@ import cn.vce.easylook.feature_music.data.network.MusicNetWork
 import cn.vce.easylook.feature_music.domain.entities.PlayListAndSongs
 import cn.vce.easylook.feature_music.domain.entities.Playlist
 import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.other.Resource
+import cn.vce.easylook.utils.LogE
+import com.cyl.musicapi.BaseApiImpl
 import com.cyl.musicapi.bean.ArtistItem
 import com.cyl.musicapi.bean.ArtistSongs
-import com.cyl.musicapi.bean.TopListBean
 import com.cyl.musicapi.playlist.MusicInfo
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object Repository {
 
@@ -80,11 +82,26 @@ object Repository {
     }
 
 
+/*
+    fun searchMusic(key: String, limit: Int, page: Int) = fire(Dispatchers.IO) {
+        val songs = withContext(Dispatchers.IO){
+            MusicNetWork.searchMusic(key, limit, page)
+        }
+        if(songs.size > 0) {
+            Result.success(songs)
+        }else{
+            Result.failure(RuntimeException("searchMusic is $songs"))
+        }
+    }
+*/
+    suspend fun searchMusic(key: String, limit: Int, page: Int) = MusicNetWork.searchMusic(key, limit, page)
+
     /**
      * 获取歌曲url信息
      * @param br 音乐品质
      */
     suspend fun getMusicUrl(mid: String) = MusicNetWork.getMusicUrl(mid =  mid)
+
 
 
 
