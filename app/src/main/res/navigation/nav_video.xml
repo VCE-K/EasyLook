@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_video"
+    app:startDestination="@id/video_fragment_dest">
+    <!--视频相关跳转 -->
+    <fragment
+        android:id="@+id/video_fragment_dest"
+        android:name="cn.vce.easylook.VideoFragment"
+        android:label="@string/video_title">
+    </fragment>
+</navigation>
