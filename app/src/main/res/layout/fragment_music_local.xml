@@ -30,12 +30,24 @@
                 app:cardElevation="@dimen/dp_2"
                 app:cardUseCompatPadding="true">
 
+                <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <cn.vce.easylook.feature_music.ui.LocalItemView
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/playlistRv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+
+                   <!-- <cn.vce.easylook.feature_music.ui.LocalItemView
                         android:id="@+id/localView"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_56"
@@ -43,9 +55,9 @@
                         app:iv_icon="@drawable/item_music"
                         app:iv_icon_color="@color/blue_800"
                         app:tv_desc="@string/default_num"
-                        app:tv_name="@string/item_local" />
+                        app:tv_name="@string/item_local" />-->
 
-                    <cn.vce.easylook.feature_music.ui.LocalItemView
+                    <!--<cn.vce.easylook.feature_music.ui.LocalItemView
                         android:id="@+id/playHistoryView"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_56"
@@ -63,7 +75,7 @@
                         app:iv_icon="@drawable/item_music"
                         app:iv_icon_color="@color/blue_800"
                         app:tv_desc="@string/default_num"
-                        app:tv_name="@string/collection" />
+                        app:tv_name="@string/collection" />-->
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

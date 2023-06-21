@@ -16,10 +16,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="?backgroundColor"
+            android:scaleType="matrix"
             app:layout_constraintEnd_toStartOf="@+id/vpSong"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.2" />
+            app:layout_constraintWidth_percent="0.1" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vpSong"
@@ -30,7 +31,7 @@
             app:layout_constraintEnd_toStartOf="@+id/ivPlayPause"
             app:layout_constraintStart_toEndOf="@id/ivCurSongImage"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.6" />
+            app:layout_constraintWidth_percent="0.7" />
 
         <ImageView
             android:id="@+id/ivPlayPause"

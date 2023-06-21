@@ -2,18 +2,15 @@ package cn.vce.easylook.feature_music.presentation.home_music
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import cn.vce.easylook.R
-import cn.vce.easylook.base.BaseFragment
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentHomeMusicBinding
-import cn.vce.easylook.feature_music.domain.entities.Playlist
 import cn.vce.easylook.feature_music.presentation.charts.ChartsFragment
 import cn.vce.easylook.feature_music.presentation.music_local.MusicLocalFragment
-import cn.vce.easylook.feature_music.presentation.music_search.MusicSearchFragment
-import com.cyl.musicapi.bean.TopListBean
 import com.google.android.material.tabs.TabLayoutMediator
 
 
@@ -51,7 +48,6 @@ class HomeMusicFragment : BaseVmFragment<FragmentHomeMusicBinding>() {
             }
             else -> false
         }
-
 
 
     private inner  class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

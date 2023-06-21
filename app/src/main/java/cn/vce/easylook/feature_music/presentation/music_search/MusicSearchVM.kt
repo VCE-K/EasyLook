@@ -2,23 +2,19 @@ package cn.vce.easylook.feature_music.presentation.music_search
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
 import cn.vce.easylook.base.BaseViewModel
-import cn.vce.easylook.feature_music.data.Repository
-import cn.vce.easylook.feature_music.domain.entities.Song
-import cn.vce.easylook.feature_music.exoplayer.MusicSource
+import cn.vce.easylook.base.BaseEvent
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Resource
-import cn.vce.easylook.feature_music.presentation.music_list.MusicListEvent
+import cn.vce.easylook.feature_music.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MusicSearchVM @Inject constructor(
-    private val musicSource: MusicSource
+    private val repository: MusicRepository
 ): BaseViewModel() {
 
     private val limit = 15
@@ -29,7 +25,7 @@ class MusicSearchVM @Inject constructor(
         Repository.searchMusic(query, limit, mOffset)
     }*/
 
-    private val _songs = MediatorLiveData<Resource<MutableList<Song>>>().apply {
+    private val _songs = MediatorLiveData<Resource<MutableList<MusicInfo>>>().apply {
         value = Resource.loading(null)
         addSource(_query) { query ->
             if (query.isNullOrEmpty()) {
@@ -41,7 +37,7 @@ class MusicSearchVM @Inject constructor(
                 launch {
                     value = try {
                         val result = withContext(Dispatchers.IO){
-                            Repository.searchMusic(query, limit, mOffset)
+                            repository.searchMusic(query, limit, mOffset)
                         }
                         Resource.success(result.toMutableList() ?: mutableListOf())
                     } catch (e: Exception) {
@@ -59,28 +55,9 @@ class MusicSearchVM @Inject constructor(
         _query.value = query
     }
 
-    fun onEvent(event: MusicListEvent) {
+    override fun onEvent(event: BaseEvent) {
         when (event) {
-            is MusicListEvent.PlayList -> {
-                _songs.value?.data?.toMutableList()?.apply {
-                    viewModelScope.launch {
-                        //正在播放的歌单是不是现在显示的歌单
-                        val id = get(0).mediaId
-                        val fetchFlag = (musicSource.playlistId == id)
-                        if ( !fetchFlag ) { //不是同一个那就刷新数据
-                            musicSource.fetchMediaData {
-                                return@fetchMediaData this@apply
-                            }
-                            id?.let {
-                                musicSource.playlistId = id
-                            }
-                        }
-                        withContext(Dispatchers.Main) {
-                            event.action(!fetchFlag)
-                        }
-                    }
-                }
-            }
+
         }
     }
 }

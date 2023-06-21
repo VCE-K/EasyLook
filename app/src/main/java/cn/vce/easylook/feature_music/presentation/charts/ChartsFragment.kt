@@ -1,24 +1,19 @@
 package cn.vce.easylook.feature_music.presentation.charts
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewbinding.ViewBinding
 import cn.vce.easylook.R
-import cn.vce.easylook.base.BaseFragment
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentChartsBinding
 import cn.vce.easylook.databinding.ItemChartsBinding
 import cn.vce.easylook.databinding.ItemChartsLargeBinding
-import cn.vce.easylook.feature_music.domain.entities.Playlist
+import cn.vce.easylook.feature_music.models.PlaylistInfo
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.utils.LogE
 import com.bumptech.glide.RequestManager
-import com.cyl.musicapi.bean.TopListBean
+import cn.vce.easylook.feature_music.models.TopListBean
+import cn.vce.easylook.utils.ConvertUtils
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.grid
 import com.drake.brv.utils.setup
@@ -91,15 +86,9 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
                             glide.load(topListBean.cover).into(binding.ivCover)
                             for (i in 0 until min(topListBean.list?.size ?: 0, 3)) {
                                 val music = topListBean.list!![i]
-                                var artistIds = ""
                                 var artistNames = ""
                                 music.artists?.let {
-                                    artistIds = it[0].id
-                                    artistNames = it[0].name
-                                    for (j in 1 until it.size - 1) {
-                                        artistIds += ",${it[j].id}"
-                                        artistNames += ",${it[j].name}"
-                                    }
+                                    artistNames = ConvertUtils.getArtist(it)
                                 }
                                 when (i) {
                                     0 -> binding.tvMusic1.text = this@ChartsFragment.getString(stringIds[i], music.name, artistNames)
@@ -124,18 +113,18 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
                     val bundle = Bundle().apply {
                         getModel<TopListBean>()?.apply {
                             if (id != null && name != null){
-                                putSerializable("playlist", Playlist(id!!, name!!, cover, description))
+                                putSerializable("playlistInfo", PlaylistInfo(id!!, name!!, description, cover, playCount, list?.size?:0))
                                 putString("title", name)
                             }
                         }
                     }
                     nav().navigate(R.id.action_chartsFragment_to_my_music_fragment_dest, bundle)
                 }
-                onClick(R.id.iv_cover) {
+                onClick(R.id.chartsItem_large) {
                     val bundle = Bundle().apply {
                         getModel<TopListBean>()?.apply {
                             if (id != null && name != null){
-                                putSerializable("playlist", Playlist(id!!, name!!, cover, description))
+                                putSerializable("playlistInfo", PlaylistInfo(id!!, name!!, description, cover, playCount, list?.size?:0))
                                 putString("title", name)
                             }
                         }

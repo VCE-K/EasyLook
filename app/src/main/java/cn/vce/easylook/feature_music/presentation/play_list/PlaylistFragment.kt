@@ -1,17 +1,15 @@
 package cn.vce.easylook.feature_music.presentation.play_list
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import cn.vce.easylook.R
 import cn.vce.easylook.databinding.FragmentPlaylistBinding
-import cn.vce.easylook.feature_music.domain.entities.Song
 import cn.vce.easylook.base.BaseFragment
+import cn.vce.easylook.feature_music.models.MusicInfo
 import com.google.android.material.tabs.TabLayoutMediator
 
 class PlaylistFragment : BaseFragment() {
@@ -36,7 +34,7 @@ class PlaylistFragment : BaseFragment() {
     }
 
     fun setUpViewPage() = binding.apply {
-        pager.adapter = PagerAdapter<Song>(emptyList(), childFragmentManager, lifecycle)
+        pager.adapter = PagerAdapter<MusicInfo>(emptyList(), childFragmentManager, lifecycle)
         TabLayoutMediator(tabs, pager) { _, _ ->
 
         }.attach()

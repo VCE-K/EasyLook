@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -20,7 +21,7 @@ import cn.vce.easylook.utils.ParamUtil
  * @date 2020/5/9
  * @author zs
  */
-abstract class BaseVmFragment<BD : ViewDataBinding> : BaseFragment() {
+abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
 
     /**
      * 开放给外部使用

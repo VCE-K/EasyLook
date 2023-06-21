@@ -4,12 +4,10 @@ import android.support.v4.media.MediaMetadataCompat
 import android.widget.Toast
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
-import cn.vce.easylook.feature_music.exoplayer.toSong
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.mediaUri
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
-import kotlinx.coroutines.*
 
 
 //用于监听播放器的各种状态和事件，如播放状态变化、加载状态变化、播放错误、播放位置变化等

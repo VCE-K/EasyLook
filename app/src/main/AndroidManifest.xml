@@ -27,7 +27,7 @@
         </service>
 
         <activity
-            android:name=".feature_music.presentation.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

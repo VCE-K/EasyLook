@@ -10,13 +10,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import cn.vce.easylook.R
 import cn.vce.easylook.databinding.FragmentSongBinding
-import cn.vce.easylook.feature_music.domain.entities.Song
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
-import cn.vce.easylook.feature_music.exoplayer.toSong
 import cn.vce.easylook.feature_music.other.Status.SUCCESS
 import com.bumptech.glide.RequestManager
-import cn.vce.easylook.feature_music.presentation.MainViewModel
+import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.base.BaseFragment
+import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,17 +28,18 @@ class SongFragment : BaseFragment() {
     @Inject
     lateinit var glide: RequestManager
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainVM: MainViewModel by activityViewModels()
 
     private val songViewModel: SongViewModel by viewModels()
 
-    private var curPlayingSong: Song? = null
 
     private var playbackState: PlaybackStateCompat? = null
 
     private var shouldUpdateSeekbar = true
 
     lateinit var binding: FragmentSongBinding
+
+    private var curPlayingMusic: MusicInfo? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,8 +55,8 @@ class SongFragment : BaseFragment() {
         subscribeToObservers()
 
         binding.ivPlayPauseDetail.setOnClickListener {
-            curPlayingSong?.let {
-                mainViewModel.playOrToggleSong(it, true)
+            curPlayingMusic?.let {
+                mainVM.playOrToggleSong(it, true)
             }
         }
 
@@ -72,36 +73,36 @@ class SongFragment : BaseFragment() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar?.let {
-                    mainViewModel.seekTo(it.progress.toLong())
+                    mainVM.seekTo(it.progress.toLong())
                     shouldUpdateSeekbar = true
                 }
             }
         })
 
         binding.ivSkipPrevious.setOnClickListener {
-            mainViewModel.skipToPreviousSong()
+            mainVM.skipToPreviousSong()
         }
 
         binding.ivSkip.setOnClickListener {
-            mainViewModel.skipToNextSong()
+            mainVM.skipToNextSong()
         }
     }
 
-    private fun updateTitleAndSongImage(song: Song) {
-        val title = "${song.title} - ${song.subtitle}"
+    private fun updateTitleAndSongImage(musicInfo: MusicInfo) {
+        val title = "${musicInfo.name} - ${musicInfo.album?.name}"
         binding.tvSongName.text = title
-        glide.load(song.imageUrl).into(binding.ivSongImage)
+        glide.load(musicInfo.album?.cover).into(binding.ivSongImage)
     }
 
     private fun subscribeToObservers() {
-        mainViewModel.mediaItems.observe(viewLifecycleOwner) {
+        mainVM.mediaItems.observe(viewLifecycleOwner) {
             it?.let { result ->
                 when(result.status) {
                     SUCCESS -> {
-                        result.data?.let { songs ->
-                            if(curPlayingSong == null && songs.isNotEmpty()) {
-                                curPlayingSong = songs[0]
-                                updateTitleAndSongImage(songs[0])
+                        result.data?.let { musicInfos ->
+                            if(curPlayingMusic == null && musicInfos.isNotEmpty()) {
+                                curPlayingMusic =musicInfos[0]
+                                updateTitleAndSongImage(musicInfos[0])
                             }
                         }
                     }
@@ -109,12 +110,12 @@ class SongFragment : BaseFragment() {
                 }
             }
         }
-        mainViewModel.curPlayingSong.observe(viewLifecycleOwner) {
+        mainVM.curPlayingSong.observe(viewLifecycleOwner) {
             if(it == null) return@observe
-            curPlayingSong = it.toSong()
-            updateTitleAndSongImage(curPlayingSong!!)
+            curPlayingMusic = it.toMusicInfo()
+            updateTitleAndSongImage(curPlayingMusic!!)
         }
-        mainViewModel.playbackState.observe(viewLifecycleOwner) {
+        mainVM.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
             binding.ivPlayPauseDetail.setImageResource(
                 if(playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play

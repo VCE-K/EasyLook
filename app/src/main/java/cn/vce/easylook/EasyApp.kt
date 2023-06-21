@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.cyl.musicapi.BaseApiImpl
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.MaterialHeader
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.shuyu.gsyvideoplayer.player.IjkPlayerManager
 import dagger.hilt.android.HiltAndroidApp
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import java.util.*
 
 @HiltAndroidApp
@@ -20,10 +25,15 @@ class EasyApp: Application(){
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+
+        IjkPlayerManager.setLogLevel(if (BuildConfig.DEBUG) IjkMediaPlayer.IJK_LOG_WARN else IjkMediaPlayer.IJK_LOG_SILENT)
         //网易云初始化
         BaseApiImpl.initWebView(context)
         setLocale()
-        setUpTheme()
+
+        SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout -> MaterialHeader(this) }
+        SmartRefreshLayout.setDefaultRefreshFooterCreator { context, layout -> ClassicsFooter(this) }
+        //setUpTheme()
     }
 
     private fun setUpTheme() {

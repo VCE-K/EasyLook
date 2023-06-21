@@ -113,6 +113,8 @@ class MusicServiceConnection(
         //当前媒体数据变更
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _curPlayingSong.postValue(metadata)
+            //在这里记录历史记录
+
         }
         //网络错误监控
         override fun onSessionEvent(event: String?, extras: Bundle?) {

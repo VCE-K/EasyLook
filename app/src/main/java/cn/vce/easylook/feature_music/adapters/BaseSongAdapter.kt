@@ -1,16 +1,14 @@
 package cn.vce.easylook.feature_music.adapters
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.utils.LogE
 
 abstract class BaseSongAdapter<T : Any>(
     private val layoutId: Int
@@ -23,19 +21,21 @@ abstract class BaseSongAdapter<T : Any>(
         val binding = _binding
     }
 
-    protected val diffCallback = object : DiffUtil.ItemCallback<Song>() {
-        override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.mediaId == newItem.mediaId
+    protected val diffCallback = object : DiffUtil.ItemCallback<MusicInfo>() {
+        override fun areItemsTheSame(oldItem: MusicInfo, newItem: MusicInfo): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
+        override fun areContentsTheSame(oldItem: MusicInfo, newItem: MusicInfo): Boolean {
+            LogE("oldItem::$oldItem")
+            LogE("newItem::$newItem")
             return oldItem.hashCode() == newItem.hashCode()
         }
     }
 
-    protected abstract val differ: AsyncListDiffer<Song>
+    protected abstract val differ: AsyncListDiffer<MusicInfo>
 
-    var songs: List<Song>
+    var songs: List<MusicInfo>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
@@ -50,9 +50,9 @@ abstract class BaseSongAdapter<T : Any>(
     }
 
 
-    protected var onItemClickListener: ((Song) -> Unit)? = null
+    protected var onItemClickListener: ((MusicInfo) -> Unit)? = null
 
-    fun setItemClickListener(listener: (Song) -> Unit) {
+    fun setItemClickListener(listener: (MusicInfo) -> Unit) {
         onItemClickListener = listener
     }
 

@@ -9,15 +9,25 @@ class SwipeSongAdapter : BaseSongAdapter<SwipeItemBinding>(R.layout.swipe_item) 
     override val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val song = songs[position]
+        val musicInfo = songs[position]
         holder.binding.apply {
             this as SwipeItemBinding  // 添加类型转换
-            val text = song.title
+            val text = musicInfo.name
             tvPrimary.text = text
-            tvPrimary2.text =  "${song.artistNames} - ${song.subtitle}"
+            var artistIds = ""
+            var artistNames = ""
+            musicInfo.artists?.let {
+                artistIds = it[0].id
+                artistNames = it[0].name
+                for (j in 1 until it.size - 1) {
+                    artistIds += ",${it[j].id}"
+                    artistNames += ",${it[j].name}"
+                }
+            }
+            tvPrimary2.text =  "$artistNames - ${musicInfo.album?.name}"
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
-                    click(song)
+                    click(musicInfo)
                 }
             }
         }

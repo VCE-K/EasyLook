@@ -3,6 +3,7 @@ package cn.vce.easylook.utils
 import android.content.Context
 import android.content.res.Resources
 import android.content.res.TypedArray
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.Log
@@ -17,9 +18,14 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import cn.vce.easylook.EasyApp
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import java.io.IOException
 import java.io.InputStream
+import java.lang.reflect.Type
 import java.util.*
+
 
 const val DEFAULT_TAG = "atri_tag"
 
@@ -96,6 +102,19 @@ val Int.px2Dp: Int
 //region Common tools
 // toast
 
+/**
+ * 获取资源文件中定义的字符串。
+ *
+ * @param resId
+ * 字符串资源id
+ * @return 字符串资源id对应的字符串内容。
+ */
+fun getString(resId: Int): String = EasyApp.context.resources.getString(resId)
+
+/*fun String.toast(duration: Int = Toast.LENGTH_SHORT) {
+    if (TextUtils.isEmpty(this))return
+    EasyApp.context.toast(this, duration)
+}*/
 
 fun toast(content: String, duration: Int = Toast.LENGTH_SHORT) {
     if (TextUtils.isEmpty(content))return
@@ -182,3 +201,53 @@ fun Any.LogE(msg: String, tag: String? = null, t: Throwable? = null) {
     Log.e(tag ?: javaClass.simpleName, msg ?: "", t)
 }
 
+fun <T> convertList(originalList: List<*>?, targetTypeClass: Class<T>?): List<T> {
+    val gson = Gson()
+    //val jsonStr = gson.toJson(originalList)
+    val gsonBuilder = GsonBuilder()
+    val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalList)
+    val targetType: Type = TypeToken.getParameterized(MutableList::class.java, targetTypeClass).type
+    return gson.fromJson(jsonString, targetType)
+}
+
+fun <T> convertObject(originalObject: Any?, targetTypeClass: Class<T>?): T {
+    val gson = Gson()
+    val jsonStr = gson.toJson(originalObject)
+    val gsonBuilder = GsonBuilder()
+    val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalObject)
+    return gson.fromJson(jsonString, targetTypeClass)
+}
+
+
+//视频所用
+
+/**
+ * 隐藏view
+ */
+fun View?.gone() {
+    this?.visibility = View.GONE
+}
+fun View?.visible() {
+    this?.visibility = View.GONE
+}
+
+//字体
+val fzlLTypeface by lazy {
+    Typeface.createFromAsset(EasyApp.context.assets, "fonts/FZLanTingHeiS-L-GB-Regular.TTF")
+}
+
+val fzdb1Typeface by lazy {
+    Typeface.createFromAsset(EasyApp.context.assets, "fonts/FZLanTingHeiS-DB1-GB-Regular.TTF")
+}
+
+val futuraTypeface by lazy {
+    Typeface.createFromAsset(EasyApp.context.assets, "fonts/Futura-CondensedMedium.ttf")
+}
+
+val dinTypeface by lazy {
+    Typeface.createFromAsset(EasyApp.context.assets, "fonts/DIN-Condensed-Bold.ttf")
+}
+
+val lobsterTypeface by lazy {
+    Typeface.createFromAsset(EasyApp.context.assets, "fonts/Lobster-1.4.otf")
+}

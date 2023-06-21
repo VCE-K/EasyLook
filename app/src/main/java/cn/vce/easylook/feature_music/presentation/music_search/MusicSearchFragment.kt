@@ -1,20 +1,21 @@
 package cn.vce.easylook.feature_music.presentation.music_search
 
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.NavHostFragment
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicSearchBinding
 import cn.vce.easylook.databinding.ListItemBinding
-import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.feature_music.presentation.MainViewModel
-import cn.vce.easylook.feature_music.presentation.music_list.MusicListEvent
+import cn.vce.easylook.MainEvent
+import cn.vce.easylook.MainViewModel
 import com.bumptech.glide.RequestManager
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.linear
@@ -28,7 +29,7 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
     private lateinit var searchView: SearchView
     private lateinit var viewModel: MusicSearchVM
 
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var mainVM: MainViewModel
 
     @Inject
     lateinit var glide: RequestManager
@@ -43,7 +44,7 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
     }
 
     override fun initFragmentViewModel() {
-        mainViewModel = getActivityViewModel()
+        mainVM = getActivityViewModel()
         viewModel = getFragmentViewModel()
     }
 
@@ -110,25 +111,31 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
         }
         searchRv.apply {
             linear().setup {
-                addType<Song>(R.layout.list_item)
+                addType<MusicInfo>(R.layout.list_item)
                 onBind {
                     val bind = getBinding<ListItemBinding>()
-                    val song = getModel<Song>()
+                    val musicInfo = getModel<MusicInfo>()
                     bind.apply {
-                        tvPrimary.text = song.title
-                        tvSecondary.text = song.artistNames + " - " +song.subtitle
-                        glide.load(song.imageUrl).into(ivItemImage)
+                        tvPrimary.text = musicInfo.name
+                        var artistIds = ""
+                        var artistNames = ""
+                        musicInfo.artists?.let {
+                            artistIds = it[0].id
+                            artistNames = it[0].name
+                            for (j in 1 until it.size - 1) {
+                                artistIds += ",${it[j].id}"
+                                artistNames += ",${it[j].name}"
+                            }
+                        }
+                        tvSecondary.text = artistNames+ " - " + (musicInfo.album?.name ?: "")
+                        glide.load(musicInfo.album?.cover).into(ivItemImage)
                     }
                 }
                 onClick(R.id.songItemLayout) {
-                    val song = getModel<Song>()
-                    viewModel.onEvent(MusicListEvent.PlayList {
-                        // 在主线程中执行代码
-                        if (it) {
-                            mainViewModel.subscribe()//获取新的数据
-                        }
-                        mainViewModel.playOrToggleSong(song)
-                    })
+                    val musicInfo = getModel<MusicInfo>()
+                    viewModel.songs.value?.data?.let {
+                        mainVM.onEvent(MainEvent.ClickPlay(it, musicInfo))
+                    }
                 }
             }
         }

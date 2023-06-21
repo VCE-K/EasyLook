@@ -18,11 +18,11 @@
 
     <fragment
         android:id="@+id/MyMusicFragment"
-        android:name="cn.vce.easylook.feature_music.presentation.music_list.MusicListFragment"
+        android:name="cn.vce.easylook.feature_music.presentation.playlist_detail.PlaylistDetailFragment"
         android:label="{title}">
         <argument
-            android:name="playlist"
-            app:argType="cn.vce.easylook.feature_music.domain.entities.Playlist"
+            android:name="playlistInfo"
+            app:argType="cn.vce.easylook.feature_music.models.PlaylistInfo"
             app:nullable="false"/>
         <argument
             android:name="title"
@@ -37,8 +37,8 @@
         android:name="cn.vce.easylook.feature_music.presentation.now_playing.SongFragment"
         android:label="{title}">
         <argument
-            android:name="song"
-            app:argType="cn.vce.easylook.feature_music.domain.entities.Song"
+            android:name="musicInfo"
+            app:argType="cn.vce.easylook.feature_music.models.MusicInfo"
             app:nullable="false"/>
         <argument
             android:name="title"

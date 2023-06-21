@@ -1,49 +1,71 @@
 package cn.vce.easylook.feature_music.exoplayer
 
 import android.support.v4.media.MediaMetadataCompat
-import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.models.Album
+import cn.vce.easylook.feature_music.models.MusicInfo
 
-fun MediaMetadataCompat.toSong(): Song? {
+
+fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
     return description?.let {
-        Song(
-            it.mediaId ?: "",
-            it.title.toString(),
-            it.subtitle.toString(),
-            it.mediaUri.toString(),
-            it.iconUri.toString(),
-            playlistId = ""
+        MusicInfo(
+            id = it.mediaId ?: "",
+            name = it.title.toString(),
+            artists = emptyList(),
+            quality = null,
+            album = Album(cover = it.iconUri.toString(),name = it.subtitle.toString()),
+            songUrl = it.mediaUri.toString(),
         )
     }
 }
 
-fun MutableList<Song>.transSongs(): MutableList<MediaMetadataCompat> {
-    return map { song ->
+fun MutableList<MusicInfo>.transSongs(): MutableList<MediaMetadataCompat> {
+    return map { musicInfo ->
+        var artistIds = ""
+        var artistNames = ""
+        musicInfo.artists?.let {
+            artistIds = it[0].id
+            artistNames = it[0].name
+            for (j in 1 until it.size - 1) {
+                artistIds += ",${it[j].id}"
+                artistNames += ",${it[j].name}"
+            }
+        }
         MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.subtitle)
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, song.mediaId)
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, song.title)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, song.imageUrl)
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, song.songUrl)
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
-            .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, song.artistNames)
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, musicInfo.album?.name)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, musicInfo.songId?: musicInfo.id)
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, musicInfo.name)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, musicInfo.name)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, musicInfo.album?.cover ?: "")
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, musicInfo.songUrl)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, musicInfo.album?.cover ?: "")
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, musicInfo.album?.name)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, musicInfo.album?.name)
+            .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, artistNames)
             .build()
     }.toMutableList()
 }
 
-fun Song.transSong(): MediaMetadataCompat {
+fun MusicInfo.transSong(): MediaMetadataCompat {
+    var artistIds = ""
+    var artistNames = ""
+    artists?.let {
+        artistIds = it[0].id
+        artistNames = it[0].name
+        for (j in 1 until it.size - 1) {
+            artistIds += ",${it[j].id}"
+            artistNames += ",${it[j].name}"
+        }
+    }
     return MediaMetadataCompat.Builder()
-        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, subtitle)
-        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
-        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title)
-        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, imageUrl)
+        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, album?.name)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId?: id)
+        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, name)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, name)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, album?.cover ?: "")
         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, songUrl)
-        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, imageUrl)
-        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, subtitle)
-        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, subtitle)
+        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, album?.cover ?: "")
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, album?.name)
+        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, album?.name)
         .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, artistNames)
         .build()
 }

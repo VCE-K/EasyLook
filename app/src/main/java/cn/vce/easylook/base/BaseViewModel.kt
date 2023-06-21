@@ -30,8 +30,9 @@ typealias VmError =  (e: ApiException) -> Unit
  * @author zs
  */
 
-open class BaseViewModel:ViewModel() {
+open abstract class BaseViewModel:ViewModel() {
 
+    val TAG = this.javaClass.simpleName
     /**
      * 错误信息liveData
      */
@@ -46,6 +47,8 @@ open class BaseViewModel:ViewModel() {
      * 无数据
      */
     val emptyLiveDate = MutableLiveData<Any>()
+
+    abstract fun onEvent(event: BaseEvent)
 
     /**
      * 处理错误

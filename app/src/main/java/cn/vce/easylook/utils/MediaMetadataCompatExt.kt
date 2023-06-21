@@ -94,14 +94,9 @@ inline val MediaMetadataCompat.displayIcon: Bitmap
 inline val MediaMetadataCompat.displayIconUri: Uri
     get() = this.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI).toUri()
 
-inline val MediaMetadataCompat.mediaUri: Uri?
-    get() = this.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)?.run {
-        // 如果不为空，则将其转换为Uri并返回
-        toUri()
-    } ?: run {
-        // 如果为空，则返回一个默认的Uri或者抛出异常等
-        null
-    }
+inline val MediaMetadataCompat.mediaUri: Uri
+    get() = this.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)?.toUri() ?: Uri.EMPTY
+
 
 inline val MediaMetadataCompat.downloadStatus
     get() = getLong(MediaMetadataCompat.METADATA_KEY_DOWNLOAD_STATUS)

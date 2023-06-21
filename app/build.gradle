@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -44,6 +45,25 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
+
+    configurations.all {
+        resolutionStrategy {
+            /*force 'androidx.databinding:databinding-common:7.4.2'
+            force 'com.google.android.material:material:1.4.0-beta01'
+            force 'androidx.constraintlayout:constraintlayout:2.0.4'
+            force 'androidx.databinding:databinding-runtime:4.1.3'
+            force 'androidx.databinding:databinding-adapters:4.1.3'
+            force 'com.github.bumptech.glide:glide between versions:4.9.0'
+            force 'com.squareup.retrofit2:retrofit between versions:2.4.0'
+
+
+            force "com.google.android.exoplayer:exoplayer-core:2.11.8"
+            force "com.google.android.exoplayer:exoplayer-ui:2.11.8"
+            force "com.google.android.exoplayer:extension-mediasession:2.11.8"*/
+            //failOnVersionConflict()
+        }
+    }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -91,6 +111,7 @@ dependencies {
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'jp.wasabeef:glide-transformations:4.1.0'
 
     // Activity KTX for viewModels()
     implementation "androidx.activity:activity-ktx:1.1.0"
@@ -111,9 +132,10 @@ dependencies {
 
 
     // ExoPlayer
-    api "com.google.android.exoplayer:exoplayer-core:2.11.8"
-    api "com.google.android.exoplayer:exoplayer-ui:2.11.8"
-    api "com.google.android.exoplayer:extension-mediasession:2.11.8"
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.8'
+    implementation "com.google.android.exoplayer:exoplayer-core:2.11.8"
+    implementation "com.google.android.exoplayer:exoplayer-ui:2.11.8"
+    implementation "com.google.android.exoplayer:extension-mediasession:2.11.8"
 
 
     //可能是最强大的RecyclerView框架
@@ -134,7 +156,15 @@ dependencies {
     //jsoup
     implementation 'org.jsoup:jsoup:1.14.3'
 
+    //lottie动画
     implementation "com.airbnb.android:lottie:$lottie_version"
 
+    //视频完整版引入
+    implementation ('com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.3.5-release-jitpack'){
+        exclude group: 'com.google.android.exoplayer'
+    }
 
+    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

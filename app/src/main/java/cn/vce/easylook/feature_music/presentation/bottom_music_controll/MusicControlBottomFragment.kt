@@ -1,17 +1,16 @@
 package cn.vce.easylook.feature_music.presentation.bottom_music_controll
 
 import android.os.Bundle
-import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicControlBottomBinding
 import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
-import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
-import cn.vce.easylook.feature_music.exoplayer.toSong
+import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.feature_music.presentation.MainViewModel
+import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.utils.LogE
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,8 +28,8 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
     @Inject
     lateinit var glide: RequestManager
 
-    private val playingSong
-            get() = mainVM.curPlayingSong.value?.toSong()
+
+    private var curPlayingMusic: MusicInfo? = null
 
     override fun init(savedInstanceState: Bundle?) {
         initView()
@@ -45,24 +44,23 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
 
                     if(mainVM.playbackState.value?.isPlaying == true) {
                         mainVM.playOrToggleSong(swipeSongAdapter.songs[position])
+                    }else {
+                        curPlayingMusic = swipeSongAdapter.songs[position]
                     }
                 }
             })
 
             ivPlayPause.setOnClickListener {
-                mainVM.curPlayingSong?.value.let {
-                    it?.toSong()?.let { it1 ->
-                        mainVM.playOrToggleSong(it1, true)
-                    }
+                curPlayingMusic?.let {
+                    mainVM.playOrToggleSong(it, true)
                 }
             }
 
             ivCurSongImage.setOnClickListener {
-
-                playingSong?.let { song ->
+                curPlayingMusic?.let {
                     val bundle = Bundle().apply {
-                        putSerializable("song", song)
-                        putString("title", song.title)
+                        putSerializable("musicInfo", it)
+                        putString("title", it.name)
                     }
                     navController.navigate(
                         R.id.globalActionToSongFragment,
@@ -72,10 +70,10 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
             }
 
             swipeSongAdapter.setItemClickListener {
-                playingSong?.let { song ->
+                curPlayingMusic?.let {
                     val bundle = Bundle().apply {
-                        putSerializable("song", song)
-                        putString("title", song.title)
+                        putSerializable("musicInfo", it)
+                        putString("title", it.name)
                     }
                     navController.navigate(
                         R.id.globalActionToSongFragment,
@@ -96,10 +94,10 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
                             result.data?.let { songs ->
                                 swipeSongAdapter.songs = songs
                                 if (songs.isNotEmpty()) {
-                                    glide.load((playingSong ?: songs[0]).imageUrl)
+                                    glide.load((curPlayingMusic ?: songs[0]).album?.cover)
                                         .into(ivCurSongImage)
                                 }
-                                switchViewPagerToCurrentSong(playingSong ?: return@observe)
+                                switchViewPagerToCurrentSong(curPlayingMusic ?: return@observe)
                             }
                         }
                         Status.ERROR -> Unit
@@ -110,8 +108,9 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
 
             mainVM.curPlayingSong.observe(viewLifecycleOwner) {
                 if (it == null) return@observe
-                glide.load(playingSong?.imageUrl).into(ivCurSongImage)
-                switchViewPagerToCurrentSong(playingSong ?: return@observe)
+                curPlayingMusic = it.toMusicInfo()
+                glide.load(curPlayingMusic?.album?.cover).into(ivCurSongImage)
+                switchViewPagerToCurrentSong(curPlayingMusic ?: return@observe)
             }
 
             mainVM.playbackState.observe(viewLifecycleOwner) {
@@ -129,14 +128,15 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
     override fun getLayoutId(): Int? = R.layout.fragment_music_control_bottom
 
 
-    private fun switchViewPagerToCurrentSong(song: Song) {
+    private fun switchViewPagerToCurrentSong(musicInfo: MusicInfo) {
         binding.apply {
             val newItemIndex = swipeSongAdapter.songs.indexOfFirst {
-                song.mediaId == it.mediaId
+                musicInfo.id == it.id
             }
             if (newItemIndex != -1) {
                 vpSong.currentItem = newItemIndex
                 LogE("vpSong.currentItem::${vpSong.currentItem}")
+                curPlayingMusic = musicInfo
             }
         }
     }

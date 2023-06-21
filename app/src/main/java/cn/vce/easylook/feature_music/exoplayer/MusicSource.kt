@@ -4,36 +4,34 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_URI
-import androidx.core.net.toUri
-import cn.vce.easylook.feature_music.data.Repository
-import cn.vce.easylook.feature_music.domain.entities.Song
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.exoplayer.State.*
-import cn.vce.easylook.utils.LogE
-import cn.vce.easylook.utils.id
-import com.google.android.exoplayer2.SimpleExoPlayer
+import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.mediaUri
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class MusicSource {
+class MusicSource(
+    private val repository: MusicRepository
+) {
 
-    var playlistId: String = ""
+    var musicInfos = mutableListOf<MusicInfo>()
     var songs = mutableListOf<MediaMetadataCompat>()
+        get() = musicInfos.transSongs()
     suspend fun fetchMediaData(
-        action: () -> MutableList<Song>
+        action: () -> MutableList<MusicInfo>
     ) = withContext(Dispatchers.IO) {
         if (state == STATE_CREATED) {
             state = STATE_INITIALIZING
-            songs = action().transSongs()
+            musicInfos = action()
             state = STATE_INITIALIZED
         } else if (state == STATE_INITIALIZED) {
-            songs = action().transSongs()
+            musicInfos = action()
         }
     }
-
 
     /**
      * nextSong: 要拿到url的媒体
@@ -47,15 +45,16 @@ class MusicSource {
     ){
         val nextSong = songs[songIndex]
         nextSong.let {
-            nextSong.toSong()?.apply {
-                if (mediaId.isNotEmpty() && (songUrl == null || "null" == songUrl)) {
-                    Repository.getMusicUrl(mediaId)?.let{ url ->
-                        replaceSongUrl(this, url)
+            musicInfos[songIndex].apply {
+                songId?:id?.let {
+                    if (songUrl == null || "null" == songUrl) {
+                        repository.getMusicUrl(it)?.let{ url ->
+                            replaceSongUrl(this, url)
+                        }
                     }
                 }
             }
         }
-
         if (fetchNext){
             var nextSongIndex: Int = if (previousFlag){
                 if ((songIndex - 1) < 0 ){//到达开头
@@ -74,22 +73,19 @@ class MusicSource {
         }
     }
 
-    private fun replaceSongUrl(song: Song, url: String){
-        song.songUrl = url
-        var itemSong = songs.find {
-            song.mediaId == it.id
+    private fun replaceSongUrl(musicInfo: MusicInfo, url: String){
+        musicInfo.songUrl = url
+        val playIndex = musicInfos.indexOfFirst { item ->
+            (item.songId ?: item.id) == (musicInfo.songId ?: musicInfo.id)
         }
-        val playIndex = songs.indexOfFirst { metadata ->
-            metadata.id == itemSong?.id
-        }
-        songs[playIndex] = song.transSong()
+        musicInfos[playIndex] = musicInfo
     }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSourceFactory): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach { song ->
             val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(song.getString(METADATA_KEY_MEDIA_URI).toUri())
+                .createMediaSource(song.mediaUri)
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
         return concatenatingMediaSource
@@ -97,7 +93,7 @@ class MusicSource {
 
     fun asMediaItems() = songs.map { song ->
         val desc = MediaDescriptionCompat.Builder()
-            .setMediaUri(song.getString(METADATA_KEY_MEDIA_URI).toUri())
+            .setMediaUri(song.mediaUri)
             .setTitle(song.description.title)
             .setSubtitle(song.description.subtitle)
             .setMediaId(song.description.mediaId)

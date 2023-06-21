@@ -2,59 +2,107 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "23dd97aac499e80e02c9b8259619eb3e",
+    "identityHash": "3ab7fb25df6624d03e72cf44c4770206",
     "entities": [
       {
-        "tableName": "Song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mediaId` TEXT NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT NOT NULL, `songUrl` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `artistNames` TEXT NOT NULL, `playlistId` TEXT NOT NULL, PRIMARY KEY(`mediaId`, `playlistId`))",
+        "tableName": "MusicInfo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `songId` TEXT, `name` TEXT, `artists` TEXT, `vendor` TEXT, `dl` INTEGER NOT NULL, `cp` INTEGER NOT NULL, `songUrl` TEXT, `pid` TEXT NOT NULL, `album_id` TEXT, `album_name` TEXT, `cover` TEXT, `high` INTEGER, `hq` INTEGER, `sq` INTEGER, PRIMARY KEY(`id`, `pid`))",
         "fields": [
           {
-            "fieldPath": "mediaId",
-            "columnName": "mediaId",
+            "fieldPath": "id",
+            "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "title",
-            "columnName": "title",
+            "fieldPath": "songId",
+            "columnName": "songId",
             "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "artists",
+            "columnName": "artists",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "vendor",
+            "columnName": "vendor",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dl",
+            "columnName": "dl",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "subtitle",
-            "columnName": "subtitle",
-            "affinity": "TEXT",
+            "fieldPath": "cp",
+            "columnName": "cp",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "songUrl",
             "columnName": "songUrl",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
-            "fieldPath": "imageUrl",
-            "columnName": "imageUrl",
+            "fieldPath": "pid",
+            "columnName": "pid",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "artistNames",
-            "columnName": "artistNames",
+            "fieldPath": "album.id",
+            "columnName": "album_id",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
-            "fieldPath": "playlistId",
-            "columnName": "playlistId",
+            "fieldPath": "album.name",
+            "columnName": "album_name",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
+          },
+          {
+            "fieldPath": "album.cover",
+            "columnName": "cover",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quality.high",
+            "columnName": "high",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quality.hq",
+            "columnName": "hq",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quality.sq",
+            "columnName": "sq",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "mediaId",
-            "playlistId"
+            "id",
+            "pid"
           ],
           "autoGenerate": false
         },
@@ -62,12 +110,12 @@
         "foreignKeys": []
       },
       {
-        "tableName": "Playlist",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pid` TEXT NOT NULL, `name` TEXT NOT NULL, `cover` TEXT, `desc` TEXT, PRIMARY KEY(`pid`))",
+        "tableName": "PlaylistInfo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `cover` TEXT, `playCount` INTEGER NOT NULL, `total` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "pid",
-            "columnName": "pid",
+            "fieldPath": "id",
+            "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -78,21 +126,33 @@
             "notNull": true
           },
           {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "cover",
             "columnName": "cover",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "desc",
-            "columnName": "desc",
-            "affinity": "TEXT",
-            "notNull": false
+            "fieldPath": "playCount",
+            "columnName": "playCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "total",
+            "columnName": "total",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "pid"
+            "id"
           ],
           "autoGenerate": false
         },
@@ -103,7 +163,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '23dd97aac499e80e02c9b8259619eb3e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ab7fb25df6624d03e72cf44c4770206')"
     ]
   }
 }

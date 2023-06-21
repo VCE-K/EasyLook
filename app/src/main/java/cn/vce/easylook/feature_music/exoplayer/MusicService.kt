@@ -199,7 +199,6 @@ class MusicService : MediaBrowserServiceCompat() {
                     if(isInitialized) {
                         result.sendResult(musicSource.asMediaItems())
                         if(!isPlayerInitialized && musicSource.songs.isNotEmpty()) {
-                            //放入主线程执行
                             preparePlayer(musicSource.songs, musicSource.songs[0], false)
                             isPlayerInitialized = true
                         }
