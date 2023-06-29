@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="m"
+            type="cn.vce.easylook.feature_music.presentation.bottom_dialog.PopupItemBean" />
     </data>
 
     <LinearLayout
-        android:id="@+id/container"
+        android:id="@+id/item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
@@ -17,6 +19,7 @@
 
         <ImageView
             android:id="@+id/iv_icon"
+            android:src="@{m.icon}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dp_16"
@@ -25,6 +28,7 @@
 
         <TextView
             android:id="@+id/tv_title"
+            android:text="@{m.title}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_8"

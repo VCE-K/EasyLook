@@ -11,9 +11,6 @@
         <action
             android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
             app:destination="@id/MyMusicFragment" />
-        <action
-            android:id="@+id/action_music_fragment_dest_to_musicSearchFragment"
-            app:destination="@id/musicSearchFragment" />
     </fragment>
 
     <fragment

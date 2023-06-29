@@ -1,8 +1,11 @@
 package cn.vce.easylook
 
+import android.app.Activity
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.transition.Explode
+import android.view.View
 import android.view.Window
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -21,6 +24,7 @@ import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicCon
 import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
 import cn.vce.easylook.utils.toast
 import com.bumptech.glide.RequestManager
+import com.drake.statusbar.immersive
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -71,18 +75,21 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
     }
 
     override fun initView() {
-        super.initView()
+        immersive(binding.toolbar, true)
         setupNavigationDrawer()
         setSupportActionBar(binding.toolbar)
-        val navController: NavController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration =
+        val navController: NavController = findNavController(R.id.nav)
+        appBarConfiguration = AppBarConfiguration(binding.navView.menu, binding.drawerLayout)
+
+        /*appBarConfiguration =
             AppBarConfiguration.Builder(
                 R.id.music_fragment_dest,
                 R.id.video_fragment_dest,
                 //R.id.novel_fragment_dest,
                 R.id.ai_fragment_dest
             ).setDrawerLayout(drawerLayout)
-                .build()
+                .build()*/
+
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         //动画
@@ -97,10 +104,17 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             animationView.speed = 3f
             animationView.playAnimation()//播放
         }*/
+        binding.toolbar.setupWithNavController(
+            navController,
+            appBarConfiguration
+        )
+
 
         binding.navView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.toolbar.subtitle =
+                (destination as FragmentNavigator.Destination).className.substringAfterLast('.')
             when(destination.id) {
                 R.id.video_fragment_dest -> {
                     isBackFlage = true
@@ -124,21 +138,23 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             .findFragmentById(R.id.musicControl) as MusicControlBottomFragment
     }
 
-    /*override fun onBackPressed() {
+    override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStack()
         } else {
-            val navHostFragment =    supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav) as NavHostFragment
             when(val fragment = navHostFragment.childFragmentManager.fragments[0]){
-                 is VideoDetailFragment -> {
-                     fragment.onBackPressed()
-                 }
-                else -> {}
+                is VideoDetailFragment -> {
+                    if (fragment.onBackPressed()) return
+                }
+                else -> {
+                    super.onBackPressed()
+                    return
+                }
             }
             processBackPressed()
         }
     }
-*/
 
 
     private fun processBackPressed() {
@@ -170,9 +186,11 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
     }
 
     override fun getLayoutId(): Int? = R.layout.activity_main
-
+    /**
+     *onSupportNavigateUp是一个用于处理导航回上一页的事件的回调函数。它通常用于在支持ActionBar的Activity中使用，用于处理用户点击返回按钮时的导航行为。
+     */
     override fun onSupportNavigateUp(): Boolean {
-        return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration) ||
+        return findNavController(R.id.nav).navigateUp(appBarConfiguration) ||
                 super.onSupportNavigateUp()
     }
 
@@ -194,6 +212,9 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                             result.message ?: "An unknown error occured",
                             Snackbar.LENGTH_LONG
                         ).show()
+                        Status.SUCCESS -> {
+                            mainViewModel.onEvent(MainEvent.InitingPlayMode)
+                        }
                         else -> Unit
                     }
                 }
@@ -212,7 +233,5 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             }
         }
     }
-
-
 }
 

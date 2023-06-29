@@ -7,19 +7,22 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import cn.vce.easylook.feature_music.models.PlaylistType
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
 import cn.vce.easylook.feature_music.other.Event
 import cn.vce.easylook.feature_music.other.Resource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.id
+import kotlinx.coroutines.*
 
 class MusicServiceConnection(
-    context: Context
+    context: Context,
+    private val musicRepository: MusicRepository,
+    private val musicSource: MusicSource
 ) {
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -82,7 +85,6 @@ class MusicServiceConnection(
         //连接中断
         override fun onConnectionSuspended() {
             Log.d("MusicServiceConnection", "SUSPENDED")
-
             _isConnected.postValue(
                 Event(
                     Resource.error(
@@ -104,7 +106,6 @@ class MusicServiceConnection(
     }
 
     private inner class MediaContollerCallback : MediaControllerCompat.Callback() {
-
         //播放状态变更
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playbackState.postValue(state)
@@ -112,9 +113,30 @@ class MusicServiceConnection(
 
         //当前媒体数据变更
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            _curPlayingSong.postValue(metadata)
             //在这里记录历史记录
-
+            metadata?.toMusicInfo()?.let {
+                if (it.id.isNotEmpty()){
+                    val index = musicSource.musicInfos.indexOfFirst { musicInfo ->
+                        it.id == musicInfo.id
+                    }
+                    val musicInfo = musicSource.musicInfos[index].copy()
+                    if (musicInfo.id != _curPlayingSong.value?.id ?: ""){
+                        serviceScope.launch{
+                            //如果原来的pid就不是空的，那这里要修改total
+                            musicInfo.pid?.let {
+                                val playlistInfo = musicRepository.getPlaylist(musicInfo.pid)
+                                playlistInfo?.let {
+                                    playlistInfo.playCount += 1
+                                    musicRepository.insertPlaylistInfo(playlistInfo)
+                                }
+                            }
+                            musicInfo.pid = PlaylistType.HISPLAY.toString()
+                            musicRepository.insertMusicInfo(musicInfo)
+                        }
+                        _curPlayingSong.postValue(metadata)
+                    }
+                }
+            }
         }
         //网络错误监控
         override fun onSessionEvent(event: String?, extras: Bundle?) {

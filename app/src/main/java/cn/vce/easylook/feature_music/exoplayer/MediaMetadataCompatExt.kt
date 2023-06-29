@@ -3,6 +3,7 @@ package cn.vce.easylook.feature_music.exoplayer
 import android.support.v4.media.MediaMetadataCompat
 import cn.vce.easylook.feature_music.models.Album
 import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.utils.ConvertUtils
 
 
 fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
@@ -20,16 +21,8 @@ fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
 
 fun MutableList<MusicInfo>.transSongs(): MutableList<MediaMetadataCompat> {
     return map { musicInfo ->
-        var artistIds = ""
-        var artistNames = ""
-        musicInfo.artists?.let {
-            artistIds = it[0].id
-            artistNames = it[0].name
-            for (j in 1 until it.size - 1) {
-                artistIds += ",${it[j].id}"
-                artistNames += ",${it[j].name}"
-            }
-        }
+
+        var artistNames = ConvertUtils.getArtist( musicInfo.artists)
         MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, musicInfo.album?.name)
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, musicInfo.songId?: musicInfo.id)
@@ -46,16 +39,8 @@ fun MutableList<MusicInfo>.transSongs(): MutableList<MediaMetadataCompat> {
 }
 
 fun MusicInfo.transSong(): MediaMetadataCompat {
-    var artistIds = ""
-    var artistNames = ""
-    artists?.let {
-        artistIds = it[0].id
-        artistNames = it[0].name
-        for (j in 1 until it.size - 1) {
-            artistIds += ",${it[j].id}"
-            artistNames += ",${it[j].name}"
-        }
-    }
+
+    var artistNames = ConvertUtils.getArtist( this.artists)
     return MediaMetadataCompat.Builder()
         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, album?.name)
         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId?: id)

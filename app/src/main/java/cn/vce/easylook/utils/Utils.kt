@@ -212,7 +212,6 @@ fun <T> convertList(originalList: List<*>?, targetTypeClass: Class<T>?): List<T>
 
 fun <T> convertObject(originalObject: Any?, targetTypeClass: Class<T>?): T {
     val gson = Gson()
-    val jsonStr = gson.toJson(originalObject)
     val gsonBuilder = GsonBuilder()
     val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalObject)
     return gson.fromJson(jsonString, targetTypeClass)

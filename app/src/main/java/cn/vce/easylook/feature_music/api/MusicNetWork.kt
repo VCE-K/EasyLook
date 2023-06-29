@@ -1,8 +1,6 @@
 package cn.vce.easylook.feature_music.api
 
-import cn.vce.easylook.feature_music.models.ArtistSongs
-import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.TopListBean
+import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.convertList
 import cn.vce.easylook.utils.convertObject
@@ -62,8 +60,11 @@ object MusicNetWork {
             BaseApiImpl.searchSongSingle(key, type, limit, page, success = {
                 if (it.status) {
                     LogE("search type", type.toLowerCase())
-                    if (it.data.songs == null) {
+                    if (it.data.songs?.isNotEmpty() == true) {
                         val data = convertList(it.data.songs, MusicInfo::class.java)
+                        data.forEach {
+                            it.pid = PlaylistType.WEBSEARCH.toString()
+                        }
                         continuation.resume(data)
                     }else{
                         continuation.resumeWithException(RuntimeException("searchMusic is $it"))

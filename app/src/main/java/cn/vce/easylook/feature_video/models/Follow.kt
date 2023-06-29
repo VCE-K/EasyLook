@@ -16,6 +16,8 @@
 
 package cn.vce.easylook.feature_video.models
 
+import java.io.Serializable
+
 /**
  * 社区-关注列表，响应实体类。
  *
@@ -44,7 +46,8 @@ data class Follow(val itemList: List<Item>, val count: Int, val total: Int, val 
     )
 }
 
-data class Content(val adIndex: Int, val `data`: FollowCard, val id: Int, val tag: Any, val type: String)
+data class Content(val adIndex: Int, val `data`: FollowCard, val id: Int, val tag: Any, val type: String):
+    Serializable
 
 data class FollowCard(
     val ad: Boolean,
@@ -99,4 +102,4 @@ data class PlayInfo(val height: Int, val name: String, val type: String, val url
 
 data class Url(val name: String, val size: Int, val url: String)
 
-data class Label(val actionUrl: String?, val text: String?, val card: String, val detail: Any?)
+data class Label(val actionUrl: String?, val text: String?, val card: String, val detail: Any?): Serializable

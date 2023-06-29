@@ -7,33 +7,33 @@
     <style name="Base.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--选中状态icon的颜色和字体颜色-->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowBackground">@color/colorPrimaryDark</item>
-        <!-- For Android sdk versions 26+. -->
-        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/opensans_font</item>
-        <!-- Target Android sdk versions < 26 and > 14. -->
-        <item name="fontFamily">@font/opensans_font</item>
-        <!-- sets the style for the overflow button -->
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+
         <item name="actionOverflowButtonStyle">@style/actionOverflowButtonStyle</item>
-
-
         <!--正常状态下字体颜色和icon颜色-->
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
 
-        <item name="android:textColor">@color/textColorPrimary</item>
         <item name="textColor">@color/textColorPrimary</item>
-
         <item name="iconColor">@color/iconColor</item>
         <item name="backgroundColor">@color/window_background</item>
     </style>
 
-    <!-- This style defines the tint color of the overflow menu button -->
+
+
+    <style name="ToolbarSubtitle" parent="AppTheme">
+        <item name="android:textSize">10dp</item>
+        <item name="android:textColor">@color/textSecond</item>
+    </style>
+
     <style name="actionOverflowButtonStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:tint">@color/colorAccent</item>
     </style>
 
-    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Light" />
+
 
     <style name="Layout.Main" parent="Base.AppTheme">
         <item name="android:layout_width">match_parent</item>

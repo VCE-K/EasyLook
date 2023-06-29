@@ -25,9 +25,18 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-
+       <!-- keyboard：键盘的可用性发生改变；
+        keyboardHidden：键盘是否隐藏的可用性发生改变；
+        orientation：屏幕方向发生改变；
+        screenSize：屏幕尺寸发生改变；
+        screenLayout：屏幕布局发生改变；
+        uiMode：UI模式发生改变，如，夜间模式的开关；
+        smallestScreenSize：屏幕可用最小尺寸发生改变。-->
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustNothing"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

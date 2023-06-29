@@ -13,6 +13,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:openDrawer="start">
 
 
@@ -29,42 +30,29 @@
                 app:lottie_autoPlay="true"
                 app:lottie_loop="false"/>-->
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/appBar"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp_56"
+                android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_behavior="com.google.android.material.appbarBarLayout$Behavior">
+                app:subtitleTextAppearance="@style/ToolbarSubtitle" />
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="?attr/actionBarSize"
-                    android:theme="@style/Toolbar"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <FrameLayout
-                android:id="@+id/frameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
            <fragment
-                android:id="@+id/nav_host_fragment"
+                android:id="@+id/nav"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/musicControl"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/appBar"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph" />
+                app:navGraph="@navigation/nav_main" />
+
 
             <fragment
                 android:id="@+id/musicControl"
@@ -74,18 +62,8 @@
                 app:layout_constraintHeight_percent="0.06"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/nav_host_fragment"
+                app:layout_constraintTop_toBottomOf="@id/nav"
                 app:layout_constraintBottom_toBottomOf="parent"/>
-
-            <!--<FrameLayout
-                android:id="@+id/musicControl"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintHeight_percent="0.06"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/nav_host_fragment"
-                app:layout_constraintBottom_toBottomOf="parent" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,11 +72,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header"
             app:itemIconTint="@drawable/drawer_item_color"
             app:itemTextColor="@drawable/drawer_item_color"
-            app:menu="@menu/drawer_actions" />
+            app:menu="@menu/menu_main" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

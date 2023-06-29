@@ -3,6 +3,7 @@ package cn.vce.easylook.feature_music.adapters
 import androidx.recyclerview.widget.AsyncListDiffer
 import cn.vce.easylook.R
 import cn.vce.easylook.databinding.SwipeItemBinding
+import cn.vce.easylook.utils.ConvertUtils
 
 class SwipeSongAdapter : BaseSongAdapter<SwipeItemBinding>(R.layout.swipe_item) {
 
@@ -14,16 +15,7 @@ class SwipeSongAdapter : BaseSongAdapter<SwipeItemBinding>(R.layout.swipe_item) 
             this as SwipeItemBinding  // 添加类型转换
             val text = musicInfo.name
             tvPrimary.text = text
-            var artistIds = ""
-            var artistNames = ""
-            musicInfo.artists?.let {
-                artistIds = it[0].id
-                artistNames = it[0].name
-                for (j in 1 until it.size - 1) {
-                    artistIds += ",${it[j].id}"
-                    artistNames += ",${it[j].name}"
-                }
-            }
+            var artistNames = ConvertUtils.getArtist(musicInfo.artists)
             tvPrimary2.text =  "$artistNames - ${musicInfo.album?.name}"
             root.setOnClickListener {
                 onItemClickListener?.let { click ->

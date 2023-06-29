@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.databinding.FragmentSongBinding
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
@@ -15,44 +16,68 @@ import cn.vce.easylook.feature_music.other.Status.SUCCESS
 import com.bumptech.glide.RequestManager
 import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.base.BaseFragment
+import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SongFragment : BaseFragment() {
+class SongFragment : BaseVmFragment<FragmentSongBinding>() {
 
     @Inject
     lateinit var glide: RequestManager
 
-    private val mainVM: MainViewModel by activityViewModels()
+    private lateinit var mainVM: MainViewModel
 
-    private val songViewModel: SongViewModel by viewModels()
-
+    private lateinit var songViewModel: SongViewModel
 
     private var playbackState: PlaybackStateCompat? = null
 
     private var shouldUpdateSeekbar = true
 
-    lateinit var binding: FragmentSongBinding
 
     private var curPlayingMusic: MusicInfo? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentSongBinding.inflate(layoutInflater)
-        return binding.root
+    override fun init(savedInstanceState: Bundle?) {
+        initView()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun getLayoutId(): Int?  = R.layout.fragment_song
+
+
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
+    }
+
+    override fun initFragmentViewModel() {
+        songViewModel = getFragmentViewModel()
+    }
+
+    override fun observe() {
         subscribeToObservers()
+
+        mainVM.playMode.observe(viewLifecycleOwner){ playMode ->
+            binding.apply {
+                when (playMode) {
+                    MusicConfigManager.REPEAT_MODE_ALL -> {
+                        ivPlayMode.setImageResource(R.drawable.ic_repeat)
+                    }
+                    MusicConfigManager.REPEAT_MODE_ONE -> {
+                        ivPlayMode.setImageResource(R.drawable.ic_repeat_one)
+                    }
+                    MusicConfigManager.PLAY_MODE_RANDOM -> {
+                        ivPlayMode.setImageResource(R.drawable.ic_shuffle)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun initView() {
 
         binding.ivPlayPauseDetail.setOnClickListener {
             curPlayingMusic?.let {
@@ -86,7 +111,12 @@ class SongFragment : BaseFragment() {
         binding.ivSkip.setOnClickListener {
             mainVM.skipToNextSong()
         }
+        binding.ivPlayMode.setOnClickListener {
+            mainVM.onEvent(MainEvent.UpdatePlayMode)
+        }
     }
+
+
 
     private fun updateTitleAndSongImage(musicInfo: MusicInfo) {
         val title = "${musicInfo.name} - ${musicInfo.album?.name}"

@@ -9,8 +9,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentHomeMusicBinding
-import cn.vce.easylook.feature_music.presentation.charts.ChartsFragment
-import cn.vce.easylook.feature_music.presentation.music_local.MusicLocalFragment
+import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsFragment
+import cn.vce.easylook.feature_music.presentation.home_music.music_local.MusicLocalFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 
@@ -35,19 +35,10 @@ class HomeMusicFragment : BaseVmFragment<FragmentHomeMusicBinding>() {
     override fun getLayoutId(): Int?  = R.layout.fragment_home_music
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_search, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        when (item.itemId) {
-            R.id.menu_search -> {
-                //去搜索页面
-                val bundle = Bundle()
-                nav().navigate(R.id.action_music_fragment_dest_to_musicSearchFragment, bundle)
-                true
-            }
-            else -> false
-        }
 
 
     private inner  class HomePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

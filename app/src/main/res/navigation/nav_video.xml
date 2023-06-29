@@ -15,5 +15,9 @@
 
     <fragment
         android:id="@+id/VideoDetailFragment"
-        android:name="cn.vce.easylook.feature_video.presentation.video_detail.VideoFragment"/>
+        android:name="cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment">
+        <argument
+            android:name="videoInfo"
+            app:argType="cn.vce.easylook.feature_video.models.VideoInfo"/>
+    </fragment>
 </navigation>

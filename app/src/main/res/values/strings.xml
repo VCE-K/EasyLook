@@ -45,13 +45,15 @@
     <!--歌曲弹框处理事项-->
     <string name="popup_song_detail">歌曲详情</string>
     <string name="popup_play_next">下一首播放</string>
+    <string name="popup_add_to_collection">添加到收藏</string>
+    <string name="cancel_to_add">取消添加</string>
     <string name="popup_add_to_playlist">添加到歌单</string>
     <string name="popup_detail">查看歌曲信息</string>
     <string name="popup_download">下载歌曲</string>
     <string name="popup_cache">缓存歌曲</string>
     <string name="popup_delete">删除</string>
-    <string name="popup_artist">查看歌手</string>
-    <string name="popup_album">查看专辑</string>
+    <string name="popup_artist">歌手</string>
+    <string name="popup_album">专辑</string>
 
     <!--novel_title-->
     <!--ai_title-->

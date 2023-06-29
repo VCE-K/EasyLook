@@ -7,6 +7,7 @@ import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.LogE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,9 +19,8 @@ class MusicSearchVM @Inject constructor(
 ): BaseViewModel() {
 
     private val limit = 15
-    private var mOffset = 0
     private val _query =  MutableLiveData<String>()
-
+    val query = _query
     /*private val _songs = Transformations.switchMap(_query) { query ->
         Repository.searchMusic(query, limit, mOffset)
     }*/
@@ -33,16 +33,18 @@ class MusicSearchVM @Inject constructor(
                 value = Resource.success(mutableListOf())
             } else {
                 // 发起搜索请求
-                value = Resource.loading(value?.data)
+                value = Resource.loading(null)
                 launch {
-                    value = try {
+                    LogE("查询：$query")
+                    val data = try {
                         val result = withContext(Dispatchers.IO){
-                            repository.searchMusic(query, limit, mOffset)
+                            repository.searchMusic(query, limit, 0)
                         }
-                        Resource.success(result.toMutableList() ?: mutableListOf())
+                        Resource.success(result.toMutableList())
                     } catch (e: Exception) {
                         Resource.error(e.message ?: "Unknown error", value?.data ?: mutableListOf())
                     }
+                    postValue(data)
                 }
             }
         }
@@ -57,7 +59,18 @@ class MusicSearchVM @Inject constructor(
 
     override fun onEvent(event: BaseEvent) {
         when (event) {
-
+            is MusicSearchEvent.RefreshSearchEvent -> {
+                _query.value?.let {
+                    // 发起搜索请求
+                    launch {
+                        LogE("查询：${_query.value}")
+                        val result = withContext(Dispatchers.IO){
+                            repository.searchMusic(it, limit, event.mOffset)
+                        }
+                        event.callback.invoke(result)
+                    }
+                }
+            }
         }
     }
 }

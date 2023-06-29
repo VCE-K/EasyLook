@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class MusicSource(
     private val repository: MusicRepository
@@ -22,14 +23,14 @@ class MusicSource(
     var songs = mutableListOf<MediaMetadataCompat>()
         get() = musicInfos.transSongs()
     suspend fun fetchMediaData(
-        action: () -> MutableList<MusicInfo>
+        list: MutableList<MusicInfo>
     ) = withContext(Dispatchers.IO) {
         if (state == STATE_CREATED) {
             state = STATE_INITIALIZING
-            musicInfos = action()
+            musicInfos = list
             state = STATE_INITIALIZED
         } else if (state == STATE_INITIALIZED) {
-            musicInfos = action()
+            musicInfos = list
         }
     }
 
@@ -47,7 +48,7 @@ class MusicSource(
         nextSong.let {
             musicInfos[songIndex].apply {
                 songId?:id?.let {
-                    if (songUrl == null || "null" == songUrl) {
+                    if (songUrl?.isBlank() == true || songUrl == null) {
                         repository.getMusicUrl(it)?.let{ url ->
                             replaceSongUrl(this, url)
                         }
@@ -73,6 +74,32 @@ class MusicSource(
         }
     }
 
+
+    /*********** 随机播放相关开始 ***********/
+    /**
+     * 随机播放具体简陋算法
+     */
+    fun List<Any>.shuffle() {
+        val rand = Random
+        val array = this.toMutableList()
+        for (i in array.size - 1 downTo 1) {
+            val j: Int = rand.nextInt(i + 1)
+            // 交换 array[i] 和 array[j]
+            val temp = array[i]
+            array[i] = array[j]
+            array[j] = temp
+        }
+    }
+
+
+
+    fun getShuffleSong(): MediaMetadataCompat {
+        val rand = Random
+        val i: Int = rand.nextInt(songs.size)
+        return songs[i]
+    }
+
+    /*********** 随机播放相关结束 ***********/
     private fun replaceSongUrl(musicInfo: MusicInfo, url: String){
         musicInfo.songUrl = url
         val playIndex = musicInfos.indexOfFirst { item ->

@@ -337,7 +337,7 @@
     <color name="textDark">#202020</color>
     <color name="textLight">@color/colorLight</color>
     <color name="textPrimary">#4e5864</color>
-    <color name="textSecond">#8d9ca9</color>
+    <color name="textSecond">#737373</color>
     <color name="trans">#00000000</color>
     <color name="white">#ffffff</color>
     <color name="white_alpha_112">#70ffffff</color>

@@ -10,6 +10,7 @@ import cn.vce.easylook.feature_music.db.MusicDatabase
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_1_2
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_2_3
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_3_4
+import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_4_5
 import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import cn.vce.easylook.feature_music.repository.MusicRepository
@@ -36,7 +37,7 @@ object AppModule {
 
 
 
-    @Singleton
+/*    @Singleton
     @Provides
     fun provideSharedPreferences(
         application: Application
@@ -44,9 +45,10 @@ object AppModule {
         //第二个参数是文件的操作模式，主要有MODE_PRIVATE和MODE_APPEND两种模式可选，默
         //认是MODE_PRIVATE，表示当指定相同文件名的时候，所写入的内容将会覆盖原文件中的内
         //容，而MODE_APPEND则表示如果该文件已存在，就往文件里面追加内容，不存在就创建新文
-        //件。
+        //件。Context.MODE_PRIVATE == 0 表示只有当前的应用程
+        //序才可以对这个SharedPreferences文件进行读写
         return application.getSharedPreferences("Easy", Context.MODE_PRIVATE)
-    }
+    }*/
 
     @Singleton
     @Provides
@@ -63,8 +65,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMusicServiceConnection(
-        @ApplicationContext context: Context
-    ) = MusicServiceConnection(context)
+        @ApplicationContext context: Context,
+        musicRepository: MusicRepository,
+        musicSource: MusicSource
+    ) = MusicServiceConnection(context, musicRepository, musicSource)
 
     @Singleton
     @Provides
@@ -78,7 +82,7 @@ object AppModule {
             app,
             MusicDatabase::class.java,
             MusicDatabase.DATABASE_NAME
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
 

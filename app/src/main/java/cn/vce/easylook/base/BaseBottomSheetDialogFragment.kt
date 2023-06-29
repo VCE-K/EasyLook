@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import cn.vce.easylook.utils.ParamUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
@@ -174,6 +174,12 @@ abstract class BaseBottomSheetDialogFragment<BD : ViewDataBinding> : BottomSheet
         mContext = context
         val ft = mActivity.supportFragmentManager.beginTransaction()
         ft.add(this, tag)
+        ft.commitAllowingStateLoss()
+    }
+
+    fun hide() {
+        val ft = mActivity.supportFragmentManager.beginTransaction()
+        ft.remove(this)
         ft.commitAllowingStateLoss()
     }
 }

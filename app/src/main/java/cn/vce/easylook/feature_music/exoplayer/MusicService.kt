@@ -14,6 +14,7 @@ import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerEventListene
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerNotificationListener
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.utils.id
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
@@ -107,7 +108,6 @@ class MusicService : MediaBrowserServiceCompat() {
             )
         }
         exoPlayer.addListener(musicPlayerEventListener)
-        exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
         musicNotificationManager.showNotification(exoPlayer)
     }
 
@@ -138,9 +138,18 @@ class MusicService : MediaBrowserServiceCompat() {
         //下一首
         override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
             //super.onSkipToNext(player, controlDispatcher)
-            val nextWindowIndex = player.nextWindowIndex
-            val itemToPlay = musicSource.songs[nextWindowIndex]
-            preparePlayer( musicSource.songs, itemToPlay, true)
+            if (MusicConfigManager.getPlayMode() == MusicConfigManager.PLAY_MODE_RANDOM){
+                val itemToPlay = musicSource.getShuffleSong()
+                preparePlayer(
+                    musicSource.songs,
+                    itemToPlay,
+                    true
+                )
+            }else{
+                val nextWindowIndex = player.nextWindowIndex
+                val itemToPlay = musicSource.songs[nextWindowIndex]
+                preparePlayer( musicSource.songs, itemToPlay, true)
+            }
         }
     }
 

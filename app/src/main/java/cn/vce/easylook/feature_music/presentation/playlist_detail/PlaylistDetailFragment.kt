@@ -76,7 +76,8 @@ class PlaylistDetailFragment : BaseVmFragment<FragmentPlaylistDetailBinding>() {
                     }
                 }
                 onClick(R.id.options){
-                    BottomDialogFragment().show(mActivity)
+                    val musicInfo = getModel<MusicInfo>()
+                    BottomDialogFragment().show(mActivity, musicInfo)
                 }
             }
         }

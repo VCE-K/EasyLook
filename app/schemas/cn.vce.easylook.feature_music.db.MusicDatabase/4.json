@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "3ab7fb25df6624d03e72cf44c4770206",
+    "identityHash": "0f45bfe3b2bd618b0388d2d4c1cd93a1",
     "entities": [
       {
         "tableName": "MusicInfo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `songId` TEXT, `name` TEXT, `artists` TEXT, `vendor` TEXT, `dl` INTEGER NOT NULL, `cp` INTEGER NOT NULL, `songUrl` TEXT, `pid` TEXT NOT NULL, `album_id` TEXT, `album_name` TEXT, `cover` TEXT, `high` INTEGER, `hq` INTEGER, `sq` INTEGER, PRIMARY KEY(`id`, `pid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `songId` TEXT, `name` TEXT, `artists` TEXT, `vendor` TEXT, `dl` INTEGER NOT NULL, `cp` INTEGER NOT NULL, `pid` TEXT NOT NULL, `album_id` TEXT, `album_name` TEXT, `cover` TEXT, `high` INTEGER, `hq` INTEGER, `sq` INTEGER, PRIMARY KEY(`id`, `pid`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -49,12 +49,6 @@
             "columnName": "cp",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "songUrl",
-            "columnName": "songUrl",
-            "affinity": "TEXT",
-            "notNull": false
           },
           {
             "fieldPath": "pid",
@@ -163,7 +157,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ab7fb25df6624d03e72cf44c4770206')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0f45bfe3b2bd618b0388d2d4c1cd93a1')"
     ]
   }
 }

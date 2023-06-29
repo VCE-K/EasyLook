@@ -3,6 +3,7 @@ package cn.vce.easylook.base
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
@@ -14,6 +15,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
 import cn.vce.easylook.utils.ParamUtil
 
 /**
@@ -73,6 +76,11 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
         //observe一定要在初始化最后，因为observe会收到黏性事件，随后对ui做处理
         observe()
         onClick()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.onNavDestinationSelected(findNavController())
+        return true
     }
 
     /**

@@ -32,18 +32,20 @@ object ConvertUtils {
      * @param artist
      * @return
      */
-    fun getArtist(artists: List<ArtistsItem>): String {
+    fun getArtist(artists: List<ArtistsItem>?): String {
         var artistIds = ""
-        var artistNames = ""
+        var artistNames: String? = null
         artists?.let {
-            artistIds = it[0].id
-            artistNames = it[0].name
-            for (j in 1 until it.size - 1) {
-                artistIds += ",${it[j].id}"
-                artistNames += ",${it[j].name}"
+            if (it.isNotEmpty()){
+                artistIds = it[0].id
+                artistNames = it[0].name
+                for (j in 1 until it.size - 1) {
+                    artistIds += ",${it[j].id}"
+                    artistNames += ",${it[j].name}"
+                }
             }
         }
-        return artistNames
+        return artistNames?: ""
     }
 
     /**
@@ -53,15 +55,17 @@ object ConvertUtils {
      * @param album
      * @return
      */
-    fun getArtistAndAlbum(artists: List<ArtistsItem>, album: String?): String {
+    fun getArtistAndAlbum(artists: List<ArtistsItem>?, album: String?): String {
         var artistIds = ""
         var artistNames = ""
         artists?.let {
-            artistIds = it[0].id
-            artistNames = it[0].name
-            for (j in 1 until it.size - 1) {
-                artistIds += ",${it[j].id}"
-                artistNames += ",${it[j].name}"
+            if (it.isNotEmpty()){
+                artistIds = it[0].id
+                artistNames = it[0].name
+                for (j in 1 until it.size - 1) {
+                    artistIds += ",${it[j].id}"
+                    artistNames += ",${it[j].name}"
+                }
             }
         }
         return "$artistNames - $album"

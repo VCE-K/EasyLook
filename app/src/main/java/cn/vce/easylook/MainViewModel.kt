@@ -2,13 +2,15 @@ package cn.vce.easylook
 
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.base.BaseEvent
-import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.exoplayer.*
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,10 +33,12 @@ class MainViewModel @Inject constructor(
     val networkError = musicServiceConnection.networkError
     val curPlayingSong = musicServiceConnection.curPlayingSong
     val playbackState = musicServiceConnection.playbackState
-
+    private val _playMode = MutableLiveData<Int>()
+    val playMode = _playMode
 
     init {
         subscribe()
+        _playMode.value = MusicConfigManager.getPlayMode()
     }
 
     override fun onEvent(event: BaseEvent) {
@@ -43,14 +47,12 @@ class MainViewModel @Inject constructor(
                 event.musicInfos.toMutableList()?.apply {
                     viewModelScope.launch {
                         //正在播放的歌单是不是现在显示的歌单
-                        val id = get(0).id
-                        val fetchFlag = (playlistId == id)
+                        val pid = get(0).pid
+                        val fetchFlag = (playlistId == pid && pid != "")
                         if ( !fetchFlag ) { //不是同一个那就刷新数据
-                            musicSource.fetchMediaData {
-                                return@fetchMediaData this@apply
-                            }
-                            id?.let {
-                                playlistId = id
+                            musicSource.fetchMediaData(this@apply)
+                            pid?.let {
+                                playlistId = pid
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -61,6 +63,48 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+            is MainEvent.InitingPlayMode -> {
+                when (_playMode.value) {
+                    MusicConfigManager.REPEAT_MODE_ALL -> { //0
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
+                    }
+                    MusicConfigManager.REPEAT_MODE_ONE -> { //1
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
+                    }
+                    MusicConfigManager.PLAY_MODE_RANDOM -> {//2
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE )
+                        musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
+                    }
+                    else -> {}
+                }
+            }
+            is MainEvent.UpdatePlayMode -> {
+                //默认顺序播放
+                var playMode = _playMode.value?: MusicConfigManager.getPlayMode()
+                playMode = if ((playMode + 1) == MusicConfigManager.PLAY_MODE_RANDOM){
+                    MusicConfigManager.PLAY_MODE_RANDOM
+                }else{
+                    (playMode + 1) % MusicConfigManager.PLAY_MODE_RANDOM
+                }
+                //1 2 2
+                //2 3 3
+                //3 4 1
+                when (playMode) {
+                    MusicConfigManager.REPEAT_MODE_ALL -> { //0
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
+                    }
+                    MusicConfigManager.REPEAT_MODE_ONE -> { //1
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
+                    }
+                    MusicConfigManager.PLAY_MODE_RANDOM -> {//2
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE )
+                        musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
+                    }
+                    else -> {}
+                }
+                MusicConfigManager.savePlayMode(playMode)
+                _playMode.value = playMode
             }
         }
     }
@@ -78,6 +122,8 @@ class MainViewModel @Inject constructor(
             }
         })
     }
+
+
 
 
     fun skipToNextSong() {
@@ -103,7 +149,7 @@ class MainViewModel @Inject constructor(
                 }
             }
         } else {
-            musicServiceConnection.transportControls.playFromMediaId(musicInfo.songId?: musicInfo.id, null)
+            musicServiceConnection.transportControls.playFromMediaId(musicInfo.id, null)
         }
     }
 
@@ -115,11 +161,6 @@ class MainViewModel @Inject constructor(
 
 
 }
-
-
-
-
-
 
 
 

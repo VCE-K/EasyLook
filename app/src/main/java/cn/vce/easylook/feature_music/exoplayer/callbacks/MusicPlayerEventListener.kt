@@ -4,6 +4,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.widget.Toast
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.mediaUri
 import com.google.android.exoplayer2.ExoPlaybackException
@@ -16,6 +17,25 @@ class MusicPlayerEventListener(
     private val musicSource: MusicSource,
     private val playerPrepared: (MediaMetadataCompat?) -> Unit
 ) : Player.EventListener {
+
+    private val playMode: Int
+        get() = MusicConfigManager.getPlayMode()
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        super.onRepeatModeChanged(repeatMode)
+        if (repeatMode == Player.REPEAT_MODE_ALL){
+            //顺序播放
+        }else if (repeatMode == Player.REPEAT_MODE_ONE){
+            //单曲播放
+        }
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+        //随机播放
+        //this.shuffleModeEnabled = shuffleModeEnabled
+    }
+
+
     private val currentWindowIndex
         get() = musicService.exoPlayer.currentWindowIndex
     override fun onPositionDiscontinuity(reason: Int) {
@@ -27,8 +47,6 @@ class MusicPlayerEventListener(
         DISCONTINUITY_REASON_REMOVE=5: “播放下一个”等操作将当前节目从播放列表中移除。*/
 
         super.onPositionDiscontinuity(reason)
-
-
         when( reason ) {
             Player.DISCONTINUITY_REASON_PERIOD_TRANSITION -> {
                 var nextSongIndex = currentWindowIndex
@@ -54,8 +72,14 @@ class MusicPlayerEventListener(
                 LogE("Music","加载中"+musicService.exoPlayer.contentPosition/1000)
             Player.STATE_READY ->
                 LogE("Music","准备完毕"+musicService.exoPlayer.contentPosition/1000)
-            Player.STATE_ENDED ->
+            Player.STATE_ENDED -> {
+                //REPEAT_MODE_ALL情况下播放全部列表歌曲之后才有这个状态
+                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
+                    val itemToPlay = musicSource.getShuffleSong()
+                    playerPrepared(itemToPlay)
+                }
                 LogE("Music","播放完成"+musicService.exoPlayer.contentPosition/1000)
+            }
         }
         if(playbackState == Player.STATE_READY && !playWhenReady) {//准备完毕and 准备就绪时播放
             //将正在运行的服务从前台转移到后台

@@ -1,21 +1,25 @@
 package cn.vce.easylook.feature_music.presentation.music_search
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import cn.vce.easylook.MainEvent
+import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicSearchBinding
 import cn.vce.easylook.databinding.ListItemBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.MainEvent
-import cn.vce.easylook.MainViewModel
+import cn.vce.easylook.feature_video.presentation.home.detail.DailyEvent
 import com.bumptech.glide.RequestManager
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.linear
@@ -33,6 +37,9 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
 
     @Inject
     lateinit var glide: RequestManager
+
+
+    private var page = 0
 
     override fun init(savedInstanceState: Bundle?) {
         initView()
@@ -54,16 +61,20 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
             when(result.status) {
                 Status.SUCCESS -> {
                     binding.apply {
-                        allProgressBar.isVisible = false
                         result.data?.let { songs ->
                             when (val adapter = searchRv.adapter) {
-                                is BindingAdapter -> adapter.models = songs
+                                is BindingAdapter -> {
+                                    page.addData(songs)
+                                    binding.page.showContent()
+                                }
                             }
                         }
                     }
                 }
-                Status.ERROR -> Unit
-                Status.LOADING -> binding.allProgressBar.isVisible = true
+                Status.ERROR -> binding.page.showError()
+                Status.LOADING -> {
+                    binding.page.showLoading()
+                }
             }
         }
     }
@@ -74,8 +85,6 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
         inflater.inflate(R.menu.menu_searchfrag, menu)
         val searchItem: MenuItem = menu.findItem(R.id.menu_search)
         searchView = MenuItemCompat.getActionView(searchItem) as SearchView
-        //searchView.mCloseButton.visibility = false
-        val extras = FragmentNavigatorExtras(searchView to "hero_image", searchView to "hero_image")
         //searchView.setIconifiedByDefault(false)
         //searchView.isIconified = false
         searchItem.expandActionView() // 将 SearchView 直接扩展展开。
@@ -95,20 +104,17 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
         })
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        return when (item.itemId) {
-            R.id.menu_search -> {
-                true
-            }
-            else -> false
-        }
-    }
-
     private fun setupRecyclerView() = binding.apply {
-        swipeRefresh.setOnRefreshListener {
-            swipeRefresh.isRefreshing = false
-        }
+
+        page.onRefresh {
+            this@MusicSearchFragment.page = 0
+            viewModel.onEvent(MusicSearchEvent.RefreshSearchEvent(this@MusicSearchFragment.page, this::addData))
+        }.onLoadMore {
+            viewModel.onEvent(MusicSearchEvent.RefreshSearchEvent(++this@MusicSearchFragment.page){
+                addData(it) { it.isNotEmpty() }
+            })
+        }.autoRefresh()
+
         searchRv.apply {
             linear().setup {
                 addType<MusicInfo>(R.layout.list_item)

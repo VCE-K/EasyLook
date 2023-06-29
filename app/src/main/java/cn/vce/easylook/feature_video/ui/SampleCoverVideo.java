@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 import com.shuyu.gsyvideoplayer.utils.Debuger;
@@ -253,5 +254,23 @@ public class SampleCoverVideo extends StandardGSYVideoPlayer {
     public void onStartTrackingTouch(SeekBar seekBar) {
         byStartedClick = true;
         super.onStartTrackingTouch(seekBar);
+    }
+
+
+    public void setNeedMuteImage(boolean isNeedMute){
+        int res = 0;
+        if(isNeedMute){
+            res = R.drawable.ic_yes_needmute;
+        }else{
+            res = R.drawable.ic_no_needmute;
+        }
+        ImageView needMuteImageImage = (ImageView) findViewById(R.id.needMute);
+        Glide.with(getContext().getApplicationContext()).setDefaultRequestOptions(
+                new RequestOptions()
+                        .placeholder(R.drawable.ic_image)
+                        .error(R.drawable.ic_image)
+                        .diskCacheStrategy(DiskCacheStrategy.DATA))
+                        .load(res)
+                        .into(needMuteImageImage);
     }
 }

@@ -10,7 +10,7 @@ import cn.vce.easylook.feature_music.models.PlaylistInfo
 
 @Database(
     entities = [MusicInfo::class, PlaylistInfo::class],
-    version = 4
+    version = 5
 )
 @TypeConverters(Converters::class)
 abstract class MusicDatabase: RoomDatabase() {
@@ -60,6 +60,43 @@ abstract class MusicDatabase: RoomDatabase() {
                 database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, playCount, total) VALUES ('LOCAL', '本地歌曲', '本地歌曲', '', 0, 0)")
                 database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, playCount, total) VALUES ('LOVE', '收藏', '收藏', '', 0, 0)")
                 database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, playCount, total) VALUES ('HISPLAY', '最近播放', '最近播放', '', 0, 0)")
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                //1.创建一个新表WordTemp，只设定想要的字段
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS new_MusicInfo (\n" +
+                            "    id TEXT NOT NULL,\n" +
+                            "    songId TEXT,\n" +
+                            "    name TEXT,\n" +
+                            "    artists TEXT,\n" +
+                            "    vendor TEXT,\n" +
+                            "    dl INTEGER NOT NULL DEFAULT(0),\n" +
+                            "    cp INTEGER NOT NULL DEFAULT(0),\n" +
+                            "    album_id TEXT,\n" +
+                            "    album_name TEXT,\n" +
+                            "    cover TEXT,\n" +
+                            "    high INTEGER DEFAULT(0),\n" +
+                            "    hq INTEGER DEFAULT(0),\n" +
+                            "    sq INTEGER DEFAULT(0),\n" +
+                            "    pid TEXT NOT NULL, PRIMARY KEY(id, pid)\n" +
+                            ")"
+                )
+
+                //2.将原来表中的数据复制过来，
+                database.execSQL(" INSERT INTO new_MusicInfo (id,songId,name,artists,vendor,dl,cp,pid,album_id,album_name,cover,high,hq,sq) " +
+                        "SELECT id,songId,name,artists,vendor,dl,cp,pid,album_id,album_name,cover,high,hq,sq FROM MusicInfo ")
+
+                //3. 将原表删除
+                database.execSQL(" DROP TABLE MusicInfo")
+
+                //4.将新建的表改名
+                database.execSQL(" ALTER TABLE new_MusicInfo RENAME to MusicInfo")
+
+                database.execSQL("DROP TABLE Playlist")
+                database.execSQL("DROP TABLE Song")
             }
         }
     }

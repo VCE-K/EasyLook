@@ -1,20 +1,9 @@
-/*
- * Copyright (c) 2020. vipyinzhiwei <vipyinzhiwei@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package cn.vce.easylook.feature_video.models
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import java.io.Serializable
 
 /**
  * 首页-日报列表，响应实体类。
@@ -24,7 +13,7 @@ package cn.vce.easylook.feature_video.models
  */
 data class Daily(val itemList: List<Item>, val count: Int, val total: Int, val nextPageUrl: String?, val adExist: Boolean) : Model() {
 
-    data class Item(val `data`: Data, val type: String, val tag: Any?, val id: Int = 0, val adIndex: Int)
+    data class Item(val `data`: Data, val type: String, val tag: Any?, val id: Int = 0, val adIndex: Int): Serializable
 
     data class Data(
         val actionUrl: String?,
@@ -42,7 +31,7 @@ data class Daily(val itemList: List<Item>, val count: Int, val total: Int, val n
         val type: String,
         val image: String,
         val label: Label?
-    )
+    ): Serializable
 
     data class Header(
         val actionUrl: String?,
@@ -61,5 +50,20 @@ data class Daily(val itemList: List<Item>, val count: Int, val total: Int, val n
         val textAlign: String,
         val time: Long,
         val title: String
-    )
+    ): Serializable
+}
+
+
+
+data class VideoInfo(
+    val videoId: Long, val playUrl: String, val title: String, val description: String, val category: String, val library: String,
+    val consumption: Consumption, val cover: Cover, val author: Author?, val webUrl: WebUrl
+) : Serializable
+
+
+
+fun Daily.Item.toVideoInfo(): VideoInfo{
+    this.data.content.data.apply {
+        return VideoInfo(id, playUrl, title, description, category, library, consumption, cover, author, webUrl)
+    }
 }
