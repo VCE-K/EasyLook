@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import cn.vce.easylook.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
@@ -31,6 +32,8 @@ abstract class BaseBottomSheetDialogFragment<BD : ViewDataBinding> : BottomSheet
     protected lateinit var binding: BD
     private var mBinding: ViewDataBinding? = null
 
+    //可能需要
+    lateinit var mainVM: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,6 +133,10 @@ abstract class BaseBottomSheetDialogFragment<BD : ViewDataBinding> : BottomSheet
      */
     protected fun nav(): NavController {
         return NavHostFragment.findNavController(this)
+    }
+
+    override fun dismiss() {
+        dialog?.dismiss()
     }
 
     /**

@@ -14,11 +14,11 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvSongName"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:text="SONG NAME"
             android:gravity="center"
-            android:textSize="24sp"
+            android:textSize="@dimen/sp_24"
             app:layout_constraintBottom_toTopOf="@+id/ivSongImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -27,9 +27,9 @@
 
         <ImageView
             android:id="@+id/ivSongImage"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:background="@color/darkBackground"
+            android:layout_width="@dimen/dp_300"
+            android:layout_height="@dimen/dp_300"
+            android:background="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -37,32 +37,32 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvCurTime"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/dp_50"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="00:00"
-            android:layout_marginStart="16dp"
-            android:textSize="14sp"
+            android:layout_marginStart="@dimen/dp_16"
+            android:textSize="@dimen/sp_14"
             app:layout_constraintBottom_toBottomOf="@+id/seekBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/seekBar" />
 
         <SeekBar
             android:id="@+id/seekBar"
-            android:layout_width="0dp"
-            android:layout_height="18dp"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_18"
             app:layout_constraintEnd_toStartOf="@+id/tvSongDuration"
             app:layout_constraintStart_toEndOf="@+id/tvCurTime"
             app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvSongDuration"
-            android:layout_width="50dp"
+            android:layout_width="@dimen/dp_50"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="00:00"
-            android:layout_marginEnd="16dp"
-            android:textSize="14sp"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:textSize="@dimen/sp_14"
             app:layout_constraintBottom_toBottomOf="@+id/seekBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/seekBar" />
@@ -70,9 +70,10 @@
 
         <ImageView
             android:id="@+id/ivPlayMode"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginEnd="@dimen/dp_16"
+            app:tint="@color/colorPrimary"
             android:background="@drawable/circle_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
             app:layout_constraintEnd_toStartOf="@+id/ivSkipPrevious"
@@ -80,9 +81,10 @@
 
         <ImageView
             android:id="@+id/ivSkipPrevious"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginEnd="@dimen/dp_16"
+            app:tint="@color/colorPrimary"
             android:src="@drawable/ic_skip_previous"
             android:background="@drawable/circle_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
@@ -92,9 +94,10 @@
 
         <ImageView
             android:id="@+id/ivPlayPauseDetail"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="32dp"
+            android:layout_width="@dimen/dp_75"
+            android:layout_height="@dimen/dp_75"
+            android:layout_marginTop="@dimen/dp_32"
+            app:tint="@color/colorPrimary"
             android:background="@drawable/circle_drawable"
             android:src="@drawable/ic_play"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,14 +108,29 @@
 
         <ImageView
             android:id="@+id/ivSkip"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="16dp"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginStart="@dimen/dp_16"
+            app:tint="@color/colorPrimary"
             android:src="@drawable/ic_skip"
             android:background="@drawable/circle_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
             app:layout_constraintStart_toEndOf="@+id/ivPlayPauseDetail"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail" />
+
+
+        <ImageView
+            android:id="@+id/ivPlaylist"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:src="@drawable/ic_playlist_add"
+            app:tint="@color/colorPrimary"
+            android:background="@drawable/circle_drawable"
+            app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
+            app:layout_constraintStart_toEndOf="@+id/ivSkip"
+            app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail"/>
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"

@@ -29,6 +29,7 @@ class HomeMusicFragment : BaseVmFragment<FragmentHomeMusicBinding>() {
                     1 -> tab.text = this@HomeMusicFragment.getString(R.string.music_home_tab_my)
                 }
             }.attach()
+            //musicViewPage.isUserInputEnabled = false
         }
     }
 

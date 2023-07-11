@@ -1,17 +1,11 @@
 package cn.vce.easylook.base
 
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import cn.vce.easylook.BuildConfig
 import cn.vce.easylook.http.ApiException
 import cn.vce.easylook.utils.toast
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONException
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -32,6 +26,9 @@ typealias VmError =  (e: ApiException) -> Unit
 
 open abstract class BaseViewModel:ViewModel() {
 
+
+    var getPlaylistJob: Job? = null
+
     val TAG = this.javaClass.simpleName
     /**
      * 错误信息liveData
@@ -48,7 +45,7 @@ open abstract class BaseViewModel:ViewModel() {
      */
     val emptyLiveDate = MutableLiveData<Any>()
 
-    abstract fun onEvent(event: BaseEvent)
+    open fun onEvent(event: BaseEvent) {}
 
     /**
      * 处理错误
@@ -58,6 +55,28 @@ open abstract class BaseViewModel:ViewModel() {
         toast(error.errorMessage)
         errorLiveData.postValue(error)
     }
+
+
+    protected fun <T> fire(context: CoroutineDispatcher, block: suspend() -> Result<T>) =
+        liveData<Result<T>>(context) {
+            val result = try {
+                block()
+            }catch (e: Exception){
+                Result.failure<T>(e)
+            }
+            emit(result)
+        }
+
+    protected fun <T> fire(context: CoroutineDispatcher = Dispatchers.Default, block: ()-> Result<T>) =
+        liveData<Result<T>>(context) {
+            val result = try {
+                block()
+            }catch (e: Exception){
+                Result.failure<T>(e)
+            }
+            emit(result)
+        }
+
 
     protected fun <T> launch(
         block:  () -> T

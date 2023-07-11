@@ -7,7 +7,7 @@ import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.ListVideoItemNormalBinding
 import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_video.extension.load
+import cn.vce.easylook.extension.load
 import cn.vce.easylook.feature_video.ui.SampleCoverVideo
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy

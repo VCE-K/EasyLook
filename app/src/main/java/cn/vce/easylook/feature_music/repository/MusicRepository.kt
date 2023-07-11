@@ -30,20 +30,15 @@ class MusicRepository(
     /**
      * 加载Netease网易云歌单
      */
-    suspend fun loadNeteaseTopList() = MusicNetWork.loadNeteaseTopList()
+    suspend fun loadNeteaseTopList() = withIO {
+        MusicNetWork.loadNeteaseTopList()
+    }
 
 
     /**
      * 加载Netease网易云歌单详情
      */
-    fun getPlaylistDetail(pid: String) = fire(Dispatchers.IO){
-        val  artistSongs: ArtistSongs = MusicNetWork.getPlaylistDetail(pid)
-        if (artistSongs != null){
-            Result.success(artistSongs)
-        } else{
-            Result.failure(RuntimeException("artistSongs is $artistSongs"))
-        }
-    }
+    //suspend fun getPlaylistDetail(pid: String) = MusicNetWork.getPlaylistDetail(pid)
 
     suspend fun searchMusic(key: String, limit: Int, page: Int) = MusicNetWork.searchMusic(key, limit, page)
 
@@ -67,7 +62,12 @@ class MusicRepository(
 
 
     //数据库操作
-    fun getPlaylistWithMusicInfo(): Flow<List<PlaylistWithMusicInfo>> = db.musicDao.getPlaylistWithMusicInfo()
+    fun getAllPlaylistWithMusicInfo(): Flow<List<PlaylistWithMusicInfo>> = db.musicDao.getAllPlaylistWithMusicInfo()
+
+    suspend fun getMusicInfos(pid: String) = withIO {
+        db.musicDao.getMusicInfos(pid)
+    }
+
     suspend fun getPlaylist(pid: String): PlaylistInfo = withIO {
         db.musicDao.getPlaylist(pid)
     }
@@ -75,9 +75,9 @@ class MusicRepository(
         db.musicDao.insertPlaylistInfo(p)
     }
     suspend fun insertMusicInfo(m: MusicInfo) = withIO {
-        db.musicDao.insertMusicInfo(m)
+        val musicInfoCopy = m.copy(timestamp = System.currentTimeMillis())
+        db.musicDao.insertMusicInfo(musicInfoCopy)
     }
-
     suspend fun deleteMusicInfo(m: MusicInfo) = withIO {
         db.musicDao.deleteMusicInfo(m)
     }

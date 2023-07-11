@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
-    id 'com.google.gms.google-services'
+    //id 'com.google.gms.google-services'
     id 'androidx.navigation.safeargs'
     id 'kotlin-parcelize'
 }
@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "cn.vce.easylook"
-        minSdk 24
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -140,6 +140,10 @@ dependencies {
 
     //可能是最强大的RecyclerView框架
     implementation "com.github.liangjingkanji:BRV:$androidBRV"
+
+    api "com.github.liangjingkanji:StateLayout:1.4.1"
+    implementation 'com.github.liangjingkanji:Net:3.5.8'
+    implementation 'com.github.liangjingkanji:Engine:0.0.71' // 快速开发基础库
     //使用SwipeRefreshLayout刷新列表
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$androidXLegacySupport"
 
@@ -169,4 +173,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     //透明状态栏
     implementation 'com.github.liangjingkanji:StatusBar:2.0.5'
+
+    //Nodrawable是一个旨在减少99%的drawable.xml文件的库，可直接在布局文件中对任意View声明drawable属性。
+    implementation 'com.github.whataa:noDrawable:1.1.1'
 }

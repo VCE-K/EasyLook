@@ -27,8 +27,6 @@ abstract class BaseSongAdapter<T : Any>(
         }
 
         override fun areContentsTheSame(oldItem: MusicInfo, newItem: MusicInfo): Boolean {
-            LogE("oldItem::$oldItem")
-            LogE("newItem::$newItem")
             return oldItem.hashCode() == newItem.hashCode()
         }
     }

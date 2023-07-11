@@ -6,51 +6,66 @@
         <variable
             name="m"
             type="cn.vce.easylook.feature_music.models.MusicInfo" />
+        <import
+            type="cn.vce.easylook.utils.ConvertUtils" />
+
+        <!--<variable name="cu" type="ConvertUtils" />-->
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/item"
+        android:id="@+id/songItemLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_75">
-        <ImageView
+
+
+        <!--<ImageView
             android:id="@+id/ivItemImage"
-            android:imageUrl="@{m.album.cover}"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:scaleType="matrix"
+            loadUrl="@{m.album == null? null: m.album.cover}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.1" />
+            app:layout_constraintWidth_percent="0.1" />-->
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvPrimary"
-            android:text="@{m.name}"
+        <TextView
+            android:id="@+id/ivItemImage2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/dp_16"
-            android:layout_marginRight="@dimen/dp_16"
-            android:gravity="center|left"
+            android:gravity="center"
+            android:textColor="?iconColor"
+            android:text="@{Integer.toString(m.itemGroupPosition+1)}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.1"/>
+
+        <TextView
+            android:id="@+id/tvPrimary"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            android:gravity="center_horizontal|left"
+            android:text="@{m.name}"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="@dimen/sp_20"
             app:layout_constraintEnd_toStartOf="@+id/options"
-            app:layout_constraintStart_toEndOf="@+id/ivItemImage"
+            app:layout_constraintStart_toEndOf="@+id/ivItemImage2"
+            app:layout_constraintBottom_toTopOf="@+id/tvSecondary"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/tvSecondary"
-            android:artistAndAlbum="@{m}"
             android:layout_width="@dimen/dp_0"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/dp_0"
+            android:text="@{ConvertUtils.INSTANCE.getArtist(m.artists)}"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="@dimen/sp_14"
-            android:layout_marginLeft="@dimen/dp_16"
-            android:layout_marginRight="@dimen/dp_16"
+            android:gravity="center_horizontal|left"
             app:layout_constraintEnd_toStartOf="@+id/options"
-            app:layout_constraintStart_toEndOf="@+id/ivItemImage"
-            app:layout_constraintTop_toBottomOf="@+id/tvPrimary" />
-
+            app:layout_constraintStart_toEndOf="@+id/ivItemImage2"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageButton
             android:id="@+id/options"

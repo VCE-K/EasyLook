@@ -49,8 +49,13 @@ class MusicPlayerEventListener(
         super.onPositionDiscontinuity(reason)
         when( reason ) {
             Player.DISCONTINUITY_REASON_PERIOD_TRANSITION -> {
-                var nextSongIndex = currentWindowIndex
-                fetchNext(nextSongIndex)
+                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
+                    val itemToPlay = musicSource.getShuffleSong()
+                    playerPrepared(itemToPlay)
+                }else{
+                    var nextSongIndex = currentWindowIndex
+                    fetchNext(nextSongIndex)
+                }
             }
             else -> Unit
         }
@@ -74,10 +79,10 @@ class MusicPlayerEventListener(
                 LogE("Music","准备完毕"+musicService.exoPlayer.contentPosition/1000)
             Player.STATE_ENDED -> {
                 //REPEAT_MODE_ALL情况下播放全部列表歌曲之后才有这个状态
-                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
+                /*if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
                     val itemToPlay = musicSource.getShuffleSong()
                     playerPrepared(itemToPlay)
-                }
+                }*/
                 LogE("Music","播放完成"+musicService.exoPlayer.contentPosition/1000)
             }
         }

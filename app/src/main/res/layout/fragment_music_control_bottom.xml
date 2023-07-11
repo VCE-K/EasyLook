@@ -7,9 +7,9 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <cn.vce.easylook.feature_music.presentation.home_music.ConstraintSlideLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="@dimen/dp_64">
 
         <ImageView
             android:id="@+id/ivCurSongImage"
@@ -24,14 +24,14 @@
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vpSong"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="match_parent"
-            android:background="?backgroundColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPlayPause"
             app:layout_constraintStart_toEndOf="@id/ivCurSongImage"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.7" />
+            app:layout_constraintWidth_percent="0.7"
+            android:background="?backgroundColor" />
 
         <ImageView
             android:id="@+id/ivPlayPause"
@@ -43,5 +43,5 @@
             app:layout_constraintStart_toEndOf="@id/vpSong"
             app:layout_constraintWidth_percent="0.2"
             app:tint="?iconColor" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </cn.vce.easylook.feature_music.presentation.home_music.ConstraintSlideLayout>
 </layout>

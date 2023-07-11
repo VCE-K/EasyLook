@@ -23,7 +23,7 @@
         <shape android:shape="rectangle">
             <stroke
                 android:width="@dimen/media_item_half_radius"
-                android:color="@color/mediaListBackground" />
+                android:color="@color/white" />
             <corners android:radius="@dimen/media_item_radius" />
             <solid android:color="#ffffff" />
         </shape>

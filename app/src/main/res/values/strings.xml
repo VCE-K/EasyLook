@@ -16,13 +16,20 @@
     <string name="search">search</string>
     <string name="settings">settings</string>
     <string name="exit">exit</string>
-
+    <string name="warning">提醒</string>
+    <string name="exit_prompt">You are force to be offline</string>
     <string name="press_again_to_exit">再按一次退出%1$s</string>
+    <string name="ok">OK</string>
 
     <!--video_title-->
 
 
     <!--music_title所用-->
+
+    <!--播放模式-->
+    <string name="play_mode_repeat">repeat playback</string>
+    <string name="play_mode_repeat_one">repeat one playback</string>
+    <string name="play_mode_shuffle">shuffle playback</string>
 
     <string name="music_home_tab_my">My</string>
     <!-- 搜索 start -->

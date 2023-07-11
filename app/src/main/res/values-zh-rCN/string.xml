@@ -17,10 +17,16 @@
     <string name="search">查询</string>
     <string name="settings">设置</string>
     <string name="exit">关闭</string>
+    <string name="warning">警告</string>
+    <string name="exit_prompt">你被迫离线</string>
     <string name="press_again_to_exit">再按一次退出%1$s</string>
+    <string name="ok">确认</string>
     <!--video_title-->
     <!--music_title所用-->
-
+    <!--播放模式-->
+    <string name="play_mode_repeat">顺序播放</string>
+    <string name="play_mode_repeat_one">单曲循环</string>
+    <string name="play_mode_shuffle">随机播放</string>
     <!-- 搜索 start -->
     <string name="music_home_tab_search">搜索</string>
 

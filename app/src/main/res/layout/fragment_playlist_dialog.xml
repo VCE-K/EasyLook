@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/sp_16" />
+
+        <ImageView
+            android:id="@+id/ivPlayMode"
+            android:layout_width="@dimen/dp_28"
+            android:layout_height="@dimen/dp_28"
+            app:layout_constraintStart_toStartOf="@+id/titleTv"
+            app:layout_constraintTop_toBottomOf="@+id/titleTv"
+            app:tint="@color/iconColor"/>
+
+        <TextView
+            android:id="@+id/subTitleTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/ivPlayMode"
+            app:layout_constraintTop_toBottomOf="@+id/titleTv"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/grey"
+            android:textSize="@dimen/sp_14" />
+
+       <!-- <com.drake.brv.PageRefreshLayout
+            android:id="@+id/page"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintStart_toStartOf="@+id/ivPlayMode"
+            app:layout_constraintTop_toBottomOf="@+id/ivPlayMode">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bottomSheetRv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_0"
+                app:layout_constraintHeight_percent="0.9"
+                app:layout_constraintStart_toStartOf="@+id/ivPlayMode"
+                app:layout_constraintTop_toBottomOf="@+id/ivPlayMode"/>
+        </com.drake.brv.PageRefreshLayout>-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bottomSheetRv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintStart_toStartOf="@+id/ivPlayMode"
+            app:layout_constraintTop_toBottomOf="@+id/ivPlayMode"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -11,13 +11,13 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowBackground">@color/colorPrimaryDark</item>
         <item name="android:textSize">14dp</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/text</item>
 
         <item name="actionOverflowButtonStyle">@style/actionOverflowButtonStyle</item>
         <!--正常状态下字体颜色和icon颜色-->
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorPrimary">@color/text</item>
 
-        <item name="textColor">@color/textColorPrimary</item>
+        <item name="textColor">@color/text</item>
         <item name="iconColor">@color/iconColor</item>
         <item name="backgroundColor">@color/window_background</item>
     </style>

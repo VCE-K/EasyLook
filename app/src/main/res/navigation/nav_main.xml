@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/nav_music">
+    app:startDestination="@id/nav_music.xml">
 
     <!--Music相关跳转 -->
     <include app:graph="@navigation/nav_music" />
@@ -19,5 +19,6 @@
 
     <!--Ai相关跳转 -->
     <include app:graph="@navigation/nav_ai" />
+
 
 </navigation>

@@ -1,25 +1,26 @@
 package cn.vce.easylook.feature_music.presentation.home_music.charts
 
 import android.os.Bundle
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.viewbinding.ViewBinding
+import android.widget.FrameLayout
+import androidx.core.widget.doAfterTextChanged
+import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentChartsBinding
-import cn.vce.easylook.databinding.ItemChartsBinding
-import cn.vce.easylook.databinding.ItemChartsLargeBinding
-import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_music.other.Status
-import com.bumptech.glide.RequestManager
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.TopListBean
-import cn.vce.easylook.utils.ConvertUtils
-import com.drake.brv.BindingAdapter
-import com.drake.brv.utils.grid
+import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
+import cn.vce.easylook.feature_music.presentation.bottom_music_dialog.BottomDialogFragment
+import cn.vce.easylook.feature_music.presentation.home_music.music_local.MusicLocalEvent
+import com.bumptech.glide.RequestManager
+import com.drake.brv.utils.bindingAdapter
+import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
+import com.drake.net.utils.scope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.math.min
 
 @AndroidEntryPoint
 class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
@@ -32,118 +33,85 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
 
     override fun init(savedInstanceState: Bundle?) {
         setupRecyclerView()
+        binding.run {
+            //lifecycleOwner = this@ChartsFragment
+            m = viewModel
+            v = this@ChartsFragment // 数据请求完成绑定点击事件
+            tc = ChartsEvent.TextChange
+        }
+
+        val musicControlFrag = MusicControlBottomFragment()
+
+        childFragmentManager.beginTransaction()
+            .replace(R.id.musicControl, musicControlFrag)
+            .commit()
+
     }
 
     override fun initFragmentViewModel() {
+        mainVM = getActivityViewModel()
         viewModel = getFragmentViewModel()
     }
 
     override fun getLayoutId(): Int? = R.layout.fragment_charts
 
-    override fun observe() {
-        //列表数据补充
-        viewModel.apply {
-            neteaseTopList.observe(viewLifecycleOwner) { result ->
-                when(result.status) {
-                    Status.SUCCESS -> {
-                        binding.apply {
-                            allProgressBar.isVisible = false
-                            result.data?.let {
-                                when (val adapter = chartListRcv.adapter) {
-                                    is BindingAdapter -> adapter.models = it
-                                }
-                            }
-                        }
-                    }
-                    Status.ERROR -> Unit
-                    Status.LOADING -> binding.allProgressBar.isVisible = true
-                }
-            }
-        }
-    }
-
     private fun setupRecyclerView() = binding.apply {
-        swipeRefresh.setOnRefreshListener {
-            swipeRefresh.isRefreshing = false
-            viewModel.loadNeteaseTopList()
+
+        chartListRv.linear().setup {
+            addType<TopListBean>(R.layout.item_charts)
+            onClick(R.id.item) {
+                if (!toggleMode) {
+                    toggle()
+                }
+                setChecked(layoutPosition, true)
+            }
+            onChecked { position, isChecked, isAllChecked ->
+                val model = getModel<TopListBean>(position)
+                model.checked = isChecked
+                model.id?.let {
+                    viewModel.onEvent(
+                        ChartsEvent.SwitchCharts(
+                            it, position
+                        )
+                    )
+                }
+                model.notifyChange() // 通知UI跟随数据变化
+            }
         }
 
-        binding.apply {
-            chartListRcv.grid(3).setup {
-                addType<TopListBean>{
-                    if (list?.size ?: 0 == 0){
-                        R.layout.item_charts
-                    }else {
-                        R.layout.item_charts_large
-                    }
-                }
-                onBind {
-                    val topListBean = getModel<TopListBean>()
-                    when (val viewBinding = getBinding<ViewBinding>()){
-                        is ItemChartsLargeBinding -> {
-                            val binding = getBinding<ItemChartsLargeBinding>()
-                            val stringIds = arrayListOf(R.string.song_list_item_title_1, R.string.song_list_item_title_2, R.string.song_list_item_title_3)
-                            glide.load(topListBean.cover).into(binding.ivCover)
-                            for (i in 0 until min(topListBean.list?.size ?: 0, 3)) {
-                                val music = topListBean.list!![i]
-                                var artistNames = ""
-                                music.artists?.let {
-                                    artistNames = ConvertUtils.getArtist(it)
-                                }
-                                when (i) {
-                                    0 -> binding.tvMusic1.text = this@ChartsFragment.getString(stringIds[i], music.name, artistNames)
-                                    1 -> binding.tvMusic2.text = this@ChartsFragment.getString(stringIds[i], music.name, artistNames)
-                                    2 -> binding.tvMusic3.text = this@ChartsFragment.getString(stringIds[i], music.name, artistNames)
-                                }
-                            }
-                        }
-                        is ItemChartsBinding -> {
-                            viewBinding.apply {
-                                glide.load(topListBean.cover).into(ivCover)
-                                tvTitle.text = topListBean.name
-                                ivCover.setOnClickListener {
 
-                                }
-                            }
+        val adapter = chartListRv.bindingAdapter
+        adapter.singleMode = true
+        // 单选模式不应该支持全选
+        chartListRv.isEnabled = !adapter.singleMode
 
-                        }
-                    }
-                }
-                onClick(R.id.chartsItem) {
-                    val bundle = Bundle().apply {
-                        getModel<TopListBean>()?.apply {
-                            if (id != null && name != null){
-                                putSerializable("playlistInfo", PlaylistInfo(id!!, name!!, description, cover, playCount, list?.size?:0))
-                                putString("title", name)
-                            }
-                        }
-                    }
-                    nav().navigate(R.id.action_chartsFragment_to_my_music_fragment_dest, bundle)
-                }
-                onClick(R.id.chartsItem_large) {
-                    val bundle = Bundle().apply {
-                        getModel<TopListBean>()?.apply {
-                            if (id != null && name != null){
-                                putSerializable("playlistInfo", PlaylistInfo(id!!, name!!, description, cover, playCount, list?.size?:0))
-                                putString("title", name)
-                            }
-                        }
-                    }
-                    nav().navigate(R.id.action_chartsFragment_to_my_music_fragment_dest, bundle)
+
+        page.onRefresh {
+            scope {
+                withContext(Dispatchers.Main) {
+                    viewModel.loadNeteaseTopList()
                 }
             }
+        }.autoRefresh()
 
-            (chartListRcv.layoutManager as GridLayoutManager).spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    val size = viewModel.neteaseTopList.value?.data?.get(position)?.list?.size ?: 0
-                    return if(size > 0){
-                        3
-                    }else {
-                        1
+        //歌单子列表，展示歌曲集合
+        songListRv.apply {
+            linear().setup {
+                addType<MusicInfo>(R.layout.list_music_item)
+                onClick(R.id.songItemLayout) {
+                    val song = getModel<MusicInfo>()
+                    viewModel.songs.value?.let {
+                        mainVM.onEvent(MainEvent.ClickPlay(it, song))
                     }
                 }
-            }
+                onClick(R.id.options){
+                    val musicInfo = getModel<MusicInfo>()
+                    BottomDialogFragment().show(mActivity, musicInfo)
+                }
 
+            }
         }
+
     }
+
 }

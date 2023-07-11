@@ -1,30 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_music"
+    android:id="@+id/nav_music.xml"
     app:startDestination="@id/music_fragment_dest">
 
     <fragment
         android:id="@+id/music_fragment_dest"
         android:name="cn.vce.easylook.feature_music.presentation.home_music.HomeMusicFragment"
         android:label="@string/music_title">
-        <action
-            android:id="@+id/action_chartsFragment_to_my_music_fragment_dest"
-            app:destination="@id/MyMusicFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/MyMusicFragment"
-        android:name="cn.vce.easylook.feature_music.presentation.playlist_detail.PlaylistDetailFragment"
-        android:label="{title}">
-        <argument
-            android:name="playlistInfo"
-            app:argType="cn.vce.easylook.feature_music.models.PlaylistInfo"
-            app:nullable="false"/>
-        <argument
-            android:name="title"
-            app:argType="string"
-            android:defaultValue=""/>
     </fragment>
 
     <action android:id="@+id/globalActionToSongFragment"

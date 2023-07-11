@@ -14,7 +14,7 @@ fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
             artists = emptyList(),
             quality = null,
             album = Album(cover = it.iconUri.toString(),name = it.subtitle.toString()),
-            songUrl = it.mediaUri.toString(),
+            songUrl = it.mediaUri.toString()
         )
     }
 }

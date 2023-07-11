@@ -2,6 +2,7 @@ package cn.vce.easylook.feature_music.exoplayer
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -66,9 +67,20 @@ class MusicService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
-        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {sessionIntent ->
-            PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
+        val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
+            val pendingIntent = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                val flags = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                }
+                PendingIntent.getActivity(this, 0, sessionIntent, flags)
+            }
+            pendingIntent
         }
+
 
         mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
             setSessionActivity(activityIntent)

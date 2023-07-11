@@ -7,24 +7,10 @@
     <color name="window_background">#1C1C1C</color>
 
     <!--文字主色调-->
-    <color name="textColorPrimary">#ffffff</color>
-    <color name="textColorSecondary">@color/white_translucent</color>
+    <color name="text">#ffffff</color>
+    <color name="textSecond">#c8ffffff</color>
 
-    <!--背景色-->
-    <color name="main_background">#212121</color>
-    <color name="iconColor">@color/white</color>
-    <color name="cardColor">#202020</color>
-
-    <!--对话框-->
-    <color name="md_background_color">@color/grey_900</color>
-    <color name="md_ripple_color">@color/colorAccent</color>
-    <color name="md_color_title">@color/textColorPrimary</color>
-    <color name="md_color_content">@color/textColorPrimary</color>
-    <color name="md_color_button_text">@color/colorAccent</color>
-
-    <color name="progressBackgroundColor">@color/maskChatHeader</color>
-
-    <!--占位图背景色-->
-    <color name="default_cover_bg">#111111</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 
 </resources>

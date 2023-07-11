@@ -28,12 +28,16 @@ object MusicNetWork {
         return suspendCoroutine { continuation ->
             BaseApiImpl.getAllNeteaseTopList(success = { result ->
                 val data = convertList(result, TopListBean::class.java)
-                data.forEach{
-                    it.list?.forEach { musicInfo ->
-                        musicInfo.pid = it.id?: ""
+                if (data != null) {
+                    data?.forEach{
+                        it.list?.forEach { musicInfo ->
+                            musicInfo.pid = it.id?: ""
+                        }
                     }
+                    continuation.resume(data)
+                }else{
+                    continuation.resumeWithException(RuntimeException("loadNeteaseTopList data is null"))
                 }
-                continuation.resume(data)
             }, fail = {
                 continuation.resumeWithException(RuntimeException("loadNeteaseTopList fail is $it"))
             })
@@ -45,7 +49,11 @@ object MusicNetWork {
             BaseApiImpl.getPlaylistDetail(type.toLowerCase(), pid, { result ->
                 LogE("getPlaylistDetail::$result")
                 val data = convertObject(result, ArtistSongs::class.java)
-                continuation.resume(data)
+                if (data != null) {
+                    continuation.resume(data)
+                }else{
+                    continuation.resumeWithException(RuntimeException("getPlaylistDetail data is null"))
+                }
             }, {
                 continuation.resumeWithException(RuntimeException("getPlaylistDetail fail is $it"))
             })
@@ -62,10 +70,14 @@ object MusicNetWork {
                     LogE("search type", type.toLowerCase())
                     if (it.data.songs?.isNotEmpty() == true) {
                         val data = convertList(it.data.songs, MusicInfo::class.java)
-                        data.forEach {
-                            it.pid = PlaylistType.WEBSEARCH.toString()
+                        if (data != null) {
+                            data.forEach {
+                                it.pid = PlaylistType.WEBSEARCH.toString()
+                            }
+                            continuation.resume(data)
+                        }else{
+                            continuation.resumeWithException(RuntimeException("getPlaylistDetail data is null"))
                         }
-                        continuation.resume(data)
                     }else{
                         continuation.resumeWithException(RuntimeException("searchMusic is $it"))
                     }

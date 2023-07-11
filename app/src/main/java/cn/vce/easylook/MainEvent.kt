@@ -5,8 +5,9 @@ import cn.vce.easylook.feature_music.models.MusicInfo
 
 sealed class MainEvent: BaseEvent() {
     // 如果是点击播放该列表歌曲事件
+    object InitPlaylist: MainEvent()
     data class ClickPlay(val musicInfos:List<MusicInfo>, val musicInfo: MusicInfo): MainEvent()
 
-    object InitingPlayMode: BaseEvent()
-    object UpdatePlayMode: BaseEvent()
+    object InitPlayMode: MainEvent()
+    object UpdatePlayMode: MainEvent()
 }

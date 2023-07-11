@@ -18,7 +18,7 @@ open class BaseFragment(): Fragment() {
     // 获取当前Fragment的NavController对象
     val navController by lazy { findNavController() }
 
-    private val className: String = javaClass.simpleName
+    val className: String = javaClass.simpleName
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG, "$className-onAttach")

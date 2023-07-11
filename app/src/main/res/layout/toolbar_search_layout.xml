@@ -28,7 +28,7 @@
         android:layout_height="1dp"
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/dp_8"
-        android:background="@color/textColorSecondary" />
+        android:background="@color/textSecond" />
 
     <ImageView
         android:id="@+id/clearSearchIv"

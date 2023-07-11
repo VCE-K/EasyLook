@@ -1,6 +1,7 @@
 package cn.vce.easylook.feature_music.models
 
 
+import androidx.databinding.BaseObservable
 import androidx.room.*
 import com.drake.brv.annotaion.ItemOrientation
 import com.drake.brv.item.ItemExpand
@@ -41,7 +42,10 @@ data class TopListBean(@SerializedName("cover")
                        @SerializedName("description")
                        val description: String = "",
                        @SerializedName("list")
-                       val list: List<MusicInfo>?)
+                       val list: List<MusicInfo>?,
+                       var checked: Boolean = false,
+                       var visibility: Boolean = false
+                        ) : BaseObservable()
 
 
 //歌曲信息
@@ -66,7 +70,9 @@ data class MusicInfo(
          @Embedded
          val quality: QualityBean?,
          @ColumnInfo(name = "pid")
-         var pid: String = ""
+         var pid: String = "",
+         @ColumnInfo(name = "timestamp")
+         val timestamp: Long = 0
 ): Serializable, ItemExpand, ItemSwipe {
 
     @Ignore
@@ -82,7 +88,7 @@ data class MusicInfo(
         quality: QualityBean?,
         songUrl: String? = null,
         pid: String = ""
-    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid){
+    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid, System.currentTimeMillis()){
         this.songUrl = songUrl
     }
     @Ignore

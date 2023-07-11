@@ -5,8 +5,8 @@ import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentRefreshLayoutBinding
 import cn.vce.easylook.databinding.ItemFollowCardTypeBinding
-import cn.vce.easylook.feature_video.extension.conversionVideoDuration
-import cn.vce.easylook.feature_video.extension.load
+import cn.vce.easylook.extension.conversionVideoDuration
+import cn.vce.easylook.extension.load
 import cn.vce.easylook.feature_video.models.Daily
 import cn.vce.easylook.feature_video.models.toVideoInfo
 import cn.vce.easylook.utils.gone

@@ -201,20 +201,30 @@ fun Any.LogE(msg: String, tag: String? = null, t: Throwable? = null) {
     Log.e(tag ?: javaClass.simpleName, msg ?: "", t)
 }
 
-fun <T> convertList(originalList: List<*>?, targetTypeClass: Class<T>?): List<T> {
-    val gson = Gson()
-    //val jsonStr = gson.toJson(originalList)
-    val gsonBuilder = GsonBuilder()
-    val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalList)
-    val targetType: Type = TypeToken.getParameterized(MutableList::class.java, targetTypeClass).type
-    return gson.fromJson(jsonString, targetType)
+fun <T> convertList(originalList: List<*>?, targetTypeClass: Class<T>?): List<T>? {
+    try {
+        val gson = Gson()
+        //val jsonStr = gson.toJson(originalList)
+        val gsonBuilder = GsonBuilder()
+        val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalList)
+        val targetType: Type = TypeToken.getParameterized(MutableList::class.java, targetTypeClass).type
+        return gson.fromJson(jsonString, targetType)
+    }catch (e: NullPointerException){
+        e.printStackTrace()
+    }
+    return null
 }
 
-fun <T> convertObject(originalObject: Any?, targetTypeClass: Class<T>?): T {
-    val gson = Gson()
-    val gsonBuilder = GsonBuilder()
-    val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalObject)
-    return gson.fromJson(jsonString, targetTypeClass)
+fun <T> convertObject(originalObject: Any?, targetTypeClass: Class<T>?): T? {
+    try {
+        val gson = Gson()
+        val gsonBuilder = GsonBuilder()
+        val jsonString: String = gsonBuilder.serializeNulls().create().toJson(originalObject)
+        return gson.fromJson(jsonString, targetTypeClass)
+    }catch (e: NullPointerException){
+        e.printStackTrace()
+    }
+    return null
 }
 
 

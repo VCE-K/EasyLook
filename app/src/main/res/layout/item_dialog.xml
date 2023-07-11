@@ -6,7 +6,7 @@
     <data>
         <variable
             name="m"
-            type="cn.vce.easylook.feature_music.presentation.bottom_dialog.PopupItemBean" />
+            type="cn.vce.easylook.feature_music.presentation.bottom_music_dialog.PopupItemBean" />
     </data>
 
     <LinearLayout

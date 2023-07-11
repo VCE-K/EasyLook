@@ -6,7 +6,6 @@
 
         <import type="android.view.View" />
 
-        <import type="androidx.core.content.ContextCompat" />
 
     </data>
 

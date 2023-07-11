@@ -4,48 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="m"
+            type="cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsViewModel" />
+        <variable
+            name="v"
+            type="cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsFragment" />
+        <variable
+            name="tc"
+            type="cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsEvent.TextChange" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/charts_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/allProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+        <com.drake.brv.PageRefreshLayout
+            android:id="@+id/page"
+            click="@{v}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintWidth_percent="0.25"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/musicControl">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/chartListRcv"
+                android:id="@+id/chartListRv"
+                click="@{v}"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:padding="@dimen/dp_8"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                android:layout_height="match_parent"
+                submitList="@{m.neteaseTopList}"
+                singleCheck="@{m.neteaseTopList}"
+                checkPosition="@{m.parentPosition}"
+                scrollToPosition="@{m.parentPosition}"/>
+        </com.drake.brv.PageRefreshLayout>
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <EditText
+            android:id="@+id/etSearch"
+            android:text="@={m.etSearchText}"
+            doAfterTextChanged="@{() -> m.onEvent(tc)}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_40"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/dp_24"
+            android:layout_marginVertical="@dimen/dp_4"
+            android:background="@color/white"
+            drawable_radius="@{100}"
+            drawable_solidColor="@{0xEFEFEFEF}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/page"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="搜索"
+            android:paddingHorizontal="16dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/songListRv"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintWidth_percent="0.75"
+            app:layout_constraintStart_toEndOf="@+id/page"
+            app:layout_constraintTop_toBottomOf="@+id/etSearch"
+            app:layout_constraintBottom_toTopOf="@+id/musicControl"
+            submitList="@{m.filterSongs ?? m.songs}"
+            android:padding="@dimen/dp_8"/>
+
+        <FrameLayout
+            android:id="@+id/musicControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

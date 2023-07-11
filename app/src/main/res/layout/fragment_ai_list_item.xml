@@ -11,7 +11,8 @@
         android:layout_height="@dimen/dp_56">
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/aiText"
-            android:background="@drawable/ai_item"
+            drawable_radius="@{@dimen/dp_16}"
+            drawable_solidColor="@{@color/white}"
             android:text="@string/ai_title"
             android:textColor="@color/black"
             android:textSize="@dimen/dp_16"

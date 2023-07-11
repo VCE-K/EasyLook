@@ -7,10 +7,11 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.PlaylistInfo
+import cn.vce.easylook.feature_music.models.PlaylistType
 
 @Database(
     entities = [MusicInfo::class, PlaylistInfo::class],
-    version = 5
+    version = 7
 )
 @TypeConverters(Converters::class)
 abstract class MusicDatabase: RoomDatabase() {
@@ -97,6 +98,27 @@ abstract class MusicDatabase: RoomDatabase() {
 
                 database.execSQL("DROP TABLE Playlist")
                 database.execSQL("DROP TABLE Song")
+            }
+        }
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE MusicInfo ADD COLUMN timestamp INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE PlaylistInfo ADD COLUMN timestamp INTEGER NOT NULL DEFAULT 0")
+                val currentTimeMillis = System.currentTimeMillis()
+                database.execSQL("UPDATE MusicInfo SET timestamp = $currentTimeMillis")
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis")
+           }
+        }
+
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                var currentTimeMillis = System.currentTimeMillis()
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.HISPLAY.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOVE.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOCAL.toString()+"'")
             }
         }
     }

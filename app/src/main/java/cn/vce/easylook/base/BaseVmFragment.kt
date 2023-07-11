@@ -2,6 +2,7 @@ package cn.vce.easylook.base
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
+import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.utils.ParamUtil
 
 /**
@@ -24,7 +26,7 @@ import cn.vce.easylook.utils.ParamUtil
  * @date 2020/5/9
  * @author zs
  */
-abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
+abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment(), View.OnClickListener {
 
     /**
      * 开放给外部使用
@@ -35,6 +37,9 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
     private var activityProvider: ViewModelProvider? = null
     protected lateinit var binding: BD
     private var mBinding: ViewDataBinding? = null
+
+    //可能需要
+    lateinit var mainVM: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +63,7 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "$className-onCreateView")
         getLayoutId()?.let {
             setStatusColor()
             setSystemInvadeBlack()
@@ -140,6 +146,13 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
         return NavHostFragment.findNavController(this)
     }
 
+    protected fun setActionTitle(title: String){
+        //nav().currentDestination?.label = title
+        mActivity.supportActionBar?.apply {
+            this.title = title
+        }
+    }
+
     /**
      * 点击事件
      */
@@ -186,4 +199,7 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment() {
      * 获取layout布局
      */
     abstract fun getLayoutId(): Int?
+
+    //继承点击事件
+    override fun onClick(v: View) {}
 }

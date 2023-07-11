@@ -7,6 +7,7 @@ import android.support.v4.media.MediaMetadataCompat
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.exoplayer.State.*
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.mediaUri
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -22,6 +23,8 @@ class MusicSource(
     var musicInfos = mutableListOf<MusicInfo>()
     var songs = mutableListOf<MediaMetadataCompat>()
         get() = musicInfos.transSongs()
+
+    private val playedSongs = mutableListOf<MediaMetadataCompat>()
     suspend fun fetchMediaData(
         list: MutableList<MusicInfo>
     ) = withContext(Dispatchers.IO) {
@@ -32,6 +35,8 @@ class MusicSource(
         } else if (state == STATE_INITIALIZED) {
             musicInfos = list
         }
+        //清理已经播放过的歌曲清单
+        playedSongs.clear()
     }
 
     /**
@@ -91,12 +96,32 @@ class MusicSource(
         }
     }
 
-
-
-    fun getShuffleSong(): MediaMetadataCompat {
+/*    fun getShuffleSong(): MediaMetadataCompat {
         val rand = Random
         val i: Int = rand.nextInt(songs.size)
         return songs[i]
+    }*/
+
+    fun getShuffleSong(): MediaMetadataCompat {
+        if (songs.isEmpty()) {
+            // 没有可播放的歌曲
+            //return "No songs available"
+        }
+
+        if (playedSongs.size == songs.size) {
+            // 所有歌曲都已播放
+            // 这里可以选择重新随机播放或者结束播放
+            playedSongs.clear()
+        }
+
+        var nextSong: MediaMetadataCompat
+        do {
+            val randomIndex = Random.nextInt(songs.size)
+            nextSong = songs[randomIndex]
+            //播放过的肯定有url了，一模一样
+        } while (playedSongs.contains(nextSong))
+        playedSongs.add(nextSong)
+        return nextSong
     }
 
     /*********** 随机播放相关结束 ***********/

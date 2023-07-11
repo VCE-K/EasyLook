@@ -1,25 +1,17 @@
 package cn.vce.easylook.feature_music.presentation.music_search
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
-import androidx.core.view.isVisible
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import cn.vce.easylook.MainEvent
-import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicSearchBinding
-import cn.vce.easylook.databinding.ListItemBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.feature_video.presentation.home.detail.DailyEvent
 import com.bumptech.glide.RequestManager
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.linear
@@ -33,7 +25,7 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
     private lateinit var searchView: SearchView
     private lateinit var viewModel: MusicSearchVM
 
-    private lateinit var mainVM: MainViewModel
+    
 
     @Inject
     lateinit var glide: RequestManager
@@ -117,26 +109,7 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
 
         searchRv.apply {
             linear().setup {
-                addType<MusicInfo>(R.layout.list_item)
-                onBind {
-                    val bind = getBinding<ListItemBinding>()
-                    val musicInfo = getModel<MusicInfo>()
-                    bind.apply {
-                        tvPrimary.text = musicInfo.name
-                        var artistIds = ""
-                        var artistNames = ""
-                        musicInfo.artists?.let {
-                            artistIds = it[0].id
-                            artistNames = it[0].name
-                            for (j in 1 until it.size - 1) {
-                                artistIds += ",${it[j].id}"
-                                artistNames += ",${it[j].name}"
-                            }
-                        }
-                        tvSecondary.text = artistNames+ " - " + (musicInfo.album?.name ?: "")
-                        glide.load(musicInfo.album?.cover).into(ivItemImage)
-                    }
-                }
+                addType<MusicInfo>(R.layout.list_music_item)
                 onClick(R.id.songItemLayout) {
                     val musicInfo = getModel<MusicInfo>()
                     viewModel.songs.value?.data?.let {

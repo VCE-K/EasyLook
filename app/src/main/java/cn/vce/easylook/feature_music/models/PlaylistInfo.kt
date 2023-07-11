@@ -1,5 +1,6 @@
 package cn.vce.easylook.feature_music.models
 
+import androidx.databinding.BaseObservable
 import androidx.room.*
 import cn.vce.easylook.feature_music.models.group.Group1Model
 import com.drake.brv.annotaion.ItemOrientation
@@ -23,13 +24,15 @@ data class PlaylistInfo(
     @SerializedName("playCount")
     var playCount: Long = 0,
     @SerializedName("total")
-    var total: Int = 0,/*
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "pid"
-    )
-    @SerializedName("list")
-    val list: MutableList<MusicInfo>? = null*/): Serializable
+    var total: Int = 0,
+    @ColumnInfo(name = "timestamp")
+    val timestamp: Long = 0
+): Serializable, BaseObservable() {
+    @Ignore
+    var checked: Boolean = false
+    @Ignore
+    var visibility: Boolean = false
+}
 
 
 data class PlaylistWithMusicInfo(
@@ -52,7 +55,7 @@ data class PlaylistWithMusicInfo(
 
     // 这里要求子列表也是可以侧滑的所以重写该字段, 并且得是可变集合, 否则无法子列表被删除
     @Ignore
-    override var itemSublist: List<Any?>? = list?.reversed()
+    override var itemSublist: List<Any?>? = list?.sortedByDescending { it.timestamp }
 }
 
 enum class PlaylistType{

@@ -4,7 +4,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_video.extension.load
+import cn.vce.easylook.extension.load
 import cn.vce.easylook.utils.ConvertUtils
 
 object TextViewBinding {

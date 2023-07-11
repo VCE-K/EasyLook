@@ -4,6 +4,7 @@ package cn.vce.easylook.base
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -17,6 +18,7 @@ import java.lang.reflect.InvocationTargetException
 
 open class BaseActivity : AppCompatActivity() {
 
+    lateinit var receiver: ForceOfflineReceiver
     companion object{
         private const val tag : String="BaseActivity"
     }
@@ -36,11 +38,19 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        //注册广播
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("cn.vce.easylook.FORCE_OFFLINE")
+        receiver = ForceOfflineReceiver()
+        registerReceiver(receiver, intentFilter)
+
         Log.d(tag,"$className-onResume:将准备好并处于栈顶的activity和用户进行交互。")
     }
 
     override fun onPause() {
         super.onPause()
+        //取消注册广播
+        unregisterReceiver(receiver)
         Log.d(tag,"$className-onPause:在系统准备去启动或者恢复另一个activity的时候调用。")
     }
 
@@ -65,23 +75,16 @@ open class BaseActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-
-    fun toastLongScan(info: String){
-        runOnUiThread{
-            Toast.makeText(this, info, Toast.LENGTH_LONG).show()
-        }
-    }
-
-
-    inner class ForcaOffline : BroadcastReceiver() {
-        override fun onReceive(p0: Context?, p1: Intent?) {
-            if (p0 != null) {
-                AlertDialog.Builder(p0).apply{
-                    setTitle("Warning")
-                    setMessage("You are force to be offline.Please try to login again.")
+    inner class ForceOfflineReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (context != null) {
+                AlertDialog.Builder(context).apply{
+                    setTitle(getString(R.string.warning))
+                    setMessage(getString(R.string.exit_prompt))
                     setCancelable(false)
-                    setPositiveButton("OK"){ _,_ ->
+                    setPositiveButton(getString(R.string.ok)){ _,_ ->
                         ActivityCollector.finishAll()
+                        //下面代码可用于重新登录，但本项目没有登录
                         //val i = Intent(p0, LoginActivity::class.java)
                         //p0.startActivity(i)
                     }

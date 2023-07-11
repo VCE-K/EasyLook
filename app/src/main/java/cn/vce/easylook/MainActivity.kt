@@ -1,14 +1,11 @@
 package cn.vce.easylook
 
-import android.app.Activity
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.transition.Explode
 import android.view.View
 import android.view.Window
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
@@ -18,7 +15,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import cn.vce.easylook.base.BaseVmActivity
 import cn.vce.easylook.databinding.ActivityMainBinding
-import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
 import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
 import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
@@ -38,11 +34,6 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
     private lateinit var drawerLayout: DrawerLayout
 
-    private var musicControlFrag: MusicControlBottomFragment? = null
-
-    @Inject
-    lateinit var swipeSongAdapter: SwipeSongAdapter
-
     @Inject
     lateinit var glide: RequestManager
     
@@ -59,6 +50,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
         //在这里调用请求权限什么的
         initView()
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // 设置一个exit transition
@@ -78,65 +70,39 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
         immersive(binding.toolbar, true)
         setupNavigationDrawer()
         setSupportActionBar(binding.toolbar)
-        val navController: NavController = findNavController(R.id.nav)
+
+        val navController = findNavController(R.id.nav)
+
         appBarConfiguration = AppBarConfiguration(binding.navView.menu, binding.drawerLayout)
-
-        /*appBarConfiguration =
-            AppBarConfiguration.Builder(
-                R.id.music_fragment_dest,
-                R.id.video_fragment_dest,
-                //R.id.novel_fragment_dest,
-                R.id.ai_fragment_dest
-            ).setDrawerLayout(drawerLayout)
-                .build()*/
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        //动画
-        /*binding.apply {
-            val animationView = animationView
-            animationView.addAnimatorListener(object : AnimatorListenerAdapter(){
-                override fun onAnimationEnd(animation: Animator) {
-                    super.onAnimationEnd(animation)
-                    animationView.visibility = View.GONE
-                }
-            })
-            animationView.speed = 3f
-            animationView.playAnimation()//播放
-        }*/
         binding.toolbar.setupWithNavController(
             navController,
             appBarConfiguration
         )
 
-
-        binding.navView.setupWithNavController(navController)
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.toolbar.subtitle =
                 (destination as FragmentNavigator.Destination).className.substringAfterLast('.')
             when(destination.id) {
-                R.id.video_fragment_dest -> {
-                    isBackFlage = true
-                    hideBottomBar()
-                }
-                R.id.music_fragment_dest -> {
-                    isBackFlage = true
-                    showBottomBar()
-                }
-                R.id.songFragment -> {
-                    isBackFlage = true
-                    hideBottomBar()
-                }
-                else -> {
-                    isBackFlage = false
-                    hideBottomBar()
-                }
-            }
+               R.id.video_fragment_dest -> {
+                   isBackFlage = true
+               }
+               R.id.music_fragment_dest -> {
+                   isBackFlage = true
+               }
+               else -> {
+                   isBackFlage = false
+               }
+           }
         }
-        musicControlFrag = supportFragmentManager
-            .findFragmentById(R.id.musicControl) as MusicControlBottomFragment
+
+        binding.navView.setupWithNavController(navController)
+
+
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+
     }
+
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
@@ -146,10 +112,6 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             when(val fragment = navHostFragment.childFragmentManager.fragments[0]){
                 is VideoDetailFragment -> {
                     if (fragment.onBackPressed()) return
-                }
-                else -> {
-                    super.onBackPressed()
-                    return
                 }
             }
             processBackPressed()
@@ -164,24 +126,6 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             backPressTime = now
         } else{
             super.onBackPressed()
-        }
-    }
-
-    private fun hideBottomBar() {
-        musicControlFrag?.let {
-            val fragmentManager = supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.hide(it)
-                .commit()
-        }
-    }
-
-    private fun showBottomBar() {
-        musicControlFrag?.let {
-            val fragmentManager = supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.show(it)
-                .commit()
         }
     }
 
@@ -213,7 +157,8 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                             Snackbar.LENGTH_LONG
                         ).show()
                         Status.SUCCESS -> {
-                            mainViewModel.onEvent(MainEvent.InitingPlayMode)
+                            mainViewModel.onEvent(MainEvent.InitPlayMode)
+                            mainViewModel.onEvent(MainEvent.InitPlaylist)
                         }
                         else -> Unit
                     }
@@ -233,5 +178,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             }
         }
     }
+
+
 }
 

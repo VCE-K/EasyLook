@@ -2,24 +2,18 @@ package cn.vce.easylook.feature_music.presentation.now_playing
 
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
+import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentSongBinding
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
-import cn.vce.easylook.feature_music.other.Status.SUCCESS
-import com.bumptech.glide.RequestManager
-import cn.vce.easylook.MainViewModel
-import cn.vce.easylook.base.BaseFragment
-import cn.vce.easylook.base.BaseVmFragment
-import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.other.Status.SUCCESS
+import cn.vce.easylook.feature_music.presentation.bottom_music_list.PlaylistDialogFragment
+import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,9 +25,8 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
     @Inject
     lateinit var glide: RequestManager
 
-    private lateinit var mainVM: MainViewModel
+    
 
-    private lateinit var songViewModel: SongViewModel
 
     private var playbackState: PlaybackStateCompat? = null
 
@@ -53,9 +46,6 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
         mainVM = getActivityViewModel()
     }
 
-    override fun initFragmentViewModel() {
-        songViewModel = getFragmentViewModel()
-    }
 
     override fun observe() {
         subscribeToObservers()
@@ -114,6 +104,9 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
         binding.ivPlayMode.setOnClickListener {
             mainVM.onEvent(MainEvent.UpdatePlayMode)
         }
+        binding.ivPlaylist.setOnClickListener {
+            PlaylistDialogFragment().show(mActivity)
+        }
     }
 
 
@@ -143,6 +136,7 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
         mainVM.curPlayingSong.observe(viewLifecycleOwner) {
             if(it == null) return@observe
             curPlayingMusic = it.toMusicInfo()
+            curPlayingMusic?.name?.let { it1 -> setActionTitle(it1) }
             updateTitleAndSongImage(curPlayingMusic!!)
         }
         mainVM.playbackState.observe(viewLifecycleOwner) {
@@ -152,13 +146,13 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
             )
             binding.seekBar.progress = it?.position?.toInt() ?: 0
         }
-        songViewModel.curPlayerPosition.observe(viewLifecycleOwner) {
+        mainVM.curPlayerPosition.observe(viewLifecycleOwner) {
             if(shouldUpdateSeekbar) {
                 binding.seekBar.progress = it.toInt()
                 setCurPlayerTimeToTextView(it)
             }
         }
-        songViewModel.curSongDuration.observe(viewLifecycleOwner) {
+        mainVM.curSongDuration.observe(viewLifecycleOwner) {
             binding.seekBar.max = it.toInt()
             val dateFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
             binding.tvSongDuration.text = dateFormat.format(it)
