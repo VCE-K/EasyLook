@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <cn.vce.easylook.feature_video.ui.SampleCoverVideo
+        <cn.vce.easylook.ui.SampleCoverVideo
             android:id="@+id/video_item_player"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_202" />

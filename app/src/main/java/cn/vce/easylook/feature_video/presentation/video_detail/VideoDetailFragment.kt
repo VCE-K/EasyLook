@@ -8,10 +8,7 @@ import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.ListVideoItemNormalBinding
 import cn.vce.easylook.feature_music.models.PlaylistInfo
 import cn.vce.easylook.extension.load
-import cn.vce.easylook.feature_video.ui.SampleCoverVideo
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
+import cn.vce.easylook.ui.SampleCoverVideo
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack

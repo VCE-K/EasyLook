@@ -7,7 +7,7 @@
 
     </data>
 
-    <cn.vce.easylook.feature_music.presentation.home_music.ConstraintSlideLayout
+    <cn.vce.easylook.ui.ConstraintSlideLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_64">
 
@@ -43,5 +43,5 @@
             app:layout_constraintStart_toEndOf="@id/vpSong"
             app:layout_constraintWidth_percent="0.2"
             app:tint="?iconColor" />
-    </cn.vce.easylook.feature_music.presentation.home_music.ConstraintSlideLayout>
+    </cn.vce.easylook.ui.ConstraintSlideLayout>
 </layout>

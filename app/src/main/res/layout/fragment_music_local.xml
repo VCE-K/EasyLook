@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <cn.vce.easylook.feature_music.presentation.home_music.music_local.RecyclerScroView
                 android:id="@+id/playlistRv"
                 click="@{v}"
                 android:layout_width="match_parent"

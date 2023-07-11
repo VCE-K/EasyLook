@@ -33,7 +33,7 @@
         android:orientation="horizontal"
         android:visibility="invisible">
 
-        <cn.vce.easylook.feature_video.ui.TypefaceTextView
+        <cn.vce.easylook.ui.TypefaceTextView
             android:id="@+id/current"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:progressDrawable="@drawable/video_seek_progress"
             android:thumb="@drawable/video_seek_thumb" />
 
-        <cn.vce.easylook.feature_video.ui.TypefaceTextView
+        <cn.vce.easylook.ui.TypefaceTextView
             android:id="@+id/total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

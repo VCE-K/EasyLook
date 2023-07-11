@@ -1,18 +1,13 @@
-package cn.vce.easylook.feature_music.presentation.home_music
+package cn.vce.easylook.ui
 
 import android.content.Context
-import android.gesture.GestureOverlayView.ORIENTATION_HORIZONTAL
 import android.graphics.Rect
-import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.viewpager2.widget.ViewPager2
-import cn.vce.easylook.utils.LogE
 import java.lang.Math.abs
-import kotlin.math.absoluteValue
 
 class ConstraintSlideLayout: ConstraintLayout {
 
@@ -27,12 +22,28 @@ class ConstraintSlideLayout: ConstraintLayout {
     private var startY = 0
 
 
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        for (i in 0 until childCount) {
+            val childView = getChildAt(i)
+            if (childView is ViewPager2) {
+                mViewPager2 = childView
+                break
+            }
+        }
+        if (mViewPager2 == null) {
+            throw IllegalStateException("The root child of ViewPager2Container must contains a ViewPager2")
+        }
+    }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-
-
-        LogE("onInterceptTouchEvent:"+ev.action)
-        /*when (ev.action) {
+        val doNotNeedIntercept = (!mViewPager2!!.isUserInputEnabled
+                || (mViewPager2?.adapter != null
+                && mViewPager2?.adapter!!.itemCount <= 1))
+        if (doNotNeedIntercept) {
+            return super.onInterceptTouchEvent(ev)
+        }
+        when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
                 startX = ev.x.toInt()
                 startY = ev.y.toInt()
@@ -55,7 +66,7 @@ class ConstraintSlideLayout: ConstraintLayout {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> parent.requestDisallowInterceptTouchEvent(
                 false
             )
-        }*/
+        }
         return super.onInterceptTouchEvent(ev)
     }
 

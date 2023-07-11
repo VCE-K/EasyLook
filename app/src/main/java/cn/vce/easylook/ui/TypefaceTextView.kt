@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.vce.easylook.feature_video.ui
+package cn.vce.easylook.ui
 
 import android.annotation.SuppressLint
 import android.content.Context

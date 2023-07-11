@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package cn.vce.easylook.feature_music.ui;
+package cn.vce.easylook.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.vce.easylook.feature_video.ui
+package cn.vce.easylook.ui
 
 import android.content.Context
 import android.util.AttributeSet

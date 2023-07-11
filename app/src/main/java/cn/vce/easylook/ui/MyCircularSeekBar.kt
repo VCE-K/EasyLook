@@ -1,4 +1,4 @@
-package cn.vce.easylook.feature_music.ui
+package cn.vce.easylook.ui
 
 import android.annotation.SuppressLint
 import android.content.Context

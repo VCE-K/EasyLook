@@ -1,4 +1,4 @@
-package cn.vce.easylook.feature_video.ui;
+package cn.vce.easylook.ui;
 
 import android.content.Context;
 import android.graphics.Point;
