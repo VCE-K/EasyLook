@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import cn.vce.easylook.R
+import cn.vce.easylook.feature_music.other.Constants
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -24,7 +25,7 @@ class MusicNotificationManager(
 
     private val notificationManager: PlayerNotificationManager
 
-    init {
+    /*fun init() {
         val mediaController = MediaControllerCompat(context, sessionToken)
         notificationManager = PlayerNotificationManager.createWithNotificationChannel(
             context,
@@ -38,8 +39,25 @@ class MusicNotificationManager(
             setSmallIcon(R.drawable.ic_music)
             setMediaSessionToken(sessionToken)
         }
-    }
+    }*/
 
+
+    init {
+        val mediaController = MediaControllerCompat(context, sessionToken)
+
+        val builder = PlayerNotificationManager.Builder(context, NOTIFICATION_ID, "cn.vce.easylook.media.NOW_PLAYING")
+        with (builder) {
+            setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
+            setNotificationListener(notificationListener)
+            setChannelNameResourceId(R.string.notification_channel_name)
+            setChannelDescriptionResourceId(R.string.notification_channel_description)
+        }
+        notificationManager = builder.build()
+        notificationManager.setMediaSessionToken(sessionToken)
+        notificationManager.setSmallIcon(R.drawable.ic_music)
+        notificationManager.setUseRewindAction(false)
+        notificationManager.setUseFastForwardAction(false)
+    }
     fun showNotification(player: Player) {
         notificationManager.setPlayer(player)
     }

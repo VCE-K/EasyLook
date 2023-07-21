@@ -32,23 +32,26 @@ class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {
     private lateinit var viewModel: MusicLocalVM
 
     override fun initFragmentViewModel() {
-        mainVM = getActivityViewModel()
         viewModel = getFragmentViewModel()
+    }
+
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
     }
 
     override fun init(savedInstanceState: Bundle?) {
         initView()
         binding.run {
-            //lifecycleOwner = this@MusicLocalFragment
+            lifecycleOwner = this@MusicLocalFragment
             m = viewModel
             v = this@MusicLocalFragment // 数据请求完成绑定点击事件
             tc = MusicLocalEvent.TextChange
         }
 
         val musicControlFrag = MusicControlBottomFragment()
-        childFragmentManager.beginTransaction()
-            .replace(R.id.musicControl, musicControlFrag)
-            .commit()
+        val fragmentTransaction = childFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.musicControl, musicControlFrag)
+        fragmentTransaction.commit()
     }
 
     override fun initView() {
@@ -86,11 +89,9 @@ class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {
 
         page.onRefresh {
             scope {
-                withContext(Dispatchers.Main) {
-                    viewModel.onEvent(MusicLocalEvent.FetchData)
-                }
+                viewModel.onEvent(MusicLocalEvent.FetchData)
             }
-        }.autoRefresh()
+        }.showLoading()
 
         //歌单子列表，展示歌曲集合
         songListRv.apply {

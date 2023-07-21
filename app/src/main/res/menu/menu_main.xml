@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@id/nav_music.xml"
+            android:icon="@drawable/ic_statistics"
+            android:title="@string/music_title" />
 
-    <item
-        android:id="@id/nav_music.xml"
-        android:icon="@drawable/ic_statistics"
-        android:title="@string/music_title" />
 
+        <item
+            android:id="@id/nav_video.xml"
+            android:icon="@drawable/ic_list"
+            android:title="@string/video_title" />
 
-    <item
-        android:id="@id/nav_video.xml"
-        android:icon="@drawable/ic_list"
-        android:title="@string/video_title" />
-
-    <item
-        android:id="@id/nav_ai.xml"
-        android:icon="@drawable/ic_statistics"
-        android:title="@string/ai_title" />
-
+        <item
+            android:id="@id/nav_ai.xml"
+            android:icon="@drawable/ic_statistics"
+            android:title="@string/ai_title" />
+    </group>
 
     <item android:title="@string/menu_other">
         <menu>
-            <item
-                android:id="@+id/nav_menu_setting"
-                android:icon="@drawable/ic_settings"
-                android:iconTint="@color/black"
-                android:title="@string/settings" />
-            <item
-                android:id="@+id/nav_exit"
-                android:icon="@drawable/ic_exit"
-                android:iconTint="@color/black"
-                android:title="@string/exit" />
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_menu_setting"
+                    android:icon="@drawable/ic_settings"
+                    android:iconTint="@color/black"
+                    android:title="@string/settings" />
+                <item
+                    android:id="@+id/nav_exit"
+                    android:icon="@drawable/ic_exit"
+                    android:iconTint="@color/black"
+                    android:title="@string/exit" />
+            </group>
         </menu>
     </item>
 </menu>

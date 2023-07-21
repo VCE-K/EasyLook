@@ -18,12 +18,14 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import cn.vce.easylook.EasyApp
+import cn.vce.easylook.feature_music.models.MusicInfo
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
 import java.io.InputStream
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -201,6 +203,16 @@ fun Any.LogE(msg: String, tag: String? = null, t: Throwable? = null) {
     Log.e(tag ?: javaClass.simpleName, msg ?: "", t)
 }
 
+
+fun convertMusicList(songs: List<*>?, source: String): List<MusicInfo>?{
+    return convertList(songs, MusicInfo::class.java)?.map{
+        it.pid = ""
+        it.source = source
+        it
+    }
+}
+
+
 fun <T> convertList(originalList: List<*>?, targetTypeClass: Class<T>?): List<T>? {
     try {
         val gson = Gson()
@@ -259,4 +271,12 @@ val dinTypeface by lazy {
 
 val lobsterTypeface by lazy {
     Typeface.createFromAsset(EasyApp.context.assets, "fonts/Lobster-1.4.otf")
+}
+
+
+fun getTimeParam(offset: Int): String {
+    val sdf = SimpleDateFormat("yyyyMMdd")
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, 1 - offset) //1 for 时区
+    return sdf.format(calendar.time)?:""
 }

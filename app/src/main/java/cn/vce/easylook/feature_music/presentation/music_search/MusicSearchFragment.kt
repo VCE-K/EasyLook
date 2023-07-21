@@ -1,11 +1,11 @@
 package cn.vce.easylook.feature_music.presentation.music_search
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
+import androidx.core.view.isVisible
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
@@ -22,10 +22,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
 
-    private lateinit var searchView: SearchView
+    private lateinit var searchView: EditText
     private lateinit var viewModel: MusicSearchVM
-
-    
 
     @Inject
     lateinit var glide: RequestManager
@@ -75,12 +73,18 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_searchfrag, menu)
-        val searchItem: MenuItem = menu.findItem(R.id.menu_search)
-        searchView = MenuItemCompat.getActionView(searchItem) as SearchView
-        //searchView.setIconifiedByDefault(false)
-        //searchView.isIconified = false
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        searchView = MenuItemCompat.getActionView(searchItem) as EditText
         searchItem.expandActionView() // 将 SearchView 直接扩展展开。
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnKeyListener { v, keyCode, event ->
+            if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                // 回车键被按下
+                // 在这里执行你的相应逻辑
+                true
+            }
+            false
+        }
+        /*searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // 处理搜索逻辑
                 query?.apply {
@@ -93,7 +97,9 @@ class MusicSearchFragment : BaseVmFragment<FragmentMusicSearchBinding>() {
                 // 处理搜索逻辑
                 return false
             }
-        })
+        })*/
+        /*searchView.mGoButton.isVisible = false
+        searchView.mCloseButton.isVisible = false*/
     }
 
     private fun setupRecyclerView() = binding.apply {

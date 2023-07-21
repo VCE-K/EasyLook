@@ -4,16 +4,17 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import cn.vce.easylook.feature_music.models.MusicInfo
+import android.support.v4.media.session.PlaybackStateCompat
 import cn.vce.easylook.feature_music.exoplayer.State.*
+import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.feature_music.models.MusicSourceType
+import cn.vce.easylook.feature_music.models.bli.download.Audio
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.repository.MusicRepository
-import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.mediaUri
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class MusicSource(
@@ -21,13 +22,23 @@ class MusicSource(
 ) {
 
     var musicInfos = mutableListOf<MusicInfo>()
-    var songs = mutableListOf<MediaMetadataCompat>()
-        get() = musicInfos.transSongs()
+    private val mShufflePlaylistSequence
+        get() = musicInfos.transSongs().apply { shuffle() }
 
+    var songs:  MutableList<MediaMetadataCompat> = mutableListOf()
+        get() {
+            return musicInfos.transSongs() /*if (MusicConfigManager.getPlayMode() == PlaybackStateCompat.REPEAT_MODE_ALL){
+                mShufflePlaylistSequence
+            }else{
+                musicInfos.transSongs()
+            }*/
+        }
+
+    //当前历史记录集合
     private val playedSongs = mutableListOf<MediaMetadataCompat>()
-    suspend fun fetchMediaData(
+    fun fetchMediaData(
         list: MutableList<MusicInfo>
-    ) = withContext(Dispatchers.IO) {
+    ) {
         if (state == STATE_CREATED) {
             state = STATE_INITIALIZING
             musicInfos = list
@@ -46,36 +57,68 @@ class MusicSource(
      */
     suspend fun fetchSongUrl(
         songIndex: Int,
-        fetchNext: Boolean = true,
-        previousFlag: Boolean = false
+        fetchNext: Boolean = true
     ){
         val nextSong = songs[songIndex]
         nextSong.let {
             musicInfos[songIndex].apply {
-                songId?:id?.let {
-                    if (songUrl?.isBlank() == true || songUrl == null) {
+                id?.let {
+                    /*if (songUrl?.isBlank() == true || songUrl == null) {
                         repository.getMusicUrl(it)?.let{ url ->
-                            replaceSongUrl(this, url)
+                            this.songUrl = url
+                        }
+                    }*/
+                    if (musicInfos[songIndex].source == MusicSourceType.BLIBLI.toString()){
+                        val avId = musicInfos[songIndex].id.toInt()
+                        val avInfoResponse = repository.getAvInfo(avId)
+                        val cid = avInfoResponse.avData?.cid
+                        cid?.let {
+                            val downloadInfo = repository.getDownloadInfo(avId, it)
+                            val data = downloadInfo.data
+                            data?.let {
+                                val url = if (it.downloadResources == null) {
+                                    //https://api.bilibili.com/x/player/playurl?avid=26305734&cid=45176667&fnval=16&otype=json&qn=16 这种居然没有audio接口！
+                                    data.durl?.get(0)?.url
+                                } else {
+                                    val resources: List<Audio>? = it.downloadResources!!.audio
+                                    resources?.get(0)?.baseUrl
+                                }
+                                this.songUrl = url
+                            }
+
+                        }
+
+                    }else if (musicInfos[songIndex].source == MusicSourceType.NETEASE.toString()){
+                        repository.getMusicUrl(it)?.let{ url ->
+                            this.songUrl = url
                         }
                     }
                 }
+
+
+
             }
         }
         if (fetchNext){
-            var nextSongIndex: Int = if (previousFlag){
-                if ((songIndex - 1) < 0 ){//到达开头
-                    songs.size - 1
-                }else {
-                    songIndex - 1
-                }
-            } else{
-                if ((songIndex + 1) == songs.size ){
-                    0
-                }else {
-                    songIndex + 1
-                }
+            val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
+                songs.size - 1
+            }else {
+                songIndex - 1
             }
-            fetchSongUrl(nextSongIndex, false)
+            val nextSongIndex= if ((songIndex + 1) == songs.size ){
+                0
+            }else {
+                songIndex + 1
+            }
+
+            if (songIndex == previousIndex && songIndex == nextSongIndex){
+                return
+            }else if (previousIndex == nextSongIndex){
+                fetchSongUrl(nextSongIndex, false)
+            }else{
+                fetchSongUrl(previousIndex, false)
+                fetchSongUrl(nextSongIndex, false)
+            }
         }
     }
 
@@ -84,7 +127,7 @@ class MusicSource(
     /**
      * 随机播放具体简陋算法
      */
-    fun List<Any>.shuffle() {
+/*    fun List<Any>.shuffle() {
         val rand = Random
         val array = this.toMutableList()
         for (i in array.size - 1 downTo 1) {
@@ -94,7 +137,7 @@ class MusicSource(
             array[i] = array[j]
             array[j] = temp
         }
-    }
+    }*/
 
 /*    fun getShuffleSong(): MediaMetadataCompat {
         val rand = Random
@@ -102,36 +145,29 @@ class MusicSource(
         return songs[i]
     }*/
 
-    fun getShuffleSong(): MediaMetadataCompat {
+    fun getShuffleSong(): Int {
         if (songs.isEmpty()) {
             // 没有可播放的歌曲
             //return "No songs available"
         }
-
         if (playedSongs.size == songs.size) {
             // 所有歌曲都已播放
             // 这里可以选择重新随机播放或者结束播放
             playedSongs.clear()
         }
-
         var nextSong: MediaMetadataCompat
+
+        var randomIndex = Random.nextInt(songs.size)
         do {
-            val randomIndex = Random.nextInt(songs.size)
             nextSong = songs[randomIndex]
+            randomIndex = Random.nextInt(songs.size)
             //播放过的肯定有url了，一模一样
         } while (playedSongs.contains(nextSong))
         playedSongs.add(nextSong)
-        return nextSong
+        return randomIndex
     }
 
     /*********** 随机播放相关结束 ***********/
-    private fun replaceSongUrl(musicInfo: MusicInfo, url: String){
-        musicInfo.songUrl = url
-        val playIndex = musicInfos.indexOfFirst { item ->
-            (item.songId ?: item.id) == (musicInfo.songId ?: musicInfo.id)
-        }
-        musicInfos[playIndex] = musicInfo
-    }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSourceFactory): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()

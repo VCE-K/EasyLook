@@ -2,7 +2,6 @@ package cn.vce.easylook.feature_music.exoplayer
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -10,6 +9,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
+import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlaybackPreparer
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerEventListener
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerNotificationListener
@@ -17,7 +17,8 @@ import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.utils.id
-import com.google.android.exoplayer2.ControlDispatcher
+import cn.vce.easylook.utils.title
+import cn.vce.easylook.utils.toast
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -96,7 +97,7 @@ class MusicService : MediaBrowserServiceCompat() {
             curSongDuration = exoPlayer.duration
         }
 
-        val musicPlaybackPreparer = MusicPlaybackPreparer(musicSource) {
+        val musicPlaybackPreparer = MusicPlaybackPreparer(this, musicSource) {
             curPlayingSong = it
             preparePlayer(
                 musicSource.songs,
@@ -112,15 +113,20 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlayer(exoPlayer)
 
         musicPlayerEventListener = MusicPlayerEventListener(this, musicSource) {
-            curPlayingSong = it
+            /*curPlayingSong = it
             preparePlayer(
                 musicSource.songs,
                 it,
                 true
-            )
+            )*/
+            updatePlayQueue()
         }
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
+    }
+
+    fun updatePlayQueue( ){
+        exoPlayer.prepare(musicSource.asMediaSource(dataSourceFactory))
     }
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
@@ -132,29 +138,27 @@ class MusicService : MediaBrowserServiceCompat() {
 
 
         //上一首
-        override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
-            //super.onSkipToPrevious(player, controlDispatcher)
+        /*override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
+            super.onSkipToPrevious(player, controlDispatcher)
             val previousWindowIndex = player.previousWindowIndex
             val itemToPlay = musicSource.songs[previousWindowIndex]
-            preparePlayer( musicSource.songs, itemToPlay, true, previousFlag = true)
+            preparePlayer( musicSource.songs, itemToPlay, true)
+        }*/
+        override fun onSkipToPrevious(player: Player) {
+            super.onSkipToPrevious(player)
+            val previousWindowIndex = player.previousWindowIndex
+            val itemToPlay = musicSource.songs[previousWindowIndex]
+            preparePlayer( musicSource.songs, itemToPlay, true)
         }
 
-        override fun onSkipToQueueItem(
-            player: Player,
-            controlDispatcher: ControlDispatcher,
-            id: Long
-        ) {
-            super.onSkipToQueueItem(player, controlDispatcher, id)
-        }
 
         //下一首
-        override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
-            //super.onSkipToNext(player, controlDispatcher)
+        override fun onSkipToNext(player: Player) {
             if (MusicConfigManager.getPlayMode() == MusicConfigManager.PLAY_MODE_RANDOM){
-                val itemToPlay = musicSource.getShuffleSong()
+                val playIndex = musicSource.getShuffleSong()
                 preparePlayer(
                     musicSource.songs,
-                    itemToPlay,
+                    musicSource.songs[playIndex],
                     true
                 )
             }else{
@@ -168,8 +172,7 @@ class MusicService : MediaBrowserServiceCompat() {
     private fun preparePlayer(
         songs: List<MediaMetadataCompat>,
         itemToPlay: MediaMetadataCompat?,
-        playNow: Boolean,
-        previousFlag: Boolean = false
+        playNow: Boolean
     ) {
         val curSongIndex = if(curPlayingSong == null)
             0
@@ -181,8 +184,19 @@ class MusicService : MediaBrowserServiceCompat() {
 
         serviceScope.launch {
             exoPlayer.playWhenReady = false // 暂停播放器，等待当前曲目完全播放结束
-            withContext(Dispatchers.IO) {
-                musicSource.fetchSongUrl(curSongIndex, previousFlag = previousFlag)
+            try {
+                withContext(Dispatchers.IO) {
+                    musicSource.fetchSongUrl(curSongIndex)
+                }
+            }catch (e: Throwable){
+                withContext(Dispatchers.Main){
+                    val song = songs[curSongIndex]
+                    e.message?.let {
+                        toast(song.title + getString(R.string.link) + it)
+                        return@withContext
+                    }
+                    toast(getString(R.string.unknown_error))
+                }
             }
             exoPlayer.prepare(musicSource.asMediaSource(dataSourceFactory))
             exoPlayer.seekTo(curSongIndex, 0L)

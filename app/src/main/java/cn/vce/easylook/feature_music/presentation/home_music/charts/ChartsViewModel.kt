@@ -1,27 +1,14 @@
 package cn.vce.easylook.feature_music.presentation.home_music.charts
 
-import android.database.Observable
-import androidx.databinding.ObservableField
-import androidx.lifecycle.*
-import cn.vce.easylook.base.BaseViewModel
+import androidx.lifecycle.MutableLiveData
 import cn.vce.easylook.base.BaseEvent
-import cn.vce.easylook.base.ObservableViewModel
-import cn.vce.easylook.base.VmError
-import cn.vce.easylook.feature_music.api.MusicNetWork
-import cn.vce.easylook.feature_music.models.ArtistSongs
+import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.PlaylistInfo
+import cn.vce.easylook.feature_music.models.MusicSourceType
 import cn.vce.easylook.feature_music.models.TopListBean
-import cn.vce.easylook.feature_music.other.Resource
-import cn.vce.easylook.feature_music.presentation.home_music.music_local.MusicLocalEvent
 import cn.vce.easylook.feature_music.repository.MusicRepository
-import cn.vce.easylook.utils.LogE
-import cn.vce.easylook.utils.convertList
+import cn.vce.easylook.utils.convertMusicList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +19,7 @@ class ChartsViewModel
 
     private val pid = MutableLiveData<String>()
 
-    val neteaseTopList = MutableLiveData<List<TopListBean>>()
+    val neteaseTopList = MutableLiveData<List<TopListBean>?>()
 
     val songs = MutableLiveData<List<MusicInfo>?>()
 
@@ -43,30 +30,32 @@ class ChartsViewModel
 
     val parentPosition = MutableLiveData<Int>()
 
-    fun loadNeteaseTopList() = launch {
-        neteaseTopList.value = repository.loadNeteaseTopList()
+
+    init {
+        onEvent(ChartsEvent.FetchData)
     }
 
     override fun onEvent(event: BaseEvent) {
         when(event){
+            is ChartsEvent.FetchData -> {
+                launch({
+                    neteaseTopList.value = ChartsRepo.loadNeteaseTopList()
+                },{
+                    neteaseTopList.value = null
+                })
+            }
             is ChartsEvent.SwitchCharts -> {
                 if (event.pid != pid.value){
                     pid.value = event.pid
                     parentPosition.value = event.position
-
-                    getPlaylistJob?.cancel()
-                    getPlaylistJob = ChartsRepo.getPlaylistDetail(event.pid)
-                        .catch { LogE("catch... when searching", t = it, tag = TAG) }
-                        .onEach {
-                            val data = convertList(it?.songs, MusicInfo::class.java)?.map{
-                                it.pid = ""
-                                it
-                            }
-                            songs.value = data
-                            onEvent(ChartsEvent.TextChange)
+                    launch {
+                        val playlistDetail = ChartsRepo.getPlaylistDetail(event.pid)
+                        val data = playlistDetail?.run {
+                            convertMusicList(songs, MusicSourceType.NETEASE.toString())
                         }
-                        .flowOn(Dispatchers.Main)
-                        .launchIn(viewModelScope)
+                        songs.postValue(data)
+                        onEvent(ChartsEvent.TextChange)
+                    }
                 }
             }
             is ChartsEvent.TextChange -> {

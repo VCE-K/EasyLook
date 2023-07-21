@@ -1,14 +1,17 @@
 package cn.vce.easylook.binding
 
+import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
+import cn.vce.easylook.R
 import cn.vce.easylook.extension.load
+import cn.vce.easylook.feature_music.exoplayer.isPlaying
 
 object ImageViewBinding {
     @JvmStatic
-    @BindingAdapter("loadUrl")  //bind后的名字任意起，注方法一定要为静态，否则报错
-    fun setImageUrl(view: ImageView, url: String?){
+    @BindingAdapter("loadUrl", requireAll = false)  //bind后的名字任意起，注方法一定要为静态，否则报错
+    fun loadUrl(view: ImageView, url: String?){
         view.load(url)
     }
 
@@ -18,5 +21,13 @@ object ImageViewBinding {
         image.setImageResource(drawable)
     }
 
+    @JvmStatic
+    @BindingAdapter("setPlaying",  requireAll = false)
+    fun setPlaying(image: ImageView, playbackState: PlaybackStateCompat?) {
+        playbackState?.let {
+            val drawable = if (it?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
+            image.setImageResource(drawable)
+        }
+    }
 
 }

@@ -72,8 +72,10 @@ data class MusicInfo(
          @ColumnInfo(name = "pid")
          var pid: String = "",
          @ColumnInfo(name = "timestamp")
-         val timestamp: Long = 0
-): Serializable, ItemExpand, ItemSwipe {
+         val timestamp: Long = 0,
+         @ColumnInfo(name = "source")
+         var source: String = "NETEASE"
+): Serializable, ItemExpand /*ItemSwipe*/ {
 
     @Ignore
     constructor(
@@ -87,8 +89,9 @@ data class MusicInfo(
         cp: Boolean = false,
         quality: QualityBean?,
         songUrl: String? = null,
-        pid: String = ""
-    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid, System.currentTimeMillis()){
+        pid: String = "",
+        source: String = "NETEASE"//BLIBLI和NETEASE
+    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid, System.currentTimeMillis(), source){
         this.songUrl = songUrl
     }
     @Ignore
@@ -99,10 +102,13 @@ data class MusicInfo(
     override var itemExpand: Boolean = false
     @Ignore
     override var itemSublist: List<Any?>? = null
-    @Ignore
-    override var itemOrientationSwipe: Int = ItemOrientation.HORIZONTAL // 侧滑方向
+    /*@Ignore
+    override var itemOrientationSwipe: Int = ItemOrientation.HORIZONTAL // 侧滑方向*/
 }
 
+enum class MusicSourceType{
+    BLIBLI, NETEASE
+}
 
 //歌唱艺术家
 data class ArtistsItem(@SerializedName("id")

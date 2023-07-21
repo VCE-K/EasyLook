@@ -20,7 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <com.drake.brv.PageRefreshLayout
             android:id="@+id/page"
             click="@{v}"
@@ -29,7 +28,7 @@
             app:layout_constraintWidth_percent="0.25"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/musicControl">
+            app:layout_constraintBottom_toBottomOf="@+id/songListRv">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chartListRv"
@@ -37,9 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 submitList="@{m.neteaseTopList}"
-                singleCheck="@{m.neteaseTopList}"
-                checkPosition="@{m.parentPosition}"
-                scrollToPosition="@{m.parentPosition}"/>
+                singCheckPosition="@{m.parentPosition}"/>
         </com.drake.brv.PageRefreshLayout>
 
         <EditText
@@ -69,6 +66,7 @@
             app:layout_constraintTop_toBottomOf="@+id/etSearch"
             app:layout_constraintBottom_toTopOf="@+id/musicControl"
             submitList="@{m.filterSongs ?? m.songs}"
+            fetchScroFirst="@{true}"
             android:padding="@dimen/dp_8"/>
 
         <FrameLayout

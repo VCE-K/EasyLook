@@ -2,7 +2,6 @@ package cn.vce.easylook.di
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.room.Room
 import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.adapters.SwipeSongAdapter
@@ -13,6 +12,8 @@ import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_3_4
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_4_5
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_5_6
 import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_6_7
+import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_7_8
+import cn.vce.easylook.feature_music.db.MusicDatabase.Companion.MIGRATION_8_9
 import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import cn.vce.easylook.feature_music.repository.MusicRepository
@@ -70,7 +71,8 @@ object AppModule {
             app,
             MusicDatabase::class.java,
             MusicDatabase.DATABASE_NAME
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+            .createFromAsset("database/MUSICS_DB.db")
             .build()
     }
 

@@ -20,9 +20,9 @@ object MusicConfigManager {
     }
     /*** 播放模式相关开始***/
 
-    const val REPEAT_MODE_ALL = 1
-    const val REPEAT_MODE_ONE = 2
-    const val PLAY_MODE_RANDOM = 3
+    const val REPEAT_MODE_ALL = 0
+    const val REPEAT_MODE_ONE = 1
+    const val PLAY_MODE_RANDOM = 2
 
     //fun isPlayMode() = sharedPreferences().contains("playMode")
 

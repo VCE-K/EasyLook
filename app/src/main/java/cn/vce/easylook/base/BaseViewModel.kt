@@ -79,7 +79,7 @@ open abstract class BaseViewModel:ViewModel() {
 
 
     protected fun <T> launch(
-        block:  () -> T
+        block:  suspend () -> T
         , error:VmError? = null) {
         viewModelScope.launch {
             runCatching {
@@ -147,7 +147,11 @@ open abstract class BaseViewModel:ViewModel() {
                 ApiException("", -10)
             }
             else -> {
-                ApiException("未知错误", -100)
+                if (e.message != null){
+                    ApiException(e.message!!, -100)
+                }else{
+                    ApiException("未知错误", -100)
+                }
             }
         }
     }

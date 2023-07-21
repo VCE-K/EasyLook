@@ -26,19 +26,19 @@
             android:id="@+id/page"
             click="@{v}"
             android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_0"
             app:layout_constraintWidth_percent="0.25"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/songListRv">
 
-            <cn.vce.easylook.feature_music.presentation.home_music.music_local.RecyclerScroView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/playlistRv"
                 click="@{v}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 submitList="@{m.playlistInfos}"
-                singleCheck="@{m.playlistInfos}"
-                checkPosition="@{m.parentPosition}"/>
+                singCheckPosition="@{m.parentPosition}"/>
         </com.drake.brv.PageRefreshLayout>
 
 
@@ -69,6 +69,7 @@
             app:layout_constraintTop_toBottomOf="@+id/etSearch"
             app:layout_constraintBottom_toTopOf="@+id/musicControl"
             submitList="@{m.filterSongs ?? m.songs}"
+            fetchScroFirst="@{true}"
             android:padding="@dimen/dp_8"/>
 
         <FrameLayout

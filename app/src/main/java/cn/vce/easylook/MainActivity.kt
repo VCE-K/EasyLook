@@ -1,10 +1,7 @@
 package cn.vce.easylook
 
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
-import android.transition.Explode
-import android.view.View
-import android.view.Window
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigator
@@ -15,12 +12,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import cn.vce.easylook.base.BaseVmActivity
 import cn.vce.easylook.databinding.ActivityMainBinding
+import cn.vce.easylook.feature_music.exoplayer.isPlaying
+import cn.vce.easylook.feature_music.exoplayer.isPrepared
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
 import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
 import cn.vce.easylook.utils.toast
 import com.bumptech.glide.RequestManager
 import com.drake.statusbar.immersive
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -52,7 +51,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+/*    override fun onCreate(savedInstanceState: Bundle?) {
         // 设置一个exit transition
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
@@ -60,7 +59,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
             window.exitTransition = Explode()
         }
         super.onCreate(savedInstanceState)
-    }
+    }*/
 
     override fun observe() {
         subscribeToObservers()
@@ -73,6 +72,27 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
         val navController = findNavController(R.id.nav)
 
+
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            println("menuItem:$menuItem")
+            when (menuItem.itemId) {
+                R.id.video_fragment_dest -> {
+                    isBackFlage = true
+                }
+                R.id.music_fragment_dest -> {
+                    isBackFlage = true
+                }
+                R.id.nav_exit -> {
+                    //退出
+                    val intent = Intent("cn.vce.easylook.FORCE_OFFLINE")
+                    sendBroadcast(intent)
+                }
+                else -> {
+                    isBackFlage = false
+                }
+            }
+            true
+        }
         appBarConfiguration = AppBarConfiguration(binding.navView.menu, binding.drawerLayout)
         binding.toolbar.setupWithNavController(
             navController,
@@ -80,6 +100,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
         )
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            println("menuItem:$destination")
             binding.toolbar.subtitle =
                 (destination as FragmentNavigator.Destination).className.substringAfterLast('.')
             when(destination.id) {
@@ -89,18 +110,19 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                R.id.music_fragment_dest -> {
                    isBackFlage = true
                }
+               R.id.nav_exit -> {
+                   //退出
+                   val intent = Intent("cn.vce.easylook.FORCE_OFFLINE")
+                   sendBroadcast(intent)
+                }
                else -> {
                    isBackFlage = false
                }
            }
         }
 
-        binding.navView.setupWithNavController(navController)
-
-
         setupActionBarWithNavController(navController, appBarConfiguration)
-
-
+        binding.navView.setupWithNavController(navController)
     }
 
 
@@ -158,7 +180,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                         ).show()
                         Status.SUCCESS -> {
                             mainViewModel.onEvent(MainEvent.InitPlayMode)
-                            mainViewModel.onEvent(MainEvent.InitPlaylist)
+                            mainViewModel.onEvent(MainEvent.InitPlaylist(flag = false))
                         }
                         else -> Unit
                     }
@@ -173,6 +195,15 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                             Snackbar.LENGTH_LONG
                         ).show()
                         else -> Unit
+                    }
+                }
+            }
+
+            mainViewModel.playbackState.observe(this@MainActivity) {
+                if (mainViewModel.initPlaylistFlag.value == false){
+                    if(it?.isPlaying == true){
+                        //初始化的后半部分
+                        mainViewModel.onEvent(MainEvent.InitPlaylist(flag = true))
                     }
                 }
             }

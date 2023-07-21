@@ -16,10 +16,15 @@ import com.bumptech.glide.RequestManager
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
+import com.drake.net.Get
+import com.drake.net.component.Progress
+import com.drake.net.interfaces.ProgressListener
 import com.drake.net.utils.scope
+import com.drake.net.utils.scopeNetLife
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,23 +39,25 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
     override fun init(savedInstanceState: Bundle?) {
         setupRecyclerView()
         binding.run {
-            //lifecycleOwner = this@ChartsFragment
+            lifecycleOwner = this@ChartsFragment
             m = viewModel
             v = this@ChartsFragment // 数据请求完成绑定点击事件
             tc = ChartsEvent.TextChange
         }
 
         val musicControlFrag = MusicControlBottomFragment()
-
-        childFragmentManager.beginTransaction()
-            .replace(R.id.musicControl, musicControlFrag)
-            .commit()
+        val fragmentTransaction = childFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.musicControl, musicControlFrag)
+        fragmentTransaction.commit()
 
     }
 
     override fun initFragmentViewModel() {
-        mainVM = getActivityViewModel()
         viewModel = getFragmentViewModel()
+    }
+
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
     }
 
     override fun getLayoutId(): Int? = R.layout.fragment_charts
@@ -89,10 +96,10 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
         page.onRefresh {
             scope {
                 withContext(Dispatchers.Main) {
-                    viewModel.loadNeteaseTopList()
+                    viewModel.onEvent(ChartsEvent.FetchData)
                 }
             }
-        }.autoRefresh()
+        }.showLoading()
 
         //歌单子列表，展示歌曲集合
         songListRv.apply {

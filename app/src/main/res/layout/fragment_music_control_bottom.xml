@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="adapter"
+            type="cn.vce.easylook.feature_music.adapters.SwipeSongAdapter" />
 
+        <variable
+            name="m"
+            type="cn.vce.easylook.MainViewModel" />
     </data>
 
     <cn.vce.easylook.ui.ConstraintSlideLayout
@@ -13,6 +20,7 @@
 
         <ImageView
             android:id="@+id/ivCurSongImage"
+            loadUrl="@{m.curPlayingMusic.album.cover}"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="?backgroundColor"
@@ -22,10 +30,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.1" />
 
+
+
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vpSong"
             android:layout_width="@dimen/dp_0"
             android:layout_height="match_parent"
+            adapter="@{adapter}"
+            data="@{m.mediaItems}"
+            curPlaying="@{m.curPlayingMusic}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPlayPause"
             app:layout_constraintStart_toEndOf="@id/ivCurSongImage"
@@ -35,10 +48,10 @@
 
         <ImageView
             android:id="@+id/ivPlayPause"
+            setPlaying="@{m.playbackState}"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="?backgroundColor"
-            android:src="@drawable/ic_play"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/vpSong"
             app:layout_constraintWidth_percent="0.2"

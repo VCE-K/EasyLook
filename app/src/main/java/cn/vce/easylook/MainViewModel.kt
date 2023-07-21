@@ -3,10 +3,8 @@ package cn.vce.easylook
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
+import androidx.databinding.Bindable
+import androidx.lifecycle.*
 import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.exoplayer.*
@@ -17,7 +15,9 @@ import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.toast
+import com.drake.net.utils.withIO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,8 +36,16 @@ class MainViewModel @Inject constructor(
     val isConnected = musicServiceConnection.isConnected
     val networkError = musicServiceConnection.networkError
     val curPlayingSong = musicServiceConnection.curPlayingSong
-    val playbackState = musicServiceConnection.playbackState
 
+    val curPlayingMusic = curPlayingSong.switchMap { curPlayingSong ->
+        liveData {
+            if (curPlayingSong != null) {
+                emit(curPlayingSong.toMusicInfo())
+            }
+        }
+    }
+
+    val playbackState = musicServiceConnection.playbackState
 
     private val _playlistId = MutableLiveData("")
 
@@ -47,8 +55,6 @@ class MainViewModel @Inject constructor(
     private val _playMode = MutableLiveData<Int>()
     val playMode = _playMode
 
-    private val _isInitFlag = MutableLiveData<Any?>()
-
     //歌曲时长
     private val _curSongDuration = MutableLiveData<Long>()
     val curSongDuration: LiveData<Long> = _curSongDuration
@@ -57,9 +63,16 @@ class MainViewModel @Inject constructor(
     private val _curPlayerPosition = MutableLiveData<Long>()
     val curPlayerPosition: LiveData<Long> = _curPlayerPosition
 
+    private val _initPlaylistFlag = MutableLiveData(false)
+    val initPlaylistFlag: LiveData<Boolean> = _initPlaylistFlag
 
     init {
-        _playMode.value = MusicConfigManager.getPlayMode()
+        var playMode: Int = if (MusicConfigManager.getPlayMode() > 2){
+            0
+        }else{
+            MusicConfigManager.getPlayMode()
+        }
+        _playMode.value = playMode
         updateCurrentPlayerPosition()
     }
 
@@ -67,49 +80,56 @@ class MainViewModel @Inject constructor(
     override fun onEvent(event: BaseEvent) {
         when (event) {
             is MainEvent.InitPlaylist ->{
-                _isInitFlag.value = _isInitFlag.value
-                launch {
-                    val songs = musicRepository.getMusicInfos(PlaylistType.HISPLAY.toString())
-                    songs?.let {
-                        onEvent(MainEvent.ClickPlay(songs, songs[0]))
-                        //playOrToggleSong(songs[songs.size - 1], true)
+                _initPlaylistFlag.value = event.flag
+                if (_initPlaylistFlag.value == false){
+                    launch {
+                        val songs = musicRepository.getMusicInfos(PlaylistType.HISPLAY.toString())
+                        if (songs != null && songs.isNotEmpty()) {
+                            onEvent(MainEvent.ClickPlay(songs, songs[0]))
+                        }
+                    }
+                }else{
+                    val isPlaying = playbackState.value?.isPlaying ?: false
+                    if (isPlaying) {
+                        musicServiceConnection.transportControls.pause()
                     }
                 }
             }
             is MainEvent.ClickPlay -> {
                 event.musicInfos.toMutableList()?.apply {
-                    viewModelScope.launch {
-                        //正在播放的歌单是不是现在显示的歌单
-                        val pid = event.musicInfo.pid
-                        val fetchFlag = (_playlistId.value == pid && pid != "")
-                        //原来不是同一个那就刷新数据，但是存在新增歌单歌曲但是歌曲数据源没更新情况，so...
-                        musicSource.fetchMediaData(this@apply)
-                        if ( !fetchFlag ) {
-                            pid?.let {
-                                _playlistId.value = pid
-                            }
-                        }
-                        withContext(Dispatchers.Main) {
-                            /*if (!fetchFlag) {
-                                subscribe()//获取新的数据
-                            }*/
-                            subscribe()//获取新的数据
-                            playOrToggleSong(event.musicInfo)
+                    //正在播放的歌单是不是现在显示的歌单
+                    val pid = event.musicInfo.pid
+                    val fetchFlag = (_playlistId.value == pid && pid != "")
+                    //原来不是同一个那就刷新数据，但是存在新增歌单歌曲但是歌曲数据源没更新情况，so...
+                    musicSource.fetchMediaData(this@apply)
+                    if (!fetchFlag) {
+                        pid?.let {
+                            _playlistId.value = pid
                         }
                     }
+                    if (!fetchFlag) {
+                        subscribe()//获取新的数据
+                    }
+                    playOrToggleSong(event.musicInfo)
+                    /*withContext(Dispatchers.Main) {
+                    *//*if (!fetchFlag) {
+                            subscribe()//获取新的数据
+                        }*//*
+                        subscribe()//获取新的数据
+                        playOrToggleSong(event.musicInfo)
+                    }*/
                 }
             }
             is MainEvent.InitPlayMode -> {
                 when (_playMode.value) {
-                    MusicConfigManager.REPEAT_MODE_ALL -> { //0
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
+                    PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
                     }
-                    MusicConfigManager.REPEAT_MODE_ONE -> { //1
+                    PlaybackStateCompat.REPEAT_MODE_ONE -> { //1
                         musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
                     }
-                    MusicConfigManager.PLAY_MODE_RANDOM -> {//2
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL )
-                        //musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
+                    PlaybackStateCompat.REPEAT_MODE_ALL -> {//2
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
                     }
                     else -> {}
                 }
@@ -117,35 +137,45 @@ class MainViewModel @Inject constructor(
             is MainEvent.UpdatePlayMode -> {
                 //默认顺序播放
                 var playMode = _playMode.value?: MusicConfigManager.getPlayMode()
-                playMode = if ((playMode + 1) == MusicConfigManager.PLAY_MODE_RANDOM){
+                if (playMode == PlaybackStateCompat.REPEAT_MODE_ALL){
+                    playMode = 0
+                }else{
+                    if (playMode > 2){
+                        playMode = 0
+                    }else{
+                        playMode++
+                    }
+                }
+                /*playMode = if ((playMode + 1) == MusicConfigManager.PLAY_MODE_RANDOM){
                     MusicConfigManager.PLAY_MODE_RANDOM
                 }else{
                     (playMode + 1) % MusicConfigManager.PLAY_MODE_RANDOM
-                }
+                }*/
+
                 when (playMode) {
-                    MusicConfigManager.REPEAT_MODE_ALL -> { //1
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
-                        musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
+                    PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
+                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
                     }
-                    MusicConfigManager.REPEAT_MODE_ONE -> { //2
+                    PlaybackStateCompat.REPEAT_MODE_ONE -> { //1
                         musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
-                        musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
                     }
-                    MusicConfigManager.PLAY_MODE_RANDOM -> {//3
+                    PlaybackStateCompat.REPEAT_MODE_ALL -> {//2
                         musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
-                        //musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
                     }
                     else -> {}
                 }
                 MusicConfigManager.savePlayMode(playMode)
                 _playMode.value = playMode
             }
+            is MainEvent.AddQueueItem -> {
+                if (event.index != null){
+                    musicServiceConnection.mediaController.addQueueItem(event.description, event.index)
+                }else{
+                    musicServiceConnection.mediaController.addQueueItem(event.description)
+                }
+            }
         }
     }
-
-
-
-
 
     fun skipToNextSong() {
         musicServiceConnection.transportControls.skipToNext()
@@ -161,7 +191,7 @@ class MainViewModel @Inject constructor(
 
     fun playOrToggleSong(musicInfo: MusicInfo, toggle: Boolean = false) {
         val isPrepared = playbackState.value?.isPrepared ?: false
-        if(isPrepared && musicInfo.id == curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
+        if(isPrepared && musicInfo.id == curPlayingSong.value?.id) {
             playbackState.value?.let { playbackState ->
                 when {
                     playbackState.isPlaying -> if(toggle) musicServiceConnection.transportControls.pause()
@@ -186,7 +216,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun subscribe() {
         _mediaItems.value = Resource.loading(null)

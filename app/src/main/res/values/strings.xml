@@ -13,6 +13,8 @@
     <!-- 通用 -->
     <string name="menu_other">other</string>
 
+    <string name="unknown_error">An unknown error occured</string>
+    <string name="link">链接</string>
     <string name="search">search</string>
     <string name="settings">settings</string>
     <string name="exit">exit</string>
@@ -42,7 +44,8 @@
 
     <string name="play_history">play history</string>
     <string name="collection">collection</string>
-
+    <string name="playlist">歌单</string>
+    <string name="playlist_songs">歌单歌曲</string>
     <string name="music_home_tab_charts">Charts</string>
     <!-- 排行榜 start -->
     <string name="song_list_item_title_1">1.%1$s - %2$s</string>
@@ -90,6 +93,9 @@
     <string name="notification_channel_description">Shows the currently playing music</string>
 
 
+    <!--提示-->
+    <string name="error_connection">网络连接异常，请稍后重试！</string>
+    <string name="data_isNull">%1$s数据为空！</string>
 
     <!--元素共享-->
     <string name="transition_name_title" translatable="false">title</string>

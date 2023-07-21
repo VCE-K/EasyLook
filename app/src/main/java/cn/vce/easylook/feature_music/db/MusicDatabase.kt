@@ -11,7 +11,7 @@ import cn.vce.easylook.feature_music.models.PlaylistType
 
 @Database(
     entities = [MusicInfo::class, PlaylistInfo::class],
-    version = 7
+    version = 9
 )
 @TypeConverters(Converters::class)
 abstract class MusicDatabase: RoomDatabase() {
@@ -121,6 +121,57 @@ abstract class MusicDatabase: RoomDatabase() {
                 database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOCAL.toString()+"'")
             }
         }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'LOCAL', '本地歌曲', '本地歌曲', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'LOCAL')")
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'LOVE', '收藏', '收藏', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'LOCAL')")
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'HISPLAY', '最近播放', '最近播放', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'LOCAL')")
+
+                var currentTimeMillis = System.currentTimeMillis()
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.HISPLAY.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOVE.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOCAL.toString()+"'")
+
+                database.execSQL("ALTER TABLE MusicInfo ADD COLUMN source TEXT NOT NULL DEFAULT 'NETEASE'")
+
+            }
+        }
+
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'LOCAL', '本地歌曲', '本地歌曲', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'LOCAL')")
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'LOVE', '收藏', '收藏', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'LOVE')")
+                database.execSQL("INSERT INTO PlaylistInfo (id, name, description, cover, " +
+                        "playCount, total, timestamp) SELECT 'HISPLAY', '最近播放', '最近播放', '', 0, 0, 0 WHERE NOT EXISTS" +
+                        " (SELECT 1 FROM PlaylistInfo WHERE id = 'HISPLAY')")
+
+                var currentTimeMillis = System.currentTimeMillis()
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.HISPLAY.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOVE.toString()+"'")
+                currentTimeMillis += 1
+                database.execSQL("UPDATE PlaylistInfo SET timestamp = $currentTimeMillis where id = '" + PlaylistType.LOCAL.toString()+"'")
+            }
+        }
+
+        /*val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("UPDATE MusicInfo SET source = ${MusicSourceType.BLIBLI} where source is null or source=''")
+            }
+        }*/
     }
 
 }

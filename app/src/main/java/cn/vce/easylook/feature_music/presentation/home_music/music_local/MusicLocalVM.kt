@@ -43,6 +43,10 @@ class MusicLocalVM @Inject constructor(
     private val pid = MutableLiveData<String>()
 
     val parentPosition = MutableLiveData<Int>()
+
+    init {
+        onEvent(MusicLocalEvent.FetchData)
+    }
     override fun onEvent(event: BaseEvent) {
         when(event){
             is MusicLocalEvent.FetchData -> {

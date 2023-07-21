@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_16"
             android:singleLine="true"
-            android:text="@{m.name + `(` + m.playCount + `)`}" />
+            android:text="@{Integer.toString(m.itemGroupPosition+1)+m.name + `(` + m.playCount + `)`}" />
 
     </LinearLayout>
 </layout>

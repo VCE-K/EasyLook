@@ -4,10 +4,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -58,6 +58,13 @@ class MusicServiceConnection(
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
+    fun addPlayListQueueItem(avid: Int?) {
+        val descriptionCompat = MediaDescriptionCompat.Builder()
+            .setMediaId("").build()
+        if (mediaController != null) {
+            mediaController.addQueueItem(descriptionCompat, 2)
+        }
+    }
     //订阅
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
         mediaBrowser.subscribe(parentId, callback)
@@ -133,7 +140,7 @@ class MusicServiceConnection(
                             musicInfo.pid = PlaylistType.HISPLAY.toString()
                             musicRepository.insertMusicInfo(musicInfo)
                         }
-                        _curPlayingSong.postValue(metadata)
+                        _curPlayingSong.value = metadata
                     }
                 }
             }

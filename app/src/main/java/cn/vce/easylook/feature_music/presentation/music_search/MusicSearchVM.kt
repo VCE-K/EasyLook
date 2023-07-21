@@ -38,7 +38,7 @@ class MusicSearchVM @Inject constructor(
                     LogE("查询：$query")
                     val data = try {
                         val result = withContext(Dispatchers.IO){
-                            repository.searchMusic(query, limit, 0)
+                            MusicSearchRepo.searchMusic(query, limit, 0)
                         }
                         Resource.success(result.toMutableList())
                     } catch (e: Exception) {
@@ -65,7 +65,7 @@ class MusicSearchVM @Inject constructor(
                     launch {
                         LogE("查询：${_query.value}")
                         val result = withContext(Dispatchers.IO){
-                            repository.searchMusic(it, limit, event.mOffset)
+                            MusicSearchRepo.searchMusic(it, limit, event.mOffset)
                         }
                         event.callback.invoke(result)
                     }

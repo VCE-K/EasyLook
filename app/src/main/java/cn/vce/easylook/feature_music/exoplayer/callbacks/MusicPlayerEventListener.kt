@@ -1,14 +1,15 @@
 package cn.vce.easylook.feature_music.exoplayer.callbacks
 
 import android.support.v4.media.MediaMetadataCompat
-import android.widget.Toast
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.utils.LogE
-import cn.vce.easylook.utils.mediaUri
+import cn.vce.easylook.utils.toast
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import kotlinx.coroutines.*
 
 
 //用于监听播放器的各种状态和事件，如播放状态变化、加载状态变化、播放错误、播放位置变化等
@@ -20,24 +21,13 @@ class MusicPlayerEventListener(
 
     private val playMode: Int
         get() = MusicConfigManager.getPlayMode()
-    override fun onRepeatModeChanged(repeatMode: Int) {
-        super.onRepeatModeChanged(repeatMode)
-        if (repeatMode == Player.REPEAT_MODE_ALL){
-            //顺序播放
-        }else if (repeatMode == Player.REPEAT_MODE_ONE){
-            //单曲播放
-        }
-    }
 
-    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
-        //随机播放
-        //this.shuffleModeEnabled = shuffleModeEnabled
-    }
+    private var currentWindowIndex = -1
+
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
 
-    private val currentWindowIndex
-        get() = musicService.exoPlayer.currentWindowIndex
     override fun onPositionDiscontinuity(reason: Int) {
         /*DISCONTINUITY_REASON_PERIOD_TRANSITION=0: 进入新的时间段（period或track）。
         DISCONTINUITY_REASON_SEEK=1: 执行了媒体跳转操作。
@@ -46,27 +36,61 @@ class MusicPlayerEventListener(
         DISCONTINUITY_REASON_AD_INSERTION=4: 广告插入导致跳过部分内容
         DISCONTINUITY_REASON_REMOVE=5: “播放下一个”等操作将当前节目从播放列表中移除。*/
 
-        super.onPositionDiscontinuity(reason)
-        when( reason ) {
+        if (currentWindowIndex != musicService.exoPlayer.currentWindowIndex) {
+            serviceScope.launch {
+                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
+                    /*val playIndex = musicSource.getShuffleSong()
+                    val itemToPlay = musicSource.songs[playIndex]*/
+                    val playIndex = musicService.exoPlayer.currentWindowIndex
+                    withContext(Dispatchers.IO) {
+                        musicSource.fetchSongUrl(playIndex)
+                    }
+                    when( reason ) {
+                        Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {//自动切换
+                            //playerPrepared(itemToPlay)
+                        }
+                        Player.DISCONTINUITY_REASON_SEEK -> Unit //第一次初始化跳转或者点击
+                        else -> Unit
+                    }
+                } else {
+                    //拿到url
+
+                    val playIndex = musicService.exoPlayer.currentWindowIndex
+                    withContext(Dispatchers.IO) {
+                        musicSource.fetchSongUrl(playIndex)
+                    }
+                }
+                currentWindowIndex = musicService.exoPlayer.currentWindowIndex
+            }
+        }
+
+        /*when( reason ) {
             Player.DISCONTINUITY_REASON_PERIOD_TRANSITION -> {
                 if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
-                    val itemToPlay = musicSource.getShuffleSong()
-                    playerPrepared(itemToPlay)
+                    *//*val itemToPlay = musicSource.getShuffleSong()
+                    playerPrepared(itemToPlay)*//*
+
+                    *//*val itemToPlay = musicSource.songs[currentWindowIndex]
+                    playerPrepared(itemToPlay)*//*
+                    var nextSongIndex = currentWindowIndex
+                    fetchNext(nextSongIndex)
                 }else{
                     var nextSongIndex = currentWindowIndex
                     fetchNext(nextSongIndex)
                 }
             }
             else -> Unit
-        }
+        }*/
+        super.onPositionDiscontinuity(reason)
+
     }
 
-    private fun fetchNext(nextSongIndex: Int){
+    /*private fun fetchNext(nextSongIndex: Int){
         if (nextSongIndex < musicSource.songs.size) {
             val itemToPlay = musicSource.songs[nextSongIndex]
             playerPrepared(itemToPlay)
         }
-    }
+    }*/
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
@@ -93,12 +117,9 @@ class MusicPlayerEventListener(
     }
 
 
-    override fun onPlayerError(error: ExoPlaybackException) {
+    override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        musicService.curPlayingSong?.mediaUri?.let {
-            Toast.makeText(musicService, "load failed", Toast.LENGTH_LONG).show()
-            return
-        }
-        Toast.makeText(musicService, "An unknown error occured", Toast.LENGTH_LONG).show()
+        //toast(getString(R.string.unknown_error))
     }
+
 }

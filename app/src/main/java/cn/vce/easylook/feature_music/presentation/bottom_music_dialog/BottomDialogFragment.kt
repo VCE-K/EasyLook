@@ -92,17 +92,17 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
         this.isHidden
         itemData.forEach(){
             if (it.key == R.string.popup_add_to_collection){
-                data.add(PopupItemBean(getString(it.key) , it.value))
+                data.add(PopupItemBean(getString(it.key) , it.value, it.key))
             }else if (it.key == R.string.popup_album){
-                data.add(PopupItemBean(getString(it.key, musicInfo.album?.name), it.value))
+                data.add(PopupItemBean(getString(it.key, musicInfo.album?.name), it.value, it.key))
             }else if (it.key == R.string.popup_artist){
-                data.add(PopupItemBean(getString(it.key, ConvertUtils.getArtist(musicInfo?.artists)) , it.value))
+                data.add(PopupItemBean(getString(it.key, ConvertUtils.getArtist(musicInfo?.artists)) , it.value, it.key))
             }else if (it.key == R.string.popup_delete){
                 if (musicInfo.pid.isNotEmpty()) {
-                    data.add(PopupItemBean(getString(it.key, ConvertUtils.getArtist(musicInfo?.artists)) , it.value))
+                    data.add(PopupItemBean(getString(it.key, ConvertUtils.getArtist(musicInfo?.artists)) , it.value, it.key))
                 }
             }else{
-                data.add(PopupItemBean(getString(it.key), it.value))
+                data.add(PopupItemBean(getString(it.key), it.value, it.key))
             }
         }
         binding.apply{
@@ -123,10 +123,15 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
                 }
                 R.id.item.onFastClick {
                     val model = getModel<PopupItemBean>()
-                    if (model.title == getString(R.string.popup_add_to_collection)){
-                        musicInfo.apply {
-                            pid = PlaylistType.LOVE.toString()
-                            viewModel.onEvent(BottomDialogEvent.SaveMusicToPlaylist(musicInfo))
+                    when(model.key){
+                        R.string.popup_play_next-> { // 下一首
+
+                        }
+                        R.string.popup_add_to_collection -> { //收藏
+                            musicInfo.apply {
+                                pid = PlaylistType.LOVE.toString()
+                                viewModel.onEvent(BottomDialogEvent.SaveMusicToPlaylist(musicInfo))
+                            }
                         }
                     }
                 }
@@ -145,4 +150,4 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
 
 }
 
-data class PopupItemBean(val title: String = "", val icon: Int = 0, val fragment:Fragment?= null)
+data class PopupItemBean(val title: String = "", val icon: Int = 0, val key:Int)

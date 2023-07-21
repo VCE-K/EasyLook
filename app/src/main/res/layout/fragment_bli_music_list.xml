@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="m"
+            type="cn.vce.easylook.feature_music.presentation.home_music.bli_music_list.BliMusicListVM" />
+        <variable
+            name="v"
+            type="cn.vce.easylook.feature_music.presentation.home_music.bli_music_list.BliMusicListFragment" />
+        <variable
+            name="tc"
+            type="cn.vce.easylook.feature_music.presentation.home_music.bli_music_list.BliMusicListEvent.TextChange" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/charts_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--<com.drake.brv.PageRefreshLayout
+            android:id="@+id/page"
+            click="@{v}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintWidth_percent="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/childRv">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/parentRv"
+                click="@{v}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                submitList="@{m.parentList}"
+                singCheckPosition="@{m.parentPosition}"/>
+        </com.drake.brv.PageRefreshLayout>-->
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/parentRv"
+            click="@{v}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintWidth_percent="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/childPage"
+            submitList="@{m.parentList}"
+            singCheckPosition="@{m.parentPosition}"/>
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:text="@={m.etSearchText}"
+            doAfterTextChanged="@{() -> m.onEvent(tc)}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_40"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/dp_24"
+            android:layout_marginVertical="@dimen/dp_4"
+            android:background="@color/white"
+            drawable_radius="@{100}"
+            drawable_solidColor="@{0xEFEFEFEF}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/parentRv"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="搜索"
+            android:paddingHorizontal="16dp" />
+
+        <com.drake.brv.PageRefreshLayout
+            android:id="@+id/childPage"
+            click="@{v}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintWidth_percent="0.75"
+            app:layout_constraintStart_toEndOf="@+id/parentRv"
+            app:layout_constraintTop_toBottomOf="@+id/etSearch"
+            app:layout_constraintBottom_toTopOf="@+id/musicControl">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/childRv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                submitList="@{m.filterSongs ?? m.childList}"
+                fetchScroFirst="@{true}"/>
+        </com.drake.brv.PageRefreshLayout>
+
+
+        <FrameLayout
+            android:id="@+id/musicControl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

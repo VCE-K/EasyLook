@@ -1,13 +1,16 @@
 package cn.vce.easylook.feature_music.api
 
+import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.convertList
 import cn.vce.easylook.utils.convertObject
+import cn.vce.easylook.utils.getString
 import com.cyl.musicapi.BaseApiImpl
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.Query
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -15,10 +18,26 @@ import kotlin.coroutines.suspendCoroutine
 
 object MusicNetWork {
 
-    //private val rankListService = ServiceCreator.create<RankListService>()
 
-    //拿到排行榜
-    //suspend fun getTopLists() = rankListService.getTopLists().await()
+    //blibli相关
+    private val bliMusicService = ServiceCreator.createBli<BliMusicService>()
+    suspend fun getTrendingPlaylist(cateId: Int,
+                                    page: Int,
+                                    pageSize: Int,
+                                    timeFrom: String,
+                                    timeTo: String) = bliMusicService.getTrendingPlaylist(cateId, page, pageSize, timeFrom, timeTo).await()
+
+    suspend fun getAvInfo(avId: Int) = bliMusicService.getAvInfo(avId).await()
+
+    suspend fun getDownloadInfo(avId: Int, cid: Int) = bliMusicService.getDownloadInfo(avId, cid).await()
+
+    //网易云相关
+
+    private val rankListService = ServiceCreator.create<RankListService>()
+
+    //获取推荐歌单
+    suspend fun personalizedPlaylist() = rankListService.personalizedPlaylist().await()
+
 
     private const val type: String = "NETEASE"
     /**
@@ -36,10 +55,12 @@ object MusicNetWork {
                     }
                     continuation.resume(data)
                 }else{
-                    continuation.resumeWithException(RuntimeException("loadNeteaseTopList data is null"))
+                    continuation.resumeWithException(RuntimeException(
+                        String.format(getString(R.string.data_isNull),
+                            getString(R.string.playlist))))
                 }
             }, fail = {
-                continuation.resumeWithException(RuntimeException("loadNeteaseTopList fail is $it"))
+                continuation.resumeWithException(RuntimeException(getString(R.string.error_connection)))
             })
         }
     }
@@ -52,10 +73,12 @@ object MusicNetWork {
                 if (data != null) {
                     continuation.resume(data)
                 }else{
-                    continuation.resumeWithException(RuntimeException("getPlaylistDetail data is null"))
+                    continuation.resumeWithException(RuntimeException(
+                        String.format(getString(R.string.data_isNull),
+                            getString(R.string.playlist_songs))))
                 }
             }, {
-                continuation.resumeWithException(RuntimeException("getPlaylistDetail fail is $it"))
+                continuation.resumeWithException(RuntimeException(getString(R.string.error_connection)))
             })
         }
     }
@@ -73,16 +96,19 @@ object MusicNetWork {
                         if (data != null) {
                             data.forEach {
                                 it.pid = PlaylistType.WEBSEARCH.toString()
+                                it.source = type.toUpperCase()
                             }
                             continuation.resume(data)
                         }else{
-                            continuation.resumeWithException(RuntimeException("getPlaylistDetail data is null"))
+                            continuation.resumeWithException(RuntimeException(
+                                String.format(getString(R.string.data_isNull),
+                                    getString(R.string.music_home_tab_search))))
                         }
                     }else{
-                        continuation.resumeWithException(RuntimeException("searchMusic is $it"))
+                        continuation.resumeWithException(RuntimeException(it.msg))
                     }
                 } else {
-                    continuation.resumeWithException(RuntimeException("searchMusic msg is ${it.msg}"))
+                    continuation.resumeWithException(RuntimeException(getString(R.string.error_connection)))
                 }
             })
         }
@@ -100,13 +126,36 @@ object MusicNetWork {
                     val url = it.data.url
                     continuation.resume(url)
                 } else {
-                    continuation.resumeWithException(RuntimeException("getMusicUrl url is null"))
+                    continuation.resumeWithException(RuntimeException(it.msg))
                 }
             }, {
-                continuation.resumeWithException(RuntimeException("getMusicUrl fail"))
+                continuation.resumeWithException(RuntimeException(getString(R.string.error_connection)))
             })
         }
     }
+
+    /*BaseApiImpl.getLyricInfo(vendor, mid) {
+        if (it.status) {
+            val lyricInfo = it.data.lyric
+            val lyric = StringBuilder()
+            lyricInfo.forEach {
+                lyric.append(it)
+                lyric.append("\n")
+            }
+            it.data.translate.forEach {
+                lyric.append(it)
+                lyric.append("\n")
+            }
+            //保存文件
+            val save = FileUtils.writeText(mLyricPath, lyric.toString())
+            LogUtil.e("保存网络歌词：$save")
+            Observable.fromArray(lyric)
+            result.onNext(lyric.toString())
+            result.onComplete()
+        } else {
+            result.onError(Throwable(it.msg))
+        }
+    }*/
 
     private suspend fun <T> Call<T>.await(): T{
         return suspendCoroutine { continuation ->

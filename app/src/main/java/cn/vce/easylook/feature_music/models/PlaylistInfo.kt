@@ -5,6 +5,7 @@ import androidx.room.*
 import cn.vce.easylook.feature_music.models.group.Group1Model
 import com.drake.brv.annotaion.ItemOrientation
 import com.drake.brv.item.ItemDrag
+import com.drake.brv.item.ItemExpand
 import com.drake.brv.item.ItemSwipe
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -27,11 +28,17 @@ data class PlaylistInfo(
     var total: Int = 0,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long = 0
-): Serializable, BaseObservable() {
+): Serializable, BaseObservable(), ItemExpand {
     @Ignore
     var checked: Boolean = false
     @Ignore
     var visibility: Boolean = false
+    @Ignore
+    override var itemGroupPosition: Int = 0
+    @Ignore
+    override var itemExpand: Boolean = false
+    @Ignore
+    override var itemSublist: List<Any?>? = null
 }
 
 
