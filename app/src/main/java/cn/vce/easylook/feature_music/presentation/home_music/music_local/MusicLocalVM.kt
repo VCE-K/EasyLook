@@ -58,28 +58,25 @@ class MusicLocalVM @Inject constructor(
             }
             is MusicLocalEvent.SwitchPlaylist -> {
                 if (event.pid != pid.value){
-                    parentPosition.value = event.position
-                    pid.value = event.pid
                     launch {
+                        parentPosition.value = event.position
+                        pid.value = event.pid
                         val data = repository.getMusicInfos(event.pid)
-                        songs.postValue(null)
-                        songs.postValue(data)
+                        songs.value = data
                         onEvent(MusicLocalEvent.TextChange)
                     }
                 }
             }
             is MusicLocalEvent.TextChange -> {
                 val input = etSearchText.value?:""
-                input?.run {
-                    val data = songs.value?.filter { v ->
-                        when {
-                            input.isBlank() -> true
-                            v is MusicInfo -> v.name?.contains(input, true) ?: false
-                            else -> true
-                        }
+                val data = songs.value?.filter { v ->
+                    when {
+                        input.isBlank() -> true
+                        v is MusicInfo -> v.name?.contains(input, true) ?: false
+                        else -> true
                     }
-                    filterSongs.value = data
                 }
+                filterSongs.value = data
             }
         }
     }

@@ -63,12 +63,14 @@ class PersonalizedPlaylistFragment: BaseVmFragment<FragmentPersonalizedPlaylistB
             onChecked { position, isChecked, isAllChecked ->
                 val model = getModel<PlaylistInfo>(position)
                 model.checked = isChecked
-                model.id?.let {
-                    viewModel.onEvent(
-                        PersonalizedPlaylistEvent.SwitchPlaylist(
-                            it, position
+                if (isChecked){
+                    model.id?.let {
+                        viewModel.onEvent(
+                            PersonalizedPlaylistEvent.SwitchPlaylist(
+                                it, position
+                            )
                         )
-                    )
+                    }
                 }
                 model.notifyChange() // 通知UI跟随数据变化
             }

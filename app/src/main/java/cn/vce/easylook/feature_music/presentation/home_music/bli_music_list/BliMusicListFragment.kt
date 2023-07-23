@@ -65,12 +65,15 @@ class BliMusicListFragment : BaseVmFragment<FragmentBliMusicListBinding>() {
             onChecked { position, isChecked, _ ->
                 val model = getModel<Cate>(position)
                 model.checked = isChecked
-                model.id?.let {
-                    viewModel.onEvent(
-                        BliMusicListEvent.SwitchCharts(
-                            it, position
+
+                if (isChecked){
+                    model.id?.let {
+                        viewModel.onEvent(
+                            BliMusicListEvent.SwitchCharts(
+                                it, position
+                            )
                         )
-                    )
+                    }
                 }
                 model.notifyChange() // 通知UI跟随数据变化
             }

@@ -75,13 +75,16 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
             onChecked { position, isChecked, isAllChecked ->
                 val model = getModel<TopListBean>(position)
                 model.checked = isChecked
-                model.id?.let {
-                    viewModel.onEvent(
-                        ChartsEvent.SwitchCharts(
-                            it, position
+                if (isChecked){
+                    model.id?.let {
+                        viewModel.onEvent(
+                            ChartsEvent.SwitchCharts(
+                                it, position
+                            )
                         )
-                    )
+                    }
                 }
+
                 model.notifyChange() // 通知UI跟随数据变化
             }
         }

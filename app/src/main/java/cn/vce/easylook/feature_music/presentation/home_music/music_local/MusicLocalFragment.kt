@@ -70,12 +70,14 @@ class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {
             onChecked { position, isChecked, isAllChecked ->
                 val model = getModel<PlaylistInfo>(position)
                 model.checked = isChecked
-                model.id?.let {
-                    viewModel.onEvent(
-                        MusicLocalEvent.SwitchPlaylist(
-                            it, position
+                if (isChecked){
+                    model.id?.let {
+                        viewModel.onEvent(
+                            MusicLocalEvent.SwitchPlaylist(
+                                it, position
+                            )
                         )
-                    )
+                    }
                 }
                 model.notifyChange() // 通知UI跟随数据变化
             }
