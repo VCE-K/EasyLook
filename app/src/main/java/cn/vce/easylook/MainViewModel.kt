@@ -91,33 +91,29 @@ class MainViewModel @Inject constructor(
                 }else{
                     val isPlaying = playbackState.value?.isPlaying ?: false
                     if (isPlaying) {
-                        musicServiceConnection.transportControls.pause()
+                        curPlayingMusic.value?.let { playOrToggleSong(it, toggle = true) }
                     }
                 }
             }
             is MainEvent.ClickPlay -> {
                 event.musicInfos.toMutableList()?.apply {
-                    //正在播放的歌单是不是现在显示的歌单
-                    val pid = event.musicInfo.pid
-                    val fetchFlag = (_playlistId.value == pid && pid != "")
-                    //原来不是同一个那就刷新数据，但是存在新增歌单歌曲但是歌曲数据源没更新情况，so...
-                    musicSource.fetchMediaData(this@apply)
-                    if (!fetchFlag) {
-                        pid?.let {
-                            _playlistId.value = pid
+                    if (event.musicInfo.id != curPlayingSong.value?.id){
+                        //正在播放的歌单是不是现在显示的歌单
+                        val pid = event.musicInfo.pid
+                        val fetchFlag = (_playlistId.value == pid && pid != "")
+                        //原来不是同一个那就刷新数据，但是存在新增歌单歌曲但是歌曲数据源没更新情况，so...
+                        musicSource.fetchMediaData(this@apply)
+                        if (!fetchFlag) {
+                            pid?.let {
+                                _playlistId.value = pid
+                            }
+                        }
+                        if (!fetchFlag) {
+                            subscribe()//获取新的数据
                         }
                     }
-                    if (!fetchFlag) {
-                        subscribe()//获取新的数据
-                    }
+
                     playOrToggleSong(event.musicInfo)
-                    /*withContext(Dispatchers.Main) {
-                    *//*if (!fetchFlag) {
-                            subscribe()//获取新的数据
-                        }*//*
-                        subscribe()//获取新的数据
-                        playOrToggleSong(event.musicInfo)
-                    }*/
                 }
             }
             is MainEvent.InitPlayMode -> {

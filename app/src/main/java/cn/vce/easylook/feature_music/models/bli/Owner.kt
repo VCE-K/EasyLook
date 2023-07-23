@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 class Owner {
     @SerializedName("mid")
     @Expose
-    var mid: Int? = null
+    var mid: Long? = null
 
     @SerializedName("name")
     @Expose

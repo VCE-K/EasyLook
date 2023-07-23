@@ -124,7 +124,11 @@ object MusicNetWork {
             BaseApiImpl.getSongUrl(vendor, mid, br, {
                 if (it.status) {
                     val url = it.data.url
-                    continuation.resume(url)
+                    if (url != null){
+                        continuation.resume(url)
+                    }else{
+                        continuation.resumeWithException(RuntimeException(getString(R.string.song_no_copyright_free)))
+                    }
                 } else {
                     continuation.resumeWithException(RuntimeException(it.msg))
                 }

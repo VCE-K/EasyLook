@@ -113,13 +113,12 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlayer(exoPlayer)
 
         musicPlayerEventListener = MusicPlayerEventListener(this, musicSource) {
-            /*curPlayingSong = it
+            curPlayingSong = it
             preparePlayer(
                 musicSource.songs,
                 it,
                 true
-            )*/
-            updatePlayQueue()
+            )
         }
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
@@ -186,17 +185,15 @@ class MusicService : MediaBrowserServiceCompat() {
             exoPlayer.playWhenReady = false // 暂停播放器，等待当前曲目完全播放结束
             try {
                 withContext(Dispatchers.IO) {
-                    musicSource.fetchSongUrl(curSongIndex)
+                    musicSource.fetchSongUrl(curSongIndex, false)
                 }
             }catch (e: Throwable){
-                withContext(Dispatchers.Main){
-                    val song = songs[curSongIndex]
-                    e.message?.let {
-                        toast(song.title + getString(R.string.link) + it)
-                        return@withContext
-                    }
-                    toast(getString(R.string.unknown_error))
+                val song = songs[curSongIndex]
+                e.message?.let {
+                    toast(song.title + getString(R.string.link) + it)
+                    return@launch
                 }
+                toast(getString(R.string.unknown_error))
             }
             exoPlayer.prepare(musicSource.asMediaSource(dataSourceFactory))
             exoPlayer.seekTo(curSongIndex, 0L)

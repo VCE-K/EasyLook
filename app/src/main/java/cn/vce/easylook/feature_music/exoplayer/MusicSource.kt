@@ -139,7 +139,7 @@ class MusicSource(
         }
     }*/
 
-/*    fun getShuffleSong(): MediaMetadataCompat {
+    /*fun getShuffleSong(): MediaMetadataCompat {
         val rand = Random
         val i: Int = rand.nextInt(songs.size)
         return songs[i]

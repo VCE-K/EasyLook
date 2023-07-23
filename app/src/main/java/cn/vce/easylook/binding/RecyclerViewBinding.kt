@@ -20,6 +20,20 @@ object RecyclerViewBinding {
              singCheckPosition: Int?) {
         val adapter = view.bindingAdapter
 
+        //回到第一行,一开始就不存在数据，现在才有的情况下才起作用
+        if (fetchScroFirst == true && adapter.models?.isEmpty() != false && itemList?.isNotEmpty() != false) {
+            when (val layoutManager = view.layoutManager) {
+                is LinearLayoutManager -> {
+                    val firstVisibleItemPosition: Int =
+                        layoutManager.findFirstVisibleItemPosition()
+                    if (firstVisibleItemPosition != 0) {
+                        //刷新数据锁定第一项
+                        layoutManager.scrollToPositionWithOffset(0, 0)
+                    }
+                }
+            }
+        }
+
         adapter.models = itemList
         val models = adapter.models
 
@@ -40,18 +54,6 @@ object RecyclerViewBinding {
         }
         //以下都需要models ！= null
         models?.let{
-            //回到第一行
-            if (fetchScroFirst == true){
-                when(val layoutManager = view.layoutManager){
-                    is LinearLayoutManager -> {
-                        val firstVisibleItemPosition: Int = layoutManager.findFirstVisibleItemPosition()
-                        if (firstVisibleItemPosition != 0){
-                            //刷新数据锁定第一项
-                            layoutManager.scrollToPositionWithOffset(0, 0)
-                        }
-                    }
-                }
-            }
 
             //单选情况下记录选中条目
             if (adapter.singleMode){

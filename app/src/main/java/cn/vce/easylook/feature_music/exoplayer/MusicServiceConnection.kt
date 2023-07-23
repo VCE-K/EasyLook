@@ -17,6 +17,7 @@ import cn.vce.easylook.feature_music.other.Event
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.repository.MusicRepository
 import cn.vce.easylook.utils.id
+import cn.vce.easylook.utils.toast
 import kotlinx.coroutines.*
 
 class MusicServiceConnection(
@@ -125,6 +126,9 @@ class MusicServiceConnection(
                 if (it.id.isNotEmpty()){
                     val index = musicSource.musicInfos.indexOfFirst { musicInfo ->
                         it.id == musicInfo.id
+                    }
+                    if (index == -1){
+                        toast(index.toString())
                     }
                     val musicInfo = musicSource.musicInfos[index].copy()
                     if (musicInfo.id != _curPlayingSong.value?.id ?: ""){

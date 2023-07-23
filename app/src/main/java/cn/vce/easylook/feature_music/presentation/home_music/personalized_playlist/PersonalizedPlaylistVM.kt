@@ -53,6 +53,8 @@ class PersonalizedPlaylistVM
                         val data = playlistDetail?.run {
                             convertMusicList(songs, MusicSourceType.NETEASE.toString())
                         }
+
+                        songs.postValue(null)
                         songs.postValue(data)
                         onEvent(PersonalizedPlaylistEvent.TextChange)
                     }

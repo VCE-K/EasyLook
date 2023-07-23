@@ -61,6 +61,7 @@ class BliMusicListVM @Inject constructor(
                     parentPosition.value = event.position
                     launch {
                         childPage = 1
+                        childList.value = null
                         childList.value = BliMusicListRepo.getTrendingPlaylist(event.cataId,
                             childPage,
                             childPagesize,

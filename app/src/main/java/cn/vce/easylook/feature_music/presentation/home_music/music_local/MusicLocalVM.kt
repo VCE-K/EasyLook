@@ -62,7 +62,8 @@ class MusicLocalVM @Inject constructor(
                     pid.value = event.pid
                     launch {
                         val data = repository.getMusicInfos(event.pid)
-                        songs.value = data
+                        songs.postValue(null)
+                        songs.postValue(data)
                         onEvent(MusicLocalEvent.TextChange)
                     }
                 }

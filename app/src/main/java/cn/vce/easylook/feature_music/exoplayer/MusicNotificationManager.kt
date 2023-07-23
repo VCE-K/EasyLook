@@ -25,27 +25,10 @@ class MusicNotificationManager(
 
     private val notificationManager: PlayerNotificationManager
 
-    /*fun init() {
-        val mediaController = MediaControllerCompat(context, sessionToken)
-        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
-            context,
-            NOTIFICATION_CHANNEL_ID,
-            R.string.notification_channel_name,
-            R.string.notification_channel_description,
-            NOTIFICATION_ID,
-            DescriptionAdapter(mediaController),
-            notificationListener
-        ).apply {
-            setSmallIcon(R.drawable.ic_music)
-            setMediaSessionToken(sessionToken)
-        }
-    }*/
-
-
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
 
-        val builder = PlayerNotificationManager.Builder(context, NOTIFICATION_ID, "cn.vce.easylook.media.NOW_PLAYING")
+        val builder = PlayerNotificationManager.Builder(context, NOTIFICATION_ID, NOTIFICATION_CHANNEL_ID)
         with (builder) {
             setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
             setNotificationListener(notificationListener)

@@ -22,7 +22,7 @@ class MusicPlayerEventListener(
     private val playMode: Int
         get() = MusicConfigManager.getPlayMode()
 
-    private var currentWindowIndex = -1
+    private var currentWindowIndex = 0
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -35,62 +35,38 @@ class MusicPlayerEventListener(
         DISCONTINUITY_REASON_INTERNAL=3: 发生某个内部组件状态变化（例如加载特殊类型的节目）
         DISCONTINUITY_REASON_AD_INSERTION=4: 广告插入导致跳过部分内容
         DISCONTINUITY_REASON_REMOVE=5: “播放下一个”等操作将当前节目从播放列表中移除。*/
-
-        if (currentWindowIndex != musicService.exoPlayer.currentWindowIndex) {
-            serviceScope.launch {
-                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
-                    /*val playIndex = musicSource.getShuffleSong()
-                    val itemToPlay = musicSource.songs[playIndex]*/
-                    val playIndex = musicService.exoPlayer.currentWindowIndex
-                    withContext(Dispatchers.IO) {
-                        musicSource.fetchSongUrl(playIndex)
-                    }
-                    when( reason ) {
-                        Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {//自动切换
-                            //playerPrepared(itemToPlay)
+        when( reason ) {
+            Player.DISCONTINUITY_REASON_AUTO_TRANSITION -> {//自动切换
+                if (currentWindowIndex != musicService.exoPlayer.currentWindowIndex) {
+                    serviceScope.launch {
+                        if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
+                            /*val playIndex = musicService.exoPlayer.currentWindowIndex + 1*/
+                            val playIndex = musicSource.getShuffleSong()
+                            withContext(Dispatchers.IO) {
+                                musicSource.fetchSongUrl(playIndex, false)
+                            }
+                            playerPrepared(musicSource.songs[playIndex])
+                        } else if (playMode == MusicConfigManager.REPEAT_MODE_ALL) {
+                            //拿到url
+                            var playIndex = musicService.exoPlayer.currentWindowIndex
+                            withContext(Dispatchers.IO) {
+                                musicSource.fetchSongUrl(playIndex, false)
+                            }
+                            playerPrepared(musicSource.songs[playIndex])
+                        }else if (playMode == MusicConfigManager.REPEAT_MODE_ONE) {
+                            //单曲循环不用做任何操作
                         }
-                        Player.DISCONTINUITY_REASON_SEEK -> Unit //第一次初始化跳转或者点击
-                        else -> Unit
-                    }
-                } else {
-                    //拿到url
-
-                    val playIndex = musicService.exoPlayer.currentWindowIndex
-                    withContext(Dispatchers.IO) {
-                        musicSource.fetchSongUrl(playIndex)
+                        currentWindowIndex = musicService.exoPlayer.currentWindowIndex
                     }
                 }
-                currentWindowIndex = musicService.exoPlayer.currentWindowIndex
             }
+            Player.DISCONTINUITY_REASON_SEEK -> Unit //第一次初始化跳转或者点击
+            else -> Unit
         }
 
-        /*when( reason ) {
-            Player.DISCONTINUITY_REASON_PERIOD_TRANSITION -> {
-                if (playMode == MusicConfigManager.PLAY_MODE_RANDOM){
-                    *//*val itemToPlay = musicSource.getShuffleSong()
-                    playerPrepared(itemToPlay)*//*
-
-                    *//*val itemToPlay = musicSource.songs[currentWindowIndex]
-                    playerPrepared(itemToPlay)*//*
-                    var nextSongIndex = currentWindowIndex
-                    fetchNext(nextSongIndex)
-                }else{
-                    var nextSongIndex = currentWindowIndex
-                    fetchNext(nextSongIndex)
-                }
-            }
-            else -> Unit
-        }*/
         super.onPositionDiscontinuity(reason)
 
     }
-
-    /*private fun fetchNext(nextSongIndex: Int){
-        if (nextSongIndex < musicSource.songs.size) {
-            val itemToPlay = musicSource.songs[nextSongIndex]
-            playerPrepared(itemToPlay)
-        }
-    }*/
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
