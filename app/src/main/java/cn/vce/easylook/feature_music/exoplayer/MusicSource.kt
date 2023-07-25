@@ -5,13 +5,14 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.State.*
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.MusicSourceType
 import cn.vce.easylook.feature_music.models.bli.download.Audio
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.repository.MusicRepository
-import cn.vce.easylook.utils.mediaUri
+import cn.vce.easylook.utils.*
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -59,45 +60,55 @@ class MusicSource(
         songIndex: Int,
         fetchNext: Boolean = true
     ){
-        val nextSong = songs[songIndex]
-        nextSong.let {
-            musicInfos[songIndex].apply {
-                id?.let {
-                    /*if (songUrl?.isBlank() == true || songUrl == null) {
-                        repository.getMusicUrl(it)?.let{ url ->
-                            this.songUrl = url
-                        }
-                    }*/
-                    if (musicInfos[songIndex].source == MusicSourceType.BLIBLI.toString()){
-                        val avId = musicInfos[songIndex].id.toInt()
-                        val avInfoResponse = repository.getAvInfo(avId)
-                        val cid = avInfoResponse.avData?.cid
-                        cid?.let {
-                            val downloadInfo = repository.getDownloadInfo(avId, it)
-                            val data = downloadInfo.data
-                            data?.let {
-                                val url = if (it.downloadResources == null) {
-                                    //https://api.bilibili.com/x/player/playurl?avid=26305734&cid=45176667&fnval=16&otype=json&qn=16 这种居然没有audio接口！
-                                    data.durl?.get(0)?.url
-                                } else {
-                                    val resources: List<Audio>? = it.downloadResources!!.audio
-                                    resources?.get(0)?.baseUrl
+        try {
+            val nextSong = songs[songIndex]
+            nextSong.let {
+                musicInfos[songIndex].apply {
+                    if (songUrl?.isNotEmpty() == true){
+                        return
+                    }
+                    if (cp) {
+                       throw java.lang.RuntimeException(getString(R.string.song_no_copyright_free))
+                    }
+                    id?.let {
+                        if (musicInfos[songIndex].source == MusicSourceType.BLIBLI.toString()){
+                            val avId = musicInfos[songIndex].id.toInt()
+                            val avInfoResponse = repository.getAvInfo(avId)
+                            val cid = avInfoResponse.avData?.cid
+                            cid?.let {
+                                val downloadInfo = repository.getDownloadInfo(avId, it)
+                                val data = downloadInfo.data
+                                data?.let {
+                                    val url = if (it.downloadResources == null) {
+                                        //https://api.bilibili.com/x/player/playurl?avid=26305734&cid=45176667&fnval=16&otype=json&qn=16 这种居然没有audio接口！
+                                        data.durl?.get(0)?.url
+                                    } else {
+                                        val resources: List<Audio>? = it.downloadResources!!.audio
+                                        resources?.get(0)?.baseUrl
+                                    }
+                                    songUrl = url
                                 }
-                                this.songUrl = url
+
                             }
 
-                        }
-
-                    }else if (musicInfos[songIndex].source == MusicSourceType.NETEASE.toString()){
-                        repository.getMusicUrl(it)?.let{ url ->
-                            this.songUrl = url
+                        }else if (musicInfos[songIndex].source == MusicSourceType.NETEASE.toString()){
+                            val url = repository.getMusicUrl(it)
+                            songUrl = url
                         }
                     }
                 }
-
-
-
             }
+        }catch (e: Throwable){
+            e.printStackTrace()
+            val song = songs[songIndex]
+            song.title + e.message
+
+            val message = if (e.message != null){
+                 song.title + e.message
+            }else{
+                 getString(R.string.unknown_error)
+            }
+            toast(message)
         }
         if (fetchNext){
             val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
@@ -127,23 +138,26 @@ class MusicSource(
     /**
      * 随机播放具体简陋算法
      */
-/*    fun List<Any>.shuffle() {
-        val rand = Random
-        val array = this.toMutableList()
-        for (i in array.size - 1 downTo 1) {
-            val j: Int = rand.nextInt(i + 1)
-            // 交换 array[i] 和 array[j]
-            val temp = array[i]
-            array[i] = array[j]
-            array[j] = temp
-        }
-    }*/
 
-    /*fun getShuffleSong(): MediaMetadataCompat {
-        val rand = Random
-        val i: Int = rand.nextInt(songs.size)
-        return songs[i]
-    }*/
+    fun getPreviousShuffleSong(currentIndex: Int): MediaMetadataCompat {
+        var previousIndex: Int
+        val currentSong = songs[currentIndex]
+        //看看现在播放的这首歌有没有播放过
+        val index = playedSongs.indexOfFirst {
+            currentSong.id == it.id
+        }
+        return if (index == -1){
+            previousIndex = playedSongs.size - 1
+            playedSongs[previousIndex]
+        }else{
+            previousIndex = if (index == 0){
+                0
+            }else{
+                index - 1
+            }
+            playedSongs[previousIndex]
+        }
+    }
 
     fun getShuffleSong(): Int {
         if (songs.isEmpty()) {

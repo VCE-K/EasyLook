@@ -11,4 +11,6 @@ sealed class MusicLocalEvent: BaseEvent() {
     data class SwitchPlaylist(val pid: String, val position: Int): MusicLocalEvent()
 
     object TextChange: MusicLocalEvent()
+
+    object InitLocalMusic: MusicLocalEvent()
 }

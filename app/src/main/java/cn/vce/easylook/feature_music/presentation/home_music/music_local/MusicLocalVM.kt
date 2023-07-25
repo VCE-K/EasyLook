@@ -1,14 +1,17 @@
 package cn.vce.easylook.feature_music.presentation.home_music.music_local
 
+import android.annotation.SuppressLint
+import android.database.Cursor
+import android.provider.BaseColumns
+import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import cn.vce.easylook.EasyApp
 import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.base.BaseEvent
-import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_music.models.PlaylistWithMusicInfo
+import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsEvent
 import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsRepo
@@ -24,6 +27,9 @@ import javax.inject.Inject
 class MusicLocalVM @Inject constructor(
     private val repository: MusicRepository
 ): BaseViewModel() {
+
+
+    private val SELECTION = MediaStore.Audio.AudioColumns.SIZE + " >= ? AND " + MediaStore.Audio.AudioColumns.DURATION + " >= ?"
 
     private val playlistWithMusicInfos =  MutableLiveData<List<PlaylistWithMusicInfo>?>()
 
@@ -44,9 +50,11 @@ class MusicLocalVM @Inject constructor(
 
     val parentPosition = MutableLiveData<Int>()
 
+
     init {
         onEvent(MusicLocalEvent.FetchData)
     }
+    @SuppressLint("Range")
     override fun onEvent(event: BaseEvent) {
         when(event){
             is MusicLocalEvent.FetchData -> {
@@ -58,12 +66,17 @@ class MusicLocalVM @Inject constructor(
             }
             is MusicLocalEvent.SwitchPlaylist -> {
                 if (event.pid != pid.value){
-                    launch {
-                        parentPosition.value = event.position
-                        pid.value = event.pid
-                        val data = repository.getMusicInfos(event.pid)
-                        songs.value = data
-                        onEvent(MusicLocalEvent.TextChange)
+                    songs.value = emptyList()
+                    if (event.pid == PlaylistType.LOCAL.toString()){
+                        onEvent(MusicLocalEvent.InitLocalMusic)
+                    }else{
+                        launch {
+                            parentPosition.value = event.position
+                            pid.value = event.pid
+                            val data = repository.getMusicInfos(event.pid)
+                            songs.value = data
+                            onEvent(MusicLocalEvent.TextChange)
+                        }
                     }
                 }
             }
@@ -77,6 +90,67 @@ class MusicLocalVM @Inject constructor(
                     }
                 }
                 filterSongs.value = data
+            }
+            is MusicLocalEvent.InitLocalMusic -> {
+                val filterTime: Long = 1 * 1000
+                val filterSize: Long = 1 * 1024
+
+                val data: Cursor? = EasyApp.context.contentResolver.query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    arrayOf(
+                        BaseColumns._ID,
+                        MediaStore.Audio.AudioColumns.IS_MUSIC,
+                        MediaStore.Audio.AudioColumns.TITLE,
+                        MediaStore.Audio.AudioColumns.ARTIST,
+                        MediaStore.Audio.AudioColumns.ALBUM,
+                        MediaStore.Audio.AudioColumns.ALBUM_ID,
+                        MediaStore.Audio.AudioColumns.DATA,
+                        MediaStore.Audio.AudioColumns.DISPLAY_NAME,
+                        MediaStore.Audio.AudioColumns.SIZE,
+                        MediaStore.Audio.AudioColumns.DURATION
+                    ),
+                    SELECTION,
+                    arrayOf(filterSize.toString(), filterTime.toString()),
+                    MediaStore.Audio.Media.DEFAULT_SORT_ORDER
+                )
+                if (data == null){
+                    songs.value = null
+                    return
+                }
+                val musicList = mutableListOf<MusicInfo>()
+                while (data.moveToNext()) {
+                    val duration: Long =
+                        data.getLong(data.getColumnIndex(MediaStore.Audio.Media.DURATION))
+                    if (duration < filterTime) {
+                        continue
+                    }
+                    val fileSize: Long =
+                        data.getLong(data.getColumnIndex(MediaStore.Audio.Media.SIZE))
+                    if (fileSize < filterSize) {
+                        continue
+                    }
+                    val id: Long = data.getLong(data.getColumnIndex(BaseColumns._ID))
+                    val title: String =
+                        data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE))
+                    val artist: String =
+                        data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST))
+                    val album: String =
+                        data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
+                    val albumId: Long =
+                        data.getLong(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
+                    val path: String =
+                        data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
+                    val fileName: String =
+                        data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME))
+                    val music = MusicInfo(id = id.toString(), name = title,artists= listOf(
+                        ArtistsItem(id = "", name = artist)
+                    ) ,
+                        album = Album(id = albumId.toString(), name = album), quality = null,
+                        songUrl = path, pid = "", source = PlaylistType.LOCAL.toString())
+                    musicList.add(music)
+
+                }
+                songs.value =musicList
             }
         }
     }

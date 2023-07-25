@@ -4,7 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="m"
+            type="cn.vce.easylook.MainViewModel" />
 
+        <variable
+            name="vm"
+            type="cn.vce.easylook.feature_music.presentation.now_playing.SongViewModel" />
+        <import type="cn.vce.easylook.feature_music.exoplayer.PlaybackStateCompatExtKt"/>
+        <import type="android.view.View"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,6 +22,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvSongName"
+            android:visibility="@{vm.isLyricShow ? View.GONE:View.VISIBLE}"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:text="SONG NAME"
@@ -21,26 +30,39 @@
             android:textSize="@dimen/sp_24"
             app:layout_constraintBottom_toTopOf="@+id/ivSongImage"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/ivSongImage"
+            android:visibility="@{vm.isLyricShow ? View.GONE:View.VISIBLE}"
             android:layout_width="@dimen/dp_300"
             android:layout_height="@dimen/dp_300"
             android:background="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
+
+
+
+        <me.wcy.lrcview.LrcView
+            android:id="@+id/lyricViewX"
+            loadLrc="@{vm.lyric}"
+            android:visibility="@{vm.isLyricShow ? View.VISIBLE:View.GONE}"
+            updateTime="@{m.curPlayerPosition}"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/seekBar"
+            android:layout_marginTop="15dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvCurTime"
             android:layout_width="@dimen/dp_50"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="00:00"
             android:layout_marginStart="@dimen/dp_16"
             android:textSize="@dimen/sp_14"
             app:layout_constraintBottom_toBottomOf="@+id/seekBar"
@@ -60,7 +82,6 @@
             android:layout_width="@dimen/dp_50"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="00:00"
             android:layout_marginEnd="@dimen/dp_16"
             android:textSize="@dimen/sp_14"
             app:layout_constraintBottom_toBottomOf="@+id/seekBar"
@@ -70,65 +91,62 @@
 
         <ImageView
             android:id="@+id/ivPlayMode"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginEnd="@dimen/dp_16"
-            app:tint="@color/colorPrimary"
-            android:background="@drawable/circle_drawable"
+            setPlayMode="@{m.playMode}"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginEnd="@dimen/dp_24"
+            app:tint="@color/iconColor"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
+            app:layout_constraintStart_toStartOf="@+id/seekBar"
             app:layout_constraintEnd_toStartOf="@+id/ivSkipPrevious"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail"/>
 
         <ImageView
             android:id="@+id/ivSkipPrevious"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginEnd="@dimen/dp_16"
-            app:tint="@color/colorPrimary"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            app:tint="@color/iconColor"
             android:src="@drawable/ic_skip_previous"
-            android:background="@drawable/circle_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
+            app:layout_constraintStart_toEndOf="@+id/ivPlayMode"
             app:layout_constraintEnd_toStartOf="@+id/ivPlayPauseDetail"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail" />
 
 
         <ImageView
             android:id="@+id/ivPlayPauseDetail"
-            android:layout_width="@dimen/dp_75"
-            android:layout_height="@dimen/dp_75"
+            srcPlayState="@{m.playbackState}"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
             android:layout_marginTop="@dimen/dp_32"
-            app:tint="@color/colorPrimary"
-            android:background="@drawable/circle_drawable"
-            android:src="@drawable/ic_play"
+            app:tint="@color/iconColor"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
 
         <ImageView
             android:id="@+id/ivSkip"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginStart="@dimen/dp_16"
-            app:tint="@color/colorPrimary"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            app:tint="@color/iconColor"
             android:src="@drawable/ic_skip"
-            android:background="@drawable/circle_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
             app:layout_constraintStart_toEndOf="@+id/ivPlayPauseDetail"
+            app:layout_constraintEnd_toStartOf="@+id/ivPlaylist"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail" />
 
 
         <ImageView
             android:id="@+id/ivPlaylist"
-            android:layout_width="@dimen/dp_56"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_width="@dimen/dp_36"
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginStart="@dimen/dp_24"
             android:src="@drawable/ic_playlist_add"
-            app:tint="@color/colorPrimary"
-            android:background="@drawable/circle_drawable"
+            app:tint="@color/iconColor"
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseDetail"
             app:layout_constraintStart_toEndOf="@+id/ivSkip"
+            app:layout_constraintEnd_toEndOf="@+id/seekBar"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail"/>
 
 

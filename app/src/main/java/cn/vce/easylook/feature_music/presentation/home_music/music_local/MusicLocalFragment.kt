@@ -47,7 +47,6 @@ class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {
             v = this@MusicLocalFragment // 数据请求完成绑定点击事件
             tc = MusicLocalEvent.TextChange
         }
-
         val musicControlFrag = MusicControlBottomFragment()
         val fragmentTransaction = childFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.musicControl, musicControlFrag)

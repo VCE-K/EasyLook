@@ -28,29 +28,11 @@ android {
         viewBinding true
     }
 
-/*
-    //  和defaultConfig 节点平级
-    signingConfigs {
-        config {
-            storeFile file('keystore 路径')
-            storePassword '密码'
-            keyAlias 'Alias名字'
-            keyPassword 'Alias 密码'
-        }
-    }
-    buildTypes {
-        release {
-            ...
-            // 添加的代码.
-            signingConfig signingConfigs.config
-        }
-    }
-*/
-
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true // minifyEnabled为true表示压缩代码 混淆代码
+            shrinkResources true // true将自动移除无用资源文件
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -196,4 +178,8 @@ dependencies {
 
     //Nodrawable是一个旨在减少99%的drawable.xml文件的库，可直接在布局文件中对任意View声明drawable属性。
     implementation 'com.github.whataa:noDrawable:1.1.1'
+    //歌词控件
+    /*implementation 'com.github.Moriafly:LyricViewX:1.1.0'*/
+
+    implementation 'me.wcy:lrcview:2.2'
 }

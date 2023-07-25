@@ -32,6 +32,7 @@ class MusicPlayerNotificationListener(
                     this,
                     Intent(applicationContext, this::class.java)
                 )
+                //避免播放器内存被系统回收, Android提供了前台机制，保证内存不足时也不会回收该应用。
                 startForeground(NOTIFICATION_ID, notification)
                 isForegroundService = true
             }

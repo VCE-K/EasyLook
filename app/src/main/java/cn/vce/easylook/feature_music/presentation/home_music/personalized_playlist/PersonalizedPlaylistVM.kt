@@ -49,13 +49,12 @@ class PersonalizedPlaylistVM
                     pid.value = event.pid
                     parentPosition.value = event.position
                     launch {
+                        songs.value = emptyList()
                         val playlistDetail = ChartsRepo.getPlaylistDetail(event.pid)
                         val data = playlistDetail?.run {
                             convertMusicList(songs, MusicSourceType.NETEASE.toString())
                         }
-
-                        songs.postValue(null)
-                        songs.postValue(data)
+                        songs.value = data
                         onEvent(PersonalizedPlaylistEvent.TextChange)
                     }
                     /*getPlaylistJob?.cancel()

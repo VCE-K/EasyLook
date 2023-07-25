@@ -7,24 +7,12 @@ import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentBliMusicListBinding
 import cn.vce.easylook.feature_music.exoplayer.transMusicInfo
 import cn.vce.easylook.feature_music.exoplayer.transMusicInfos
-import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.TopListBean
 import cn.vce.easylook.feature_music.models.bli.HotSong
-import cn.vce.easylook.feature_music.models.bli.download.Audio
 import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
-import cn.vce.easylook.feature_music.presentation.bottom_music_dialog.BottomDialogFragment
-import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsEvent
-import cn.vce.easylook.utils.LogE
-import cn.vce.easylook.utils.toast
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
-import com.drake.net.utils.scope
-import com.drake.net.utils.scopeNetLife
-import com.drake.net.utils.withIO
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class BliMusicListFragment : BaseVmFragment<FragmentBliMusicListBinding>() {
@@ -44,6 +32,7 @@ class BliMusicListFragment : BaseVmFragment<FragmentBliMusicListBinding>() {
         binding.m = viewModel
         binding.v = this
         binding.tc = BliMusicListEvent.TextChange
+
         val musicControlFrag = MusicControlBottomFragment()
         val fragmentTransaction = childFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.musicControl, musicControlFrag)

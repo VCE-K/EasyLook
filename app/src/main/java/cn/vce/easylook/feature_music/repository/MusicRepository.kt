@@ -26,9 +26,9 @@ class MusicRepository(
      * 获取歌曲url信息
      * @param br 音乐品质
      */
-    suspend fun getMusicUrl(mid: String) = MusicNetWork.getMusicUrl(mid =  mid)
+    suspend fun getMusicUrl(mid: String) = MusicNetWork.getMusicUrl(mid = mid)
 
-
+    suspend fun getLyricInfo(mid: String) = MusicNetWork.getLyricInfo(mid = mid)
     //数据库操作
     fun getAllPlaylistWithMusicInfo(): Flow<List<PlaylistWithMusicInfo>> = db.musicDao.getAllPlaylistWithMusicInfo()
 

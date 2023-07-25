@@ -8,8 +8,6 @@
             type="cn.vce.easylook.feature_music.models.MusicInfo" />
         <import
             type="cn.vce.easylook.utils.ConvertUtils" />
-
-        <!--<variable name="cu" type="ConvertUtils" />-->
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

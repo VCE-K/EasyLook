@@ -138,28 +138,54 @@ object MusicNetWork {
         }
     }
 
-    /*BaseApiImpl.getLyricInfo(vendor, mid) {
-        if (it.status) {
-            val lyricInfo = it.data.lyric
-            val lyric = StringBuilder()
-            lyricInfo.forEach {
-                lyric.append(it)
-                lyric.append("\n")
+    /**
+     * 获取歌曲歌词
+     *
+     */
+    suspend fun getLyricInfo(vendor: String = type.toLowerCase(), mid: String): String {
+        LogE("getMusicUrl $vendor $mid")
+        return suspendCoroutine { continuation ->
+            /*BaseApiImpl.getLyricInfo(vendor, mid) {
+                if (it.status) {
+                    val lyricInfo = it.data.lyric
+                    val lyric = StringBuilder()
+                    lyricInfo.forEach {
+                        lyric.append(it)
+                        lyric.append("\n")
+                    }
+                    it.data.translate.forEach {
+                        lyric.append(it)
+                        lyric.append("\n")
+                    }
+                    //保存文件
+                    val save = FileUtils.writeText(mLyricPath, lyric.toString())
+                    LogUtil.e("保存网络歌词：$save")
+                    Observable.fromArray(lyric)
+                    result.onNext(lyric.toString())
+                    result.onComplete()
+                } else {
+                    result.onError(Throwable(it.msg))
+                }
+            }*/
+            BaseApiImpl.getLyricInfo(vendor, mid) {
+                if (it.status) {
+                    val lyricInfo = it.data.lyric
+                    val lyric = StringBuilder()
+                    lyricInfo.forEach {
+                        lyric.append(it)
+                        lyric.append("\n")
+                    }
+                    it.data.translate.forEach {
+                        lyric.append(it)
+                        lyric.append("\n")
+                    }
+                    continuation.resume(lyric.toString())
+                } else {
+                    continuation.resumeWithException(RuntimeException(getString(R.string.lyric_error)))
+                }
             }
-            it.data.translate.forEach {
-                lyric.append(it)
-                lyric.append("\n")
-            }
-            //保存文件
-            val save = FileUtils.writeText(mLyricPath, lyric.toString())
-            LogUtil.e("保存网络歌词：$save")
-            Observable.fromArray(lyric)
-            result.onNext(lyric.toString())
-            result.onComplete()
-        } else {
-            result.onError(Throwable(it.msg))
         }
-    }*/
+    }
 
     private suspend fun <T> Call<T>.await(): T{
         return suspendCoroutine { continuation ->

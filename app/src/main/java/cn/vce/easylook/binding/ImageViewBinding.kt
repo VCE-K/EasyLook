@@ -7,6 +7,7 @@ import androidx.databinding.BindingAdapter
 import cn.vce.easylook.R
 import cn.vce.easylook.extension.load
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
+import cn.vce.easylook.feature_music.other.MusicConfigManager
 
 object ImageViewBinding {
     @JvmStatic
@@ -30,4 +31,29 @@ object ImageViewBinding {
         }
     }
 
+    @JvmStatic
+    @BindingAdapter("setPlayMode",  requireAll = false)
+    fun setPlayMode(image: ImageView, playMode: Int) {
+        when (playMode) {
+            MusicConfigManager.REPEAT_MODE_ALL -> {
+                image.setImageResource(R.drawable.ic_repeat)
+            }
+            MusicConfigManager.REPEAT_MODE_ONE -> {
+                image.setImageResource(R.drawable.ic_repeat_one)
+            }
+            MusicConfigManager.PLAY_MODE_RANDOM -> {
+                image.setImageResource(R.drawable.ic_shuffle)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter("srcPlayState",  requireAll = false)
+    fun srcPlayState(image: ImageView, playbackState: PlaybackStateCompat?) {
+        image.setImageResource(if (playbackState?.isPlaying==true){
+            R.drawable.ic_pause
+        }else{
+            R.drawable.ic_play
+        })
+    }
 }

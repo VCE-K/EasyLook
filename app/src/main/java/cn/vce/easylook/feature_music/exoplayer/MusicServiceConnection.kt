@@ -59,13 +59,6 @@ class MusicServiceConnection(
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
-    fun addPlayListQueueItem(avid: Int?) {
-        val descriptionCompat = MediaDescriptionCompat.Builder()
-            .setMediaId("").build()
-        if (mediaController != null) {
-            mediaController.addQueueItem(descriptionCompat, 2)
-        }
-    }
     //订阅
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
         mediaBrowser.subscribe(parentId, callback)
@@ -122,7 +115,8 @@ class MusicServiceConnection(
         //当前媒体数据变更
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             //在这里记录历史记录
-            metadata?.toMusicInfo()?.let {
+            val music = metadata?.toMusicInfo()
+            music?.let {
                 if (it.id.isNotEmpty()){
                     val index = musicSource.musicInfos.indexOfFirst { musicInfo ->
                         it.id == musicInfo.id

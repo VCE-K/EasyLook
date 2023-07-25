@@ -39,7 +39,7 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment(), View.OnC
     private var mBinding: ViewDataBinding? = null
 
     //可能需要
-    lateinit var mainVM: MainViewModel
+    protected lateinit var mainVM: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,14 +47,17 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment(), View.OnC
         //所以fragmentViewModel不能放在onCreateView初始化，否则会产生多个fragmentViewModel
         initActivityViewModel()
         initFragmentViewModel()
+        // 必须要在Activity与Fragment绑定后，因为如果Fragment可能获取的是Activity中ViewModel
+        // 必须在onCreateView之前初始化viewModel，因为onCreateView中需要通过ViewModel与DataBinding绑定
+        initViewModel()
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
         mActivity = context as AppCompatActivity
-        // 必须要在Activity与Fragment绑定后，因为如果Fragment可能获取的是Activity中ViewModel
+        /*// 必须要在Activity与Fragment绑定后，因为如果Fragment可能获取的是Activity中ViewModel
         // 必须在onCreateView之前初始化viewModel，因为onCreateView中需要通过ViewModel与DataBinding绑定
-        initViewModel()
+        initViewModel()*/
         ParamUtil.initParam(this)
     }
 

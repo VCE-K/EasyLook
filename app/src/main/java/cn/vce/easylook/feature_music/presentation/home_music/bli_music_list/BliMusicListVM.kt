@@ -35,7 +35,7 @@ class BliMusicListVM @Inject constructor(
     })
 
 
-    val childList = MutableLiveData<MutableList<HotSong>?>()
+    val childList = MutableLiveData<List<HotSong>?>()
 
     val etSearchText = MutableLiveData<String?>()
     
@@ -61,7 +61,7 @@ class BliMusicListVM @Inject constructor(
                     parentPosition.value = event.position
                     launch {
                         childPage = 1
-                        childList.value = null
+                        childList.value = emptyList()
                         childList.value = BliMusicListRepo.getTrendingPlaylist(event.cataId,
                             childPage,
                             childPagesize,
@@ -90,7 +90,6 @@ class BliMusicListVM @Inject constructor(
                             getTimeParam(childTimeTo)
                         )
                         toast(childPage.toString())
-                        LogE("xxxxx:2")
                         childList.value = (childList.value?.plus(data))?.toMutableList()
                         onEvent(ChartsEvent.TextChange)
                     }

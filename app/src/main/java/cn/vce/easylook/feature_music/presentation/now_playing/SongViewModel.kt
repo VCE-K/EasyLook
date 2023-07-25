@@ -1,46 +1,52 @@
 package cn.vce.easylook.feature_music.presentation.now_playing
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import cn.vce.easylook.feature_music.exoplayer.MusicService
+import androidx.lifecycle.*
 import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
-import cn.vce.easylook.feature_music.exoplayer.currentPlaybackPosition
-import cn.vce.easylook.feature_music.other.Constants.UPDATE_PLAYER_POSITION_INTERVAL
+import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.id
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SongViewModel @Inject constructor(
-    musicServiceConnection: MusicServiceConnection
-) : ViewModel() {
+    private val musicServiceConnection: MusicServiceConnection,
+    private val musicRepository: MusicRepository
+): ViewModel() {
 
-    private val playbackState = musicServiceConnection.playbackState
+    private val curPlayingSong = musicServiceConnection.curPlayingSong
+    //歌词相关
+    val isLyricShow = MutableLiveData(false)
+    val lyric = isLyricShow.switchMap { isLyricShow ->
+        liveData {
+            if (isLyricShow){
+                curPlayingSong.value?.id?.let {
+                    val lrcText = musicRepository.getLyricInfo(it)
 
-    private val _curSongDuration = MutableLiveData<Long>()
-    val curSongDuration: LiveData<Long> = _curSongDuration
-
-    private val _curPlayerPosition = MutableLiveData<Long>()
-    val curPlayerPosition: LiveData<Long> = _curPlayerPosition
-
-    init {
-        updateCurrentPlayerPosition()
-    }
-
-    private fun updateCurrentPlayerPosition() {
-        viewModelScope.launch {
-            while(true) {
-                val pos = playbackState.value?.currentPlaybackPosition
-                if(curPlayerPosition.value != pos) {
-                    _curPlayerPosition.postValue(pos ?: 0)
-                    _curSongDuration.postValue(MusicService.curSongDuration)
-                }
-                delay(UPDATE_PLAYER_POSITION_INTERVAL)
+                    val array: Array<String> =
+                        lrcText.split("\\n".toRegex()).dropLastWhile({ it.isEmpty() })
+                            .toTypedArray()
+                    val sb = StringBuffer()
+                    for (i in array.indices){
+                        var isFirst = false
+                        for (j in 0.. array[i].length-1){
+                            val c = array[i][j]
+                            if (!isFirst && c == ','){
+                                isFirst = true
+                                sb.append("]")
+                            }else if (j == array[i].length-1 && c == ']'){
+                                sb.append("\n")
+                            }else{
+                                sb.append(c)
+                            }
+                        }
+                    }
+                    emit(sb.toString())
+                }?:emit(null)
             }
         }
+    }
+    fun setLyricShow(isShowFlag: Boolean){
+        isLyricShow.value = isShowFlag
     }
 }
 

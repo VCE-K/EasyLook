@@ -8,6 +8,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.exoplayer.MusicSource
 import cn.vce.easylook.utils.id
+import cn.vce.easylook.utils.toast
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import kotlinx.coroutines.*
@@ -15,7 +16,6 @@ import kotlinx.coroutines.*
 
 /*MusicPlaybackPreparer（音乐播放准备器） 类，它的主要作用是以异步方式获取音乐数据，并通知应用程序使用新的数据来更新元数据和 UI。*/
 class MusicPlaybackPreparer(
-    private val musicService: MusicService,
     private val musicSource: MusicSource,
     private val playerPrepared: (MediaMetadataCompat?) -> Unit
 ) : MediaSessionConnector.PlaybackPreparer {

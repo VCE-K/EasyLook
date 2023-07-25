@@ -98,6 +98,7 @@
     <string name="data_isNull">%1$s数据为空！</string>
     <string name="song_no_copyright_free">歌曲无版权</string>
 
+    <string name="lyric_error">歌词获取失败</string>
     <!--元素共享-->
     <string name="transition_name_title" translatable="false">title</string>
     <string name="transition_name_cover" translatable="false">cover</string>

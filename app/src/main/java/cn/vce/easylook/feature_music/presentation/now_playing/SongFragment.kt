@@ -7,14 +7,14 @@ import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentSongBinding
-import cn.vce.easylook.feature_music.exoplayer.isPlaying
 import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.other.MusicConfigManager
-import cn.vce.easylook.feature_music.other.Status.SUCCESS
 import cn.vce.easylook.feature_music.presentation.bottom_music_list.PlaylistDialogFragment
+import cn.vce.easylook.utils.ConvertUtils
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
+import me.wcy.lrcview.LrcView
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -24,8 +24,7 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
 
     @Inject
     lateinit var glide: RequestManager
-
-    
+    private lateinit var viewModel: SongViewModel
 
 
     private var playbackState: PlaybackStateCompat? = null
@@ -42,8 +41,9 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
     override fun getLayoutId(): Int?  = R.layout.fragment_song
 
 
-    override fun initActivityViewModel() {
+    override fun initViewModel() {
         mainVM = getActivityViewModel()
+        viewModel = getFragmentViewModel()
     }
 
 
@@ -68,71 +68,76 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
     }
 
     override fun initView() {
-
-        binding.ivPlayPauseDetail.setOnClickListener {
-            curPlayingMusic?.let {
-                mainVM.playOrToggleSong(it, true)
-            }
-        }
-
-        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if(fromUser) {
-                    setCurPlayerTimeToTextView(progress.toLong())
+        binding.run {
+            m = mainVM
+            vm = viewModel
+            ivPlayPauseDetail.setOnClickListener {
+                curPlayingMusic?.let {
+                    mainVM.playOrToggleSong(it, true)
                 }
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                shouldUpdateSeekbar = false
-            }
+            seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if(fromUser) {
+                        setCurPlayerTimeToTextView(progress.toLong())
+                    }
+                }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                seekBar?.let {
-                    mainVM.seekTo(it.progress.toLong())
-                    shouldUpdateSeekbar = true
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    shouldUpdateSeekbar = false
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    seekBar?.let {
+                        mainVM.seekTo(it.progress.toLong())
+                        shouldUpdateSeekbar = true
+                    }
+                }
+            })
+
+            lyricViewX.run {
+                setDraggable(true
+                ) { view, time ->
+                    true
                 }
             }
-        })
 
-        binding.ivSkipPrevious.setOnClickListener {
-            mainVM.skipToPreviousSong()
-        }
+            tvSongName.setOnClickListener{
+                viewModel.setLyricShow(true)
+            }
+            ivSongImage.setOnClickListener{
+                viewModel.setLyricShow(true)
+            }
 
-        binding.ivSkip.setOnClickListener {
-            mainVM.skipToNextSong()
-        }
-        binding.ivPlayMode.setOnClickListener {
-            mainVM.onEvent(MainEvent.UpdatePlayMode)
-        }
-        binding.ivPlaylist.setOnClickListener {
-            PlaylistDialogFragment().show(mActivity)
+
+            ivSkipPrevious.setOnClickListener {
+                mainVM.skipToPreviousSong()
+            }
+
+            ivSkip.setOnClickListener {
+                mainVM.skipToNextSong()
+            }
+            ivPlayMode.setOnClickListener {
+                mainVM.onEvent(MainEvent.UpdatePlayMode)
+            }
+            ivPlaylist.setOnClickListener {
+                PlaylistDialogFragment().show(mActivity)
+            }
         }
     }
 
 
 
     private fun updateTitleAndSongImage(musicInfo: MusicInfo) {
-        val title = "${musicInfo.name} - ${musicInfo.album?.name}"
+        val artistName = ConvertUtils.getArtist(musicInfo.artists)
+        val title = "${musicInfo.name} - $artistName"
         binding.tvSongName.text = title
         glide.load(musicInfo.album?.cover).into(binding.ivSongImage)
     }
 
     private fun subscribeToObservers() {
-        mainVM.mediaItems.observe(viewLifecycleOwner) {
-            it?.let { result ->
-                when(result.status) {
-                    SUCCESS -> {
-                        result.data?.let { musicInfos ->
-                            if(curPlayingMusic == null && musicInfos.isNotEmpty()) {
-                                curPlayingMusic =musicInfos[0]
-                                updateTitleAndSongImage(musicInfos[0])
-                            }
-                        }
-                    }
-                    else -> Unit
-                }
-            }
-        }
+
         mainVM.curPlayingSong.observe(viewLifecycleOwner) {
             if(it == null) return@observe
             curPlayingMusic = it.toMusicInfo()
@@ -141,9 +146,6 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
         }
         mainVM.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
-            binding.ivPlayPauseDetail.setImageResource(
-                if(playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
-            )
             binding.seekBar.progress = it?.position?.toInt() ?: 0
         }
         mainVM.curPlayerPosition.observe(viewLifecycleOwner) {

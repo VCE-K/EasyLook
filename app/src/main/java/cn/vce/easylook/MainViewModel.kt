@@ -1,31 +1,30 @@
 package cn.vce.easylook
 
+import android.annotation.SuppressLint
+import android.database.Cursor
+import android.provider.BaseColumns
+import android.provider.MediaStore
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.databinding.Bindable
 import androidx.lifecycle.*
 import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.exoplayer.*
-import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.PlaylistType
+import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.other.Constants
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.getString
 import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.toast
-import com.drake.net.utils.withIO
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.util.prefs.Preferences
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -41,6 +40,8 @@ class MainViewModel @Inject constructor(
         liveData {
             if (curPlayingSong != null) {
                 emit(curPlayingSong.toMusicInfo())
+            }else{
+                emit(null)
             }
         }
     }
@@ -112,7 +113,6 @@ class MainViewModel @Inject constructor(
                             subscribe()//获取新的数据
                         }
                     }
-
                     playOrToggleSong(event.musicInfo)
                 }
             }
@@ -142,11 +142,6 @@ class MainViewModel @Inject constructor(
                         playMode++
                     }
                 }
-                /*playMode = if ((playMode + 1) == MusicConfigManager.PLAY_MODE_RANDOM){
-                    MusicConfigManager.PLAY_MODE_RANDOM
-                }else{
-                    (playMode + 1) % MusicConfigManager.PLAY_MODE_RANDOM
-                }*/
 
                 when (playMode) {
                     PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
@@ -206,6 +201,8 @@ class MainViewModel @Inject constructor(
                 val pos = playbackState.value?.currentPlaybackPosition
                 if(curPlayerPosition.value != pos) {
                     _curPlayerPosition.postValue(pos?:0L)
+                }
+                if(_curSongDuration.value != MusicService.curSongDuration){
                     _curSongDuration.postValue(MusicService.curSongDuration)
                 }
                 delay(Constants.UPDATE_PLAYER_POSITION_INTERVAL)

@@ -64,9 +64,9 @@ data class MusicInfo(
          @ColumnInfo(name = "vendor")
          var vendor: String? = "",
          @ColumnInfo(name = "dl", defaultValue = "0")
-         val dl: Boolean = false,
+         val dl: Boolean = false,//在线歌曲是否付费歌曲，false 不能下载
          @ColumnInfo(name = "cp", defaultValue = "0")
-         val cp: Boolean = false,
+         val cp: Boolean = false,//在线歌曲是否限制播放，false 可以播放
          @Embedded
          val quality: QualityBean?,
          @ColumnInfo(name = "pid")
