@@ -97,7 +97,7 @@ class BliMusicListFragment : BaseVmFragment<FragmentBliMusicListBinding>() {
             finish()
         }.onLoadMore {
             viewModel.onEvent(BliMusicListEvent.FetchMoreChildData)
-        }.autoRefresh()
+        }
 
     }
 

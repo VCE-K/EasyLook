@@ -45,7 +45,7 @@ object MusicServiceModule {
     @Provides
     fun provideDataSourceFactory(
         @ApplicationContext context: Context
-    ) = DefaultDataSourceFactory(context, Util.getUserAgent(context, "Spotify App"))
+    ) = DefaultDataSourceFactory(context, Util.getUserAgent(context, "EasyLook App"))
 }
 
 

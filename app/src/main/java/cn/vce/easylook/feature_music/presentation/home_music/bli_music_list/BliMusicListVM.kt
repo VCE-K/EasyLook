@@ -56,17 +56,17 @@ class BliMusicListVM @Inject constructor(
     override fun onEvent(event: BaseEvent) {
         when(event){
             is BliMusicListEvent.SwitchCharts -> {
-                if (event.cataId != cateId.value){
-                    cateId.value = event.cataId
-                    parentPosition.value = event.position
-                    launch {
+                launch {
+                    if (event.cataId != cateId.value){
+                        cateId.value = event.cataId
+                        parentPosition.postValue(event.position)
                         childPage = 1
-                        childList.value = emptyList()
-                        childList.value = BliMusicListRepo.getTrendingPlaylist(event.cataId,
+                        childList.postValue(emptyList())
+                        childList.postValue(BliMusicListRepo.getTrendingPlaylist(event.cataId,
                             childPage,
                             childPagesize,
                             getTimeParam(childTimeFrom),
-                            getTimeParam(childTimeTo))
+                            getTimeParam(childTimeTo)))
                         onEvent(ChartsEvent.TextChange)
                     }
                 }
@@ -90,7 +90,7 @@ class BliMusicListVM @Inject constructor(
                             getTimeParam(childTimeTo)
                         )
                         toast(childPage.toString())
-                        childList.value = (childList.value?.plus(data))?.toMutableList()
+                        childList.postValue(childList.value?.plus(data))
                         onEvent(ChartsEvent.TextChange)
                     }
                 }

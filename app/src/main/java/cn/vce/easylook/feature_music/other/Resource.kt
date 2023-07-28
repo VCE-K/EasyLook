@@ -2,6 +2,7 @@ package cn.vce.easylook.feature_music.other
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
 
+    //fun <T> success(data: T?) = Resource(Status.SUCCESS, data, null)
     companion object {
         fun <T> success(data: T?) = Resource(Status.SUCCESS, data, null)
 
@@ -11,8 +12,3 @@ data class Resource<out T>(val status: Status, val data: T?, val message: String
     }
 }
 
-enum class Status {
-    SUCCESS,
-    ERROR,
-    LOADING
-}

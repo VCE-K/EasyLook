@@ -7,10 +7,17 @@ import cn.vce.easylook.utils.convertList
 import cn.vce.easylook.utils.convertObject
 import cn.vce.easylook.utils.getString
 import com.cyl.musicapi.BaseApiImpl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.http.Query
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -37,6 +44,8 @@ object MusicNetWork {
 
     //获取推荐歌单
     suspend fun personalizedPlaylist() = rankListService.personalizedPlaylist().await()
+
+    suspend fun downloadMusic() = rankListService.downloadMusic().await()
 
 
     private const val type: String = "NETEASE"
@@ -100,12 +109,10 @@ object MusicNetWork {
                             }
                             continuation.resume(data)
                         }else{
-                            continuation.resumeWithException(RuntimeException(
-                                String.format(getString(R.string.data_isNull),
-                                    getString(R.string.music_home_tab_search))))
+                            continuation.resume(emptyList())
                         }
                     }else{
-                        continuation.resumeWithException(RuntimeException(it.msg))
+                        continuation.resume(emptyList())
                     }
                 } else {
                     continuation.resumeWithException(RuntimeException(getString(R.string.error_connection)))
@@ -202,4 +209,20 @@ object MusicNetWork {
             })
         }
     }
+
+    private suspend fun  Call<ResponseBody>.downFile() {
+        return suspendCoroutine { continuation ->
+            enqueue(object: Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+
+                }
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    continuation.resumeWithException(t)
+                }
+
+            })
+        }
+    }
+
+
 }

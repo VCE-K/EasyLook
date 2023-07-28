@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="m"
+            type="cn.vce.easylook.feature_music.presentation.music_search.MusicSearchVM" />
 
     </data>
 
@@ -24,6 +27,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/searchRv"
+                submitRList="@{m.songs}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"

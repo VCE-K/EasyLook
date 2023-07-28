@@ -1,47 +1,39 @@
 package cn.vce.easylook.feature_music.presentation.now_playing
 
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.*
+import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.exoplayer.MusicServiceConnection
 import cn.vce.easylook.feature_music.repository.MusicRepository
 import cn.vce.easylook.utils.id
+import com.drake.net.Get
+import com.drake.net.Post
+import com.drake.net.component.Progress
+import com.drake.net.interfaces.ProgressListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class SongViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     private val musicRepository: MusicRepository
-): ViewModel() {
+): BaseViewModel() {
 
     private val curPlayingSong = musicServiceConnection.curPlayingSong
     //歌词相关
     val isLyricShow = MutableLiveData(false)
-    val lyric = isLyricShow.switchMap { isLyricShow ->
+    val lyric = curPlayingSong.switchMap { cps ->
         liveData {
-            if (isLyricShow){
-                curPlayingSong.value?.id?.let {
+            try {
+                val data = cps?.id?.let {
                     val lrcText = musicRepository.getLyricInfo(it)
-
-                    val array: Array<String> =
-                        lrcText.split("\\n".toRegex()).dropLastWhile({ it.isEmpty() })
-                            .toTypedArray()
-                    val sb = StringBuffer()
-                    for (i in array.indices){
-                        var isFirst = false
-                        for (j in 0.. array[i].length-1){
-                            val c = array[i][j]
-                            if (!isFirst && c == ','){
-                                isFirst = true
-                                sb.append("]")
-                            }else if (j == array[i].length-1 && c == ']'){
-                                sb.append("\n")
-                            }else{
-                                sb.append(c)
-                            }
-                        }
-                    }
-                    emit(sb.toString())
-                }?:emit(null)
+                    lrcText
+                }?:null
+                emit(data)
+            }catch (e: Throwable){
+                e.printStackTrace()
+                emit(null)
             }
         }
     }

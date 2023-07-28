@@ -1,29 +1,23 @@
 package cn.vce.easylook.feature_music.presentation.home_music.music_local
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
-import androidx.core.widget.doAfterTextChanged
+import android.widget.Toast
 import cn.vce.easylook.MainEvent
-import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicLocalBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_music.models.PlaylistWithMusicInfo
-import cn.vce.easylook.feature_music.models.TopListBean
 import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
 import cn.vce.easylook.feature_music.presentation.bottom_music_dialog.BottomDialogFragment
-import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsEvent
-import cn.vce.easylook.utils.toast
-import com.drake.brv.item.ItemExpand
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
-import com.drake.brv.utils.models
 import com.drake.brv.utils.setup
 import com.drake.net.utils.scope
+import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {

@@ -4,7 +4,7 @@
 
 
     <!--应用基础色-->
-    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimary">#FF6200EE</color>
     <color name="colorPrimaryDark">@color/white</color>
     <color name="colorAccent">@color/red</color>
     <color name="window_background">@color/white</color>

@@ -6,10 +6,7 @@ import cn.vce.easylook.feature_music.db.MusicDatabase
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.PlaylistInfo
 import cn.vce.easylook.feature_music.models.PlaylistWithMusicInfo
-import cn.vce.easylook.feature_music.models.bli.AvInfoResponse
-import cn.vce.easylook.feature_music.models.bli.download.Audio
-import cn.vce.easylook.feature_music.models.bli.download.DownloadInfoResponse
-import kotlinx.coroutines.Dispatchers
+import cn.vce.easylook.feature_music.other.LRUCacheLyric
 import kotlinx.coroutines.flow.Flow
 
 class MusicRepository(
@@ -28,7 +25,33 @@ class MusicRepository(
      */
     suspend fun getMusicUrl(mid: String) = MusicNetWork.getMusicUrl(mid = mid)
 
-    suspend fun getLyricInfo(mid: String) = MusicNetWork.getLyricInfo(mid = mid)
+    suspend fun getLyricInfo(mid: String): String {
+        //先去缓存进行查找
+        return LRUCacheLyric.getInstance()[mid]?:MusicNetWork.getLyricInfo(mid = mid).also {
+            //放入缓存
+            LRUCacheLyric.getInstance().put(mid, it)
+            val lrcText = it
+            val array: Array<String> =
+                lrcText.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+            val sb = StringBuffer()
+            for (i in array.indices){
+                var isFirst = false
+                for (j in 0 until array[i].length){
+                    val c = array[i][j]
+                    if (!isFirst && c == ','){
+                        isFirst = true
+                        sb.append("]")
+                    }else if (j == array[i].length-1 && c == ']'){
+                        sb.append("\n")
+                    }else{
+                        sb.append(c)
+                    }
+                }
+            }
+            return sb.toString()
+        }
+    }
     //数据库操作
     fun getAllPlaylistWithMusicInfo(): Flow<List<PlaylistWithMusicInfo>> = db.musicDao.getAllPlaylistWithMusicInfo()
 

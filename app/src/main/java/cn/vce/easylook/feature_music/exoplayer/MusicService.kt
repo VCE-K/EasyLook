@@ -76,7 +76,6 @@ class MusicService : MediaBrowserServiceCompat() {
             )
             pendingIntent
         }
-
         mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
             setSessionActivity(activityIntent)
             isActive = true
@@ -106,14 +105,16 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator())
         mediaSessionConnector.setPlayer(exoPlayer)
 
-        musicPlayerEventListener = MusicPlayerEventListener(this) {
+        musicPlayerEventListener = MusicPlayerEventListener(this, {
             curPlayingSong = it
             preparePlayer(
                 musicSource.songs,
                 it,
                 true
             )
-        }
+        }, {
+            updatePlayQueue()
+        })
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
     }

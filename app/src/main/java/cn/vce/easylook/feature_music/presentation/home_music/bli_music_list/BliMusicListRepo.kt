@@ -28,4 +28,6 @@ object BliMusicListRepo: BaseRepository()  {
 
 
     suspend fun getDownloadInfo(avId: Int, cid: Int) = MusicNetWork.getDownloadInfo(avId, cid)
+
+
 }

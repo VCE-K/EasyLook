@@ -1,6 +1,7 @@
 package cn.vce.easylook.feature_music.presentation.home_music.music_local
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
 import android.provider.MediaStore
@@ -75,9 +76,9 @@ class MusicLocalVM @Inject constructor(
                             pid.value = event.pid
                             val data = repository.getMusicInfos(event.pid)
                             songs.value = data
-                            onEvent(MusicLocalEvent.TextChange)
                         }
                     }
+                    onEvent(MusicLocalEvent.TextChange)
                 }
             }
             is MusicLocalEvent.TextChange -> {
@@ -138,20 +139,21 @@ class MusicLocalVM @Inject constructor(
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
                     val albumId: Long =
                         data.getLong(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
-                    val path: String =
+                    val path: String = "file:"
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
                     val fileName: String =
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME))
                     val music = MusicInfo(id = id.toString(), name = title,artists= listOf(
                         ArtistsItem(id = "", name = artist)
-                    ) ,
-                        album = Album(id = albumId.toString(), name = album), quality = null,
-                        songUrl = path, pid = "", source = PlaylistType.LOCAL.toString())
+                    ) , album = Album(id = albumId.toString(), name = album), quality = null,
+                        songUrl = path, pid = PlaylistType.LOCAL.toString(), source = PlaylistType.LOCAL.toString())
                     musicList.add(music)
-
                 }
-                songs.value =musicList
+                // 释放资源
+                data.close()
+                songs.value = musicList
             }
         }
     }
+
 }

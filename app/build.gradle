@@ -84,7 +84,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-
     // Material Design
     implementation 'com.google.android.material:material:1.3.0-alpha02'
 
@@ -100,7 +99,6 @@ dependencies {
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
-
 
     // Coroutine Lifecycle Scopes
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
@@ -170,7 +168,6 @@ dependencies {
         exclude group: 'com.google.android.exoplayer'
     }
 
-    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     //透明状态栏
@@ -179,7 +176,7 @@ dependencies {
     //Nodrawable是一个旨在减少99%的drawable.xml文件的库，可直接在布局文件中对任意View声明drawable属性。
     implementation 'com.github.whataa:noDrawable:1.1.1'
     //歌词控件
-    /*implementation 'com.github.Moriafly:LyricViewX:1.1.0'*/
-
     implementation 'me.wcy:lrcview:2.2'
+    //权限控件
+    implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 }

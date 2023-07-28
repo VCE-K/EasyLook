@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.utils.LogE
 import com.drake.brv.PageRefreshLayout
 import com.drake.brv.utils.bindingAdapter
 import com.drake.statelayout.StateLayout
@@ -13,9 +12,10 @@ import com.drake.statelayout.StateLayout
 object RecyclerViewBinding {
 
     @JvmStatic
-    @BindingAdapter(value =  ["submitList", "fetchScroFirst", "singCheckPosition"], requireAll = false)
+    @BindingAdapter(value =  ["submitList", "submitRList", "fetchScroFirst", "singCheckPosition"], requireAll = false)
     fun bind(view: RecyclerView,
              itemList: List<Any>?,
+             itemRList: Resource<List<Any>?>?,
              fetchScroFirst: Boolean?,
              singCheckPosition: Int?) {
         val adapter = view.bindingAdapter
@@ -33,28 +33,51 @@ object RecyclerViewBinding {
                 }
             }
         }
-
-        adapter.models = itemList
-        val models = adapter.models
-
-        when(val parentView = view.parent){
-            is StateLayout -> {
-                when(val parentView = parentView.parent) {
-                    is PageRefreshLayout -> {
-                        if (models == null) {
-                            parentView.showError(force = true)
-                        }else if (models.isEmpty()) {
+        if (itemRList == null){
+            adapter.models = itemList
+            when(val parentView = view.parent){
+                is StateLayout -> {
+                    when(val parentView = parentView.parent) {
+                        is PageRefreshLayout -> {
+                            val models = adapter.models
+                            if (models == null) {
+                                parentView.showError(force = true)
+                            }else if (models.isEmpty()) {
+                                parentView.showEmpty()
+                            }else{
+                                parentView.showContent()
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            adapter.models = itemRList.data
+            val parentView = view.parent.parent
+            val isPageFlag = view.parent.parent is PageRefreshLayout
+            if (isPageFlag) {
+                parentView as PageRefreshLayout
+                when (itemRList.status) {
+                    Status.SUCCESS -> {
+                        if (itemRList.data == null) {
                             parentView.showEmpty()
                         }else{
                             parentView.showContent()
                         }
                     }
+                    Status.LOADING -> {
+                        parentView.showLoading()
+                    }
+                    Status.ERROR -> {
+                        parentView.showError()
+                    }
                 }
             }
         }
+
+        val models = adapter.models
         //以下都需要models ！= null
         models?.let{
-
             //单选情况下记录选中条目
             if (adapter.singleMode){
                 if (singCheckPosition !=null && singCheckPosition >= 0) {

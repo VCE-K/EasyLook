@@ -4,5 +4,5 @@ import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.feature_music.models.MusicInfo
 
 sealed class MusicSearchEvent: BaseEvent() {
-    data class RefreshSearchEvent(val mOffset: Int, val callback: (List<MusicInfo>) -> Unit): MusicSearchEvent()
+    data class RefreshSearchEvent(val mOffset: Int): MusicSearchEvent()
 }

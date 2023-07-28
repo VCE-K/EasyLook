@@ -1,5 +1,6 @@
 package cn.vce.easylook.feature_music.presentation.now_playing
 
+import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.SeekBar
@@ -98,8 +99,12 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
 
             lyricViewX.run {
                 setDraggable(true
-                ) { view, time ->
-                    true
+                ) {  v, time ->
+                    seekBar?.let {
+                        mainVM.seekTo(time)
+                        return@setDraggable true
+                    }
+                    false
                 }
             }
 

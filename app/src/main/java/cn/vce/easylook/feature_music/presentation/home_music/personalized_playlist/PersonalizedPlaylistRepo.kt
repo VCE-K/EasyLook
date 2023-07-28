@@ -1,9 +1,17 @@
 package cn.vce.easylook.feature_music.presentation.home_music.personalized_playlist
 
+import cn.vce.easylook.EasyApp
 import cn.vce.easylook.base.BaseRepository
 import cn.vce.easylook.feature_music.api.MusicNetWork
 import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_music.other.Resource
+import cn.vce.easylook.feature_music.other.DownloadResult
+import cn.vce.easylook.utils.LogE
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
 
 object PersonalizedPlaylistRepo: BaseRepository() {
 
@@ -48,5 +56,46 @@ object PersonalizedPlaylistRepo: BaseRepository() {
         }
         list
     }
+    /**
+     * 下载歌曲
+     */
+    suspend fun downloadMusic() = flow {
+        try {
+            val body = MusicNetWork.downloadMusic()
+            val mediaType = body.contentType()
+            val contentLength = body.contentLength()
+            val inputStream = body.byteStream()
+            val file = File(EasyApp.context.getExternalFilesDir(null), "test.rar1")
+            LogE("absolutePath:"+file.absolutePath)
+            val outputStream = FileOutputStream(file)
+            var currentLength = 0
+            val bufferSize = 1024 * 8
+            val buffer = ByteArray(bufferSize)
+            val bufferedInputStream = BufferedInputStream(inputStream, bufferSize)
+            var readLength: Int
+            while (bufferedInputStream.read(buffer, 0, bufferSize)
+                    .also { readLength = it } != -1
+            ) {
+                outputStream.write(buffer, 0, readLength)
+                currentLength += readLength
+                emit(
+                    DownloadResult.loading(
+                        currentLength.toLong(),
+                        contentLength,
+                        currentLength.toFloat() / contentLength.toFloat()
+                    )
+                )
+            }
+            bufferedInputStream.close()
+            outputStream.close()
+            inputStream.close()
+            emit(DownloadResult.success(file))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(DownloadResult.error(e.message ?: "Unknown error"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+
 
 }

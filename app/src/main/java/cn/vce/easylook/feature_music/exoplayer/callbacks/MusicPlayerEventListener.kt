@@ -16,7 +16,8 @@ import kotlinx.coroutines.*
 //用于监听播放器的各种状态和事件，如播放状态变化、加载状态变化、播放错误、播放位置变化等
 class MusicPlayerEventListener(
     private val musicService: MusicService,
-    private val playerPrepared: (MediaMetadataCompat?) -> Unit
+    private val playerPrepared: (MediaMetadataCompat?) -> Unit,
+    private val updatePlayQueue: () -> Unit
 ) :  Player.Listener {
 
 
@@ -40,23 +41,32 @@ class MusicPlayerEventListener(
         super.onPositionDiscontinuity(reason)
     }
 
+    private var isFirstIdle = false
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
         when (playbackState) {
             Player.STATE_IDLE -> {
                 LogE("Music", "空闲状态" + musicService.exoPlayer.contentPosition / 1000)
-                if (playIndex != musicService.exoPlayer.currentMediaItemIndex){
+                /*if (playIndex != musicService.exoPlayer.currentMediaItemIndex){
+
+                }*/
+                if (!isFirstIdle){
                     musicSource.whenReady {
                         serviceScope.launch {
                             playIndex = musicService.exoPlayer.currentMediaItemIndex
-                            if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
+                            /*if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
                                 playIndex = musicSource.getShuffleSong()
-                            }
-                            /*musicSource.fetchSongUrl(playIndex, false)*/
-                            playerPrepared(musicSource.songs[playIndex])
+                            }*/
+                            musicSource.fetchSongUrl(playIndex, false)
+                            /*playerPrepared(musicSource.songs[playIndex])*/
+                            updatePlayQueue()
+                            isFirstIdle = true
                         }
                     }
+                }else{
+                    isFirstIdle = false
                 }
+
             }
             Player.STATE_BUFFERING ->
                 LogE("Music","加载中"+musicService.exoPlayer.contentPosition/1000)

@@ -103,7 +103,7 @@ open abstract class BaseViewModel:ViewModel() {
             }.onFailure {
                 if (BuildConfig.DEBUG) {
                     it.printStackTrace()
-                    return@onFailure
+                    //return@onFailure
                 }
                 getApiException(it).apply {
                     withContext(Dispatchers.Main){
