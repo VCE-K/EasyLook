@@ -86,6 +86,7 @@ class MusicPlayerEventListener(
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
+
         //toast(getString(R.string.unknown_error))
     }
 

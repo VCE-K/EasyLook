@@ -6,15 +6,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!--前台Service展示-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!--
-        android:maxSdkVersion="32" />-->
+
     <!--音频文件-->
-    <!--<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />-->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 
+    <!--不想进行作用域存储的适配requestLegacyExternalStorage==true-->
     <application
         android:name=".EasyApp"
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

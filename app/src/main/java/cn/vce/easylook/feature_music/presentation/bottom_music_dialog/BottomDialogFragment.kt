@@ -35,6 +35,7 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
     private lateinit var viewModel: BottomDialogVM
     private var itemData = mutableMapOf(
         R.string.popup_play_next to R.drawable.ic_queue_play_next,
+        R.string.popup_download to R.drawable.ic_queue_play_next,
         R.string.popup_add_to_collection to R.drawable.ic_add_love,
         R.string.popup_add_to_playlist to R.drawable.ic_playlist_add,
         R.string.popup_album to R.drawable.ic_album,
@@ -49,6 +50,9 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
 
     override fun getLayoutId(): Int? = R.layout.dialog_layout
 
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
+    }
 
     override fun initFragmentViewModel() {
         viewModel = getFragmentViewModel()
@@ -126,6 +130,10 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
                     when(model.key){
                         R.string.popup_play_next-> { // 下一首
 
+                        }
+                        R.string.popup_download -> {
+                            mainVM.downloadMusic(musicInfo)
+                            this@BottomDialogFragment.hide()
                         }
                         R.string.popup_add_to_collection -> { //收藏
                             musicInfo.apply {

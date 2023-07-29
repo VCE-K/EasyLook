@@ -1,9 +1,6 @@
 package cn.vce.easylook.feature_music.presentation.home_music.music_local
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
@@ -16,7 +13,6 @@ import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
 import com.drake.net.utils.scope
-import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,6 +46,7 @@ class MusicLocalFragment: BaseVmFragment<FragmentMusicLocalBinding>() {
     override fun initView() {
         setupRecyclerView()
     }
+
 
     private fun setupRecyclerView() = binding.apply {
         playlistRv.linear().setup {

@@ -86,7 +86,7 @@ class PersonalizedPlaylistVM
             is PersonalizedPlaylistEvent.TextChange -> {
                 val input = etSearchText.value?:""
                 if (input == "11"){
-                    launch {
+                    /*launch {
                         val downloadResult = PersonalizedPlaylistRepo.downloadMusic()
                         downloadResult.catch { LogE("catch... when searching", t = it) }
                             .onEach {
@@ -114,7 +114,7 @@ class PersonalizedPlaylistVM
                             }
                             .flowOn(Dispatchers.Main)
                             .launchIn(viewModelScope)
-                    }
+                    }*/
                 }
                 input?.run {
                     val data = songs.value?.filter { v ->

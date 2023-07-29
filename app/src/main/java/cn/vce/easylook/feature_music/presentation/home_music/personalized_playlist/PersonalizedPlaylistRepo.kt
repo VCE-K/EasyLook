@@ -1,17 +1,25 @@
 package cn.vce.easylook.feature_music.presentation.home_music.personalized_playlist
 
+import android.content.ContentValues
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.Toast
 import cn.vce.easylook.EasyApp
 import cn.vce.easylook.base.BaseRepository
 import cn.vce.easylook.feature_music.api.MusicNetWork
 import cn.vce.easylook.feature_music.models.PlaylistInfo
 import cn.vce.easylook.feature_music.other.DownloadResult
 import cn.vce.easylook.utils.LogE
+import cn.vce.easylook.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.concurrent.thread
 
 object PersonalizedPlaylistRepo: BaseRepository() {
 
@@ -56,17 +64,19 @@ object PersonalizedPlaylistRepo: BaseRepository() {
         }
         list
     }
-    /**
+ /*   *//**
      * 下载歌曲
-     */
+     *//*
     suspend fun downloadMusic() = flow {
         try {
+            val contentResolver = EasyApp.context.contentResolver
             val body = MusicNetWork.downloadMusic()
             val mediaType = body.contentType()
             val contentLength = body.contentLength()
             val inputStream = body.byteStream()
-            val file = File(EasyApp.context.getExternalFilesDir(null), "test.rar1")
-            LogE("absolutePath:"+file.absolutePath)
+            val file = File(EasyApp.context.getExternalFilesDir(null), "")
+
+
             val outputStream = FileOutputStream(file)
             var currentLength = 0
             val bufferSize = 1024 * 8
@@ -94,7 +104,8 @@ object PersonalizedPlaylistRepo: BaseRepository() {
             e.printStackTrace()
             emit(DownloadResult.error(e.message ?: "Unknown error"))
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)*/
+
 
 
 

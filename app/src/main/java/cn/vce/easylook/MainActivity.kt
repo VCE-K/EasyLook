@@ -26,6 +26,7 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import android.Manifest
+import cn.vce.easylook.utils.LogE
 
 @AndroidEntryPoint
 class MainActivity : BaseVmActivity<ActivityMainBinding>() {
@@ -52,11 +53,43 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
         initView()
         permissionsRequest()
     }
-    private val handler = Handler(Looper.getMainLooper())
 
 
     override fun observe() {
         subscribeToObservers()
+        lateinit var childHandle: Handler
+        Thread {
+            Looper.prepare()//初始化，这里创建该线程的Looper,而Looper会自动初始化MessageQueue
+            childHandle = Handler(Looper.myLooper()!!)
+            Looper.loop()
+        }.start()
+
+        var count = 5
+
+        val mHandle = Handler(Looper.getMainLooper()).postDelayed({
+            childHandle.postDelayed(object: Runnable{
+                override fun run() {
+                    if(count >= 0) {
+                        //打印当前线程名
+                        LogE("count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
+                        count--
+                        //继续给子线程发消息
+                        childHandle .postDelayed(this,1000)
+                    }else if(count >= -10){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            childHandle.looper.quitSafely()
+                        }else {
+                            childHandle.looper.quit()
+                        }
+                        LogE("quit: count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
+                        count--
+                        //继续给子线程发消息
+                        childHandle .postDelayed(this,1000)
+                    }
+                }
+
+            }, 1000)
+        }, 1000)
     }
 
     override fun initView() {
@@ -102,14 +135,12 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
      */
     private fun permissionsRequest() {
         val requestList = ArrayList<String>()
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestList.add(Manifest.permission.READ_MEDIA_AUDIO)
         }else{
             requestList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }*/
-        requestList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
         if (requestList.isNotEmpty()) {
             PermissionX.init(this)
                 .permissions(requestList)

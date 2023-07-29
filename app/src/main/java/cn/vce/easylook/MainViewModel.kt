@@ -1,27 +1,42 @@
 package cn.vce.easylook
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.database.Cursor
+import android.os.Build
+import android.os.Environment
 import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.widget.Toast
 import androidx.lifecycle.*
 import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.base.BaseViewModel
+import cn.vce.easylook.feature_music.api.MusicNetWork
 import cn.vce.easylook.feature_music.exoplayer.*
 import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.other.Constants
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
+import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.getString
 import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.toast
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.text.NumberFormat
 import java.util.prefs.Preferences
 import javax.inject.Inject
 
@@ -192,6 +207,36 @@ class MainViewModel @Inject constructor(
             }
         } else {
             musicServiceConnection.transportControls.playFromMediaId(musicInfo.id, null)
+        }
+    }
+
+    fun downloadMusic(m: MusicInfo){
+        launch {
+
+            toast("开始下载下载歌曲：${m.name}")
+            val downloadMusic = musicRepository.downloadMusic(m)
+            downloadMusic?.apply {
+                this.catch { LogE("catch... when searching", t = it) }
+                .onEach {
+                    when(it.status){
+                        Status.SUCCESS -> {
+                            LogE("下载文件:$it")
+                            toast("下载歌曲：${m.name}成功")
+                        }
+                        Status.LOADING -> {
+                            val num = NumberFormat.getPercentInstance()
+                            num.maximumFractionDigits = 2
+                            LogE("下载歌曲${m.name}进度:"+
+                                    num.format(it.process))
+                        }
+                        Status.ERROR -> {
+                            toast("下载歌曲：${m.name}失败")
+                        }
+                    }
+                }
+                .flowOn(Dispatchers.Main)
+                .launchIn(viewModelScope)
+            }?:toast(getString(R.string.error_connection))
         }
     }
 

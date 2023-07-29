@@ -58,7 +58,7 @@ class BliMusicListVM @Inject constructor(
             is BliMusicListEvent.SwitchCharts -> {
                 launch {
                     if (event.cataId != cateId.value){
-                        cateId.value = event.cataId
+                        cateId.postValue(event.cataId)
                         parentPosition.postValue(event.position)
                         childPage = 1
                         childList.postValue(emptyList())

@@ -1,7 +1,6 @@
 package cn.vce.easylook.feature_music.presentation.home_music.music_local
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
 import android.provider.MediaStore
@@ -10,16 +9,11 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import cn.vce.easylook.EasyApp
-import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.base.BaseEvent
+import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.feature_music.models.*
-import cn.vce.easylook.feature_music.other.Resource
-import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsEvent
-import cn.vce.easylook.feature_music.presentation.home_music.charts.ChartsRepo
 import cn.vce.easylook.feature_music.repository.MusicRepository
-import cn.vce.easylook.utils.convertList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -67,18 +61,19 @@ class MusicLocalVM @Inject constructor(
             }
             is MusicLocalEvent.SwitchPlaylist -> {
                 if (event.pid != pid.value){
-                    songs.value = emptyList()
-                    if (event.pid == PlaylistType.LOCAL.toString()){
-                        onEvent(MusicLocalEvent.InitLocalMusic)
-                    }else{
-                        launch {
+                    launch {
+                        if (event.pid == PlaylistType.LOCAL.toString()) {
+                            onEvent(MusicLocalEvent.InitLocalMusic)
+                        } else {
+                            songs.value = emptyList()
                             parentPosition.value = event.position
                             pid.value = event.pid
                             val data = repository.getMusicInfos(event.pid)
                             songs.value = data
                         }
+                        //一定要放launch最后面，不然有走getMusicInfos之前先走下面这句了
+                        onEvent(MusicLocalEvent.TextChange)
                     }
-                    onEvent(MusicLocalEvent.TextChange)
                 }
             }
             is MusicLocalEvent.TextChange -> {
@@ -95,8 +90,8 @@ class MusicLocalVM @Inject constructor(
             is MusicLocalEvent.InitLocalMusic -> {
                 val filterTime: Long = 1 * 1000
                 val filterSize: Long = 1 * 1024
-
-                val data: Cursor? = EasyApp.context.contentResolver.query(
+                songs.value = emptyList()
+                val data: Cursor = EasyApp.context.contentResolver.query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     arrayOf(
                         BaseColumns._ID,
@@ -113,11 +108,8 @@ class MusicLocalVM @Inject constructor(
                     SELECTION,
                     arrayOf(filterSize.toString(), filterTime.toString()),
                     MediaStore.Audio.Media.DEFAULT_SORT_ORDER
-                )
-                if (data == null){
-                    songs.value = null
-                    return
-                }
+                ) ?: return
+
                 val musicList = mutableListOf<MusicInfo>()
                 while (data.moveToNext()) {
                     val duration: Long =
@@ -139,7 +131,7 @@ class MusicLocalVM @Inject constructor(
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM))
                     val albumId: Long =
                         data.getLong(data.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
-                    val path: String = "file:"
+                    val path: String = /*"file://" +*/
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DATA))
                     val fileName: String =
                         data.getString(data.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME))

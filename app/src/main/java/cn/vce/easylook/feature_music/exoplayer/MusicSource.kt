@@ -4,18 +4,18 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.State.*
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.MusicSourceType
 import cn.vce.easylook.feature_music.models.bli.download.Audio
-import cn.vce.easylook.feature_music.other.MusicConfigManager
 import cn.vce.easylook.feature_music.repository.MusicRepository
 import cn.vce.easylook.utils.*
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import java.io.File
+import java.net.URI
 import kotlin.random.Random
 
 class MusicSource(
@@ -60,55 +60,11 @@ class MusicSource(
         songIndex: Int,
         fetchNext: Boolean = true
     ){
-        try {
-            val nextSong = songs[songIndex]
-            nextSong.let {
-                musicInfos[songIndex].apply {
-                    if (songUrl?.isNotEmpty() == true){
-                        return
-                    }
-                    if (cp) {
-                       throw java.lang.RuntimeException(getString(R.string.song_no_copyright_free))
-                    }
-                    id?.let {
-                        if (musicInfos[songIndex].source == MusicSourceType.BLIBLI.toString()){
-                            val avId = musicInfos[songIndex].id.toInt()
-                            val avInfoResponse = repository.getAvInfo(avId)
-                            val cid = avInfoResponse.avData?.cid
-                            cid?.let {
-                                val downloadInfo = repository.getDownloadInfo(avId, it)
-                                val data = downloadInfo.data
-                                data?.let {
-                                    val url = if (it.downloadResources == null) {
-                                        //https://api.bilibili.com/x/player/playurl?avid=26305734&cid=45176667&fnval=16&otype=json&qn=16 这种居然没有audio接口！
-                                        data.durl?.get(0)?.url
-                                    } else {
-                                        val resources: List<Audio>? = it.downloadResources!!.audio
-                                        resources?.get(0)?.baseUrl
-                                    }
-                                    songUrl = url
-                                }
-
-                            }
-
-                        }else if (musicInfos[songIndex].source == MusicSourceType.NETEASE.toString()){
-                            val url = repository.getMusicUrl(it)
-                            songUrl = url
-                        }
-                    }
-                }
+        val nextSong = songs[songIndex]
+        nextSong.let {
+            musicInfos[songIndex].apply {
+                repository.getMusicUrl(this)
             }
-        }catch (e: Throwable){
-            e.printStackTrace()
-            val song = songs[songIndex]
-            song.title + e.message
-
-            val message = if (e.message != null){
-                 song.title + e.message
-            }else{
-                 getString(R.string.unknown_error)
-            }
-            toast(message)
         }
         if (fetchNext){
             val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
@@ -186,9 +142,17 @@ class MusicSource(
     fun asMediaSource(dataSourceFactory: DefaultDataSourceFactory): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach { song ->
-            val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            var mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(song.mediaUri)
             concatenatingMediaSource.addMediaSource(mediaSource)
+            val file = File(song.mediaUri.toString())
+            if (file.canRead()) {
+                // 文件可读，执行相关操作
+                LogE("可读:"+ song.mediaUri.toString())
+            } else {
+                // 文件不可读，可能是由于权限问题
+                LogE("不可读:"+ song.mediaUri.toString())
+            }
         }
         return concatenatingMediaSource
     }
