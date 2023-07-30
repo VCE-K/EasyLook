@@ -3,11 +3,7 @@
 
 2023-04-15
 
-视频-音乐-小说-AI，四者选其一。
-
-2023-05-08
-
-音乐取自QQ音乐，先做排行榜-歌单
+构思：AI聊天-图片-视频（开源接口、B站接口，一些开放的短视频接口）-音乐（QQ音乐、B站接口、网易云接口以及个人服务器接口）-小说。
 
 2023-05-10
 
@@ -28,8 +24,6 @@
 
 
 参考项目:
-
-[architecture-samples](https://github.com/android/architecture-samples)
 
 [uamp](https://github.com/android/uamp)
 
