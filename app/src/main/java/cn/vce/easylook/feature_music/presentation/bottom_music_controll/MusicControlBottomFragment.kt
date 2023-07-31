@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.ViewDataBinding
+import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
@@ -17,7 +19,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBinding>() {
+class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBinding>() {
 
 /*    companion object{
         private var instance: MusicControlBottomFragment? = null
@@ -44,6 +46,9 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
         binding.adapter = swipeSongAdapter
     }
 
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
+    }
 
     override fun initView() {
         binding.apply {
@@ -138,9 +143,6 @@ class MusicControlBottomFragment : BaseVmFragment<FragmentMusicControlBottomBind
         }
     }
 
-    override fun initViewModel() {
-        mainVM = getActivityViewModel()
-    }
 
     override fun getLayoutId(): Int? = R.layout.fragment_music_control_bottom
 

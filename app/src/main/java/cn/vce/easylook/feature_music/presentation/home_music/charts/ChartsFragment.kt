@@ -1,8 +1,6 @@
 package cn.vce.easylook.feature_music.presentation.home_music.charts
 
 import android.os.Bundle
-import android.widget.FrameLayout
-import androidx.core.widget.doAfterTextChanged
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
@@ -11,20 +9,14 @@ import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.TopListBean
 import cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment
 import cn.vce.easylook.feature_music.presentation.bottom_music_dialog.BottomDialogFragment
-import cn.vce.easylook.feature_music.presentation.home_music.music_local.MusicLocalEvent
 import com.bumptech.glide.RequestManager
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
-import com.drake.net.Get
-import com.drake.net.component.Progress
-import com.drake.net.interfaces.ProgressListener
 import com.drake.net.utils.scope
-import com.drake.net.utils.scopeNetLife
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
