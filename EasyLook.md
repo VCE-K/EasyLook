@@ -9,26 +9,27 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 
 音乐区使用网易云音乐和B站的API, UI为简易风格。<br>
 
-[点击下载体验](https://mikochat.oss-ap-northeast-1.aliyuncs.com/release/miko_1.0.2-beta.apk)
+[点击下载体验](https://github.com/VCE-K/EasyLook/blob/main/app/release/app-release.apk)
 <br/>
 
 ## 软件架构
 ### **[EasyLook](https://github.com/VCE-K/EasyLook)**使用标准MVVM模式，单Activity+多Fragment开发。
 ## 功能截图
 <center class="half">
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/0.jpg" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731174714435.png" width="200px" />
 </center>
 
 
 ### 音乐区
 <center class="half">
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/6.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/7.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/8.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/9.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/10.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/music/11.jpg" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731164528694.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731164741041.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731175340130.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731175417055.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731180414079.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230731180545641.png" width="200px" />
 </center>
+
 
 ### 动漫区
 <center class="half">
