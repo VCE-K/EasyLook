@@ -3,11 +3,11 @@
 ## 介绍
 ### EasyLook —AI聊天，视频、音乐、小说、美图资源。
 
-做出来具有下列模块功能的App，什么都想做一点，但是什么都只会一点。
+做出来具有下列模块功能的App，什么都想做一点，但是什么都只会一点，正在开发ing。
 
 AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接口）-音乐（QQ音乐、B站接口、网易云接口以及个人服务器接口）-小说。
 
-音乐区则使用网易云音乐和B站的API, UI为简易风格。<br>
+音乐区使用网易云音乐和B站的API, UI为简易风格。<br>
 
 [点击下载体验](https://mikochat.oss-ap-northeast-1.aliyuncs.com/release/miko_1.0.2-beta.apk)
 <br/>
@@ -17,11 +17,6 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 ## 功能截图
 <center class="half">
     <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/0.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/1.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/2.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/3.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/4.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/index/5.jpg" width="200px" />
 </center>
 
 

@@ -87,7 +87,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                             LogE("quit: count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
                             count--
                             //继续给子线程发消息,然后报错
-                            childHandle .postDelayed(this,1000)
+                            //childHandle .postDelayed(this,1000)
                         }
                     }
 

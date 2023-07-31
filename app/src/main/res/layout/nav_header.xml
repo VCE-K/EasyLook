@@ -17,8 +17,8 @@
 
         <ImageView
             android:layout_width="@dimen/dp_100"
-            drawable_radius="@{25}"
-            drawable_solidColor="@{0xffFF7055}"
+            drawable_radius="@{40}"
+            drawable_solidColor="@{@color/textSecond}"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/logo_no_fill"

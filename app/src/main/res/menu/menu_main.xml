@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
+
         <item
             android:id="@id/nav_music.xml"
-            android:icon="@drawable/ic_statistics"
+            android:icon="@drawable/ic_image"
             android:title="@string/music_title" />
 
 
@@ -16,6 +17,16 @@
             android:id="@id/nav_ai.xml"
             android:icon="@drawable/ic_statistics"
             android:title="@string/ai_title" />
+
+        <item
+            android:id="@id/novel_title"
+            android:icon="@drawable/ic_novel"
+            android:title="@string/novel_title" />
+
+        <item
+            android:id="@id/nav_image"
+            android:icon="@drawable/ic_image"
+            android:title="@string/image_title" />
     </group>
 
     <item android:title="@string/menu_other">

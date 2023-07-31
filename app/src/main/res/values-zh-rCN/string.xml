@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">简看</string>
 
-    <string name="navigation_view_header_title">可用事项</string>
+    <string name="navigation_view_header_title">功能清单</string>
 
     <string name="tasks_header_image_content_description">任务标题图像</string>
 
@@ -10,7 +10,7 @@
     <string name="music_title">音乐</string>
     <string name="novel_title">小说</string>
     <string name="ai_title">ChatGPT</string>
-
+    <string name="image_title">美图</string>
 
     <!-- 通用 -->
     <string name="menu_other">通用</string>

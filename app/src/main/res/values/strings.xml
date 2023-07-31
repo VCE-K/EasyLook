@@ -9,6 +9,7 @@
     <string name="music_title">Music</string>
     <string name="novel_title">Novel</string>
     <string name="ai_title">ChatGPT</string>
+    <string name="image_title">Image</string>
 
     <!-- 通用 -->
     <string name="menu_other">other</string>

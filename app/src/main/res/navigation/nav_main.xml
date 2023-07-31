@@ -20,9 +20,23 @@
     <!--Ai相关跳转 -->
     <include app:graph="@navigation/nav_ai" />
 
+
+    <fragment
+        android:id="@+id/novel_title"
+        android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.InvisibleFragment"
+        android:label="@string/music_title">
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_image"
+        android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.InvisibleFragment"
+        android:label="@string/music_title">
+    </fragment>
+
     <fragment
         android:id="@+id/nav_menu_setting"
-        android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.SettingFragment"
+        android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.InvisibleFragment"
         android:label="@string/music_title">
     </fragment>
 
