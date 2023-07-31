@@ -69,6 +69,10 @@ class MainViewModel @Inject constructor(
     private val _curPlayerPosition = MutableLiveData<Long>()
     val curPlayerPosition: LiveData<Long> = _curPlayerPosition
 
+    private val _songList = musicServiceConnection.songList
+    val songList: LiveData<List<MusicInfo>> = _songList
+
+
     private val _initPlaylistFlag = MutableLiveData(false)
     val initPlaylistFlag: LiveData<Boolean> = _initPlaylistFlag
 
@@ -83,6 +87,7 @@ class MainViewModel @Inject constructor(
         }else{
             musicRepository.getPlayMode()
         }
+        musicServiceConnection.curPlayingSong
         _playMode.value = playMode
 
         if (isAllGranted()){
@@ -141,18 +146,7 @@ class MainViewModel @Inject constructor(
                 }
             }
             is MainEvent.InitPlayMode -> {
-                when (_playMode.value) {
-                    PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ONE -> { //1
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ALL -> {//2
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
-                    }
-                    else -> {}
-                }
+                switchPlayMode(_playMode.value)
             }
             is MainEvent.UpdatePlayMode -> {
                 //默认顺序播放
@@ -166,19 +160,8 @@ class MainViewModel @Inject constructor(
                         playMode++
                     }
                 }
-
-                when (playMode) {
-                    PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ONE -> { //1
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ALL -> {//2
-                        musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
-                    }
-                    else -> {}
-                }
+                switchPlayMode(playMode)
+                subscribe()
                 musicRepository.savePlayMode(playMode)
                 _playMode.value = playMode
             }
@@ -194,6 +177,24 @@ class MainViewModel @Inject constructor(
                     downloadMusic(event.musicInfos[i])
                 }
             }
+        }
+    }
+
+    private fun switchPlayMode(playMode: Int?){
+        when (playMode) {
+            PlaybackStateCompat.REPEAT_MODE_NONE -> { //0
+                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
+                musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
+            }
+            PlaybackStateCompat.REPEAT_MODE_ONE -> { //1
+                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
+                musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
+            }
+            PlaybackStateCompat.REPEAT_MODE_ALL -> {//2
+                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
+                musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
+            }
+            else -> {}
         }
     }
 

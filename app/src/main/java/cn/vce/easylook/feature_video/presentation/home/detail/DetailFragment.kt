@@ -14,6 +14,8 @@ import cn.vce.easylook.utils.visible
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DetailFragment: BaseVmFragment<FragmentRefreshLayoutBinding>() {
@@ -23,18 +25,16 @@ class DetailFragment: BaseVmFragment<FragmentRefreshLayoutBinding>() {
 
     override fun init(savedInstanceState: Bundle?) {
         initView()
+        binding.m = viewModel
     }
 
     override fun initView() {
         binding.apply {
             page.onRefresh {
-                viewModel.onEvent(DailyEvent.Search(this::addData))
-            }/*.onLoadMore {
-                viewModel.onEvent(DailyEvent.Search {
-                    addData(it) { it.isNotEmpty() }
-                })
-            }*/.autoRefresh()
-            recyclerView.linear().setup {
+                viewModel.onEvent(DailyEvent.Search)
+            }.autoRefresh()
+
+            rv.linear().setup {
                 addType<Daily.Item>(R.layout.item_follow_card_type)
                 onBind {
                     val binding = getBinding<ItemFollowCardTypeBinding>()
@@ -71,4 +71,24 @@ class DetailFragment: BaseVmFragment<FragmentRefreshLayoutBinding>() {
 
     override fun getLayoutId(): Int? = R.layout.fragment_refresh_layout
 
+}
+
+
+fun main() {
+    val list: MutableList<Int> = ArrayList()
+    for (i in 1..10) {
+        list.add(i)
+    }
+    shuffle(list)
+    println(list)
+}
+//[5, 1, 10, 2, 7, 4, 8, 9, 3, 6]
+private fun shuffle(list: MutableList<Int>) {
+    val random = Random()
+    for (i in list.size - 1 downTo 1) {
+        val j: Int = random.nextInt(i + 1)
+        val temp = list[i]
+        list[i] = list[j]
+        list[j] = temp
+    }
 }

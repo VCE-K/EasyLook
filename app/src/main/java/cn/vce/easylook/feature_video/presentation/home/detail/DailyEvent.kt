@@ -5,5 +5,5 @@ import cn.vce.easylook.feature_video.models.Daily
 
 sealed class DailyEvent: BaseEvent() {
 
-    data class Search(val callback: (List<Daily.Item>) -> Unit): DailyEvent()
+    object Search: DailyEvent()
 }

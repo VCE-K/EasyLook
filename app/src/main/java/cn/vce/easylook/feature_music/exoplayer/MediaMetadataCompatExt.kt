@@ -1,7 +1,9 @@
 package cn.vce.easylook.feature_music.exoplayer
 
 import android.content.Context
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaSessionCompat
 import cn.vce.easylook.feature_music.models.Album
 import cn.vce.easylook.feature_music.models.ArtistsItem
 import cn.vce.easylook.feature_music.models.MusicInfo
@@ -10,6 +12,7 @@ import cn.vce.easylook.feature_music.models.bli.AvData
 import cn.vce.easylook.feature_music.models.bli.HotSong
 import cn.vce.easylook.feature_music.repository.MusicRepository
 import cn.vce.easylook.utils.ConvertUtils
+import cn.vce.easylook.utils.mediaUri
 
 
 //这个方法只是用于证明可以转化MusicInfo的
@@ -24,6 +27,18 @@ fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
             songUrl = it.mediaUri.toString()
         )
     }
+}
+
+fun List<MediaSessionCompat.QueueItem>.toMusicInfo() = map { queueItem ->
+    val mDescription = queueItem.description
+    MusicInfo(
+        id = mDescription.mediaId ?: "",
+        name = mDescription.title.toString(),
+        artists = arrayListOf(ArtistsItem(name = mDescription.subtitle as String)),
+        quality = null,
+        album = Album(cover = mDescription.iconUri.toString(),name = mDescription.subtitle.toString()),
+        songUrl = mDescription.mediaUri.toString()
+    )
 }
 
 fun MutableList<MusicInfo>.transSongs(): MutableList<MediaMetadataCompat> {

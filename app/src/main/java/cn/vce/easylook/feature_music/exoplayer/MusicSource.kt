@@ -4,6 +4,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.State.*
 import cn.vce.easylook.feature_music.models.MusicInfo
@@ -23,17 +24,18 @@ class MusicSource(
 ) {
 
     var musicInfos = mutableListOf<MusicInfo>()
-    private val mShufflePlaylistSequence
-        get() = musicInfos.transSongs().apply { shuffle() }
-
-    var songs:  MutableList<MediaMetadataCompat> = mutableListOf()
+    private var mShufflePlaylistSequence: MutableList<MediaMetadataCompat> = mutableListOf()
+    val songList: MutableList<MediaMetadataCompat>
         get() {
-            return musicInfos.transSongs() /*if (MusicConfigManager.getPlayMode() == PlaybackStateCompat.REPEAT_MODE_ALL){
+            val repeatMode = repository.getPlayMode()
+            return if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
                 mShufflePlaylistSequence
+                musicInfos.transSongs()
             }else{
                 musicInfos.transSongs()
-            }*/
+            }
         }
+
 
     //当前历史记录集合
     private val playedSongs = mutableListOf<MediaMetadataCompat>()
@@ -43,9 +45,11 @@ class MusicSource(
         if (state == STATE_CREATED) {
             state = STATE_INITIALIZING
             musicInfos = list
+            mShufflePlaylistSequence = musicInfos.transSongs().also { it.shuffle() }
             state = STATE_INITIALIZED
         } else if (state == STATE_INITIALIZED) {
             musicInfos = list
+            mShufflePlaylistSequence = musicInfos.transSongs().also { it.shuffle() }
         }
         //清理已经播放过的歌曲清单
         playedSongs.clear()
@@ -60,19 +64,25 @@ class MusicSource(
         songIndex: Int,
         fetchNext: Boolean = true
     ){
-        val nextSong = songs[songIndex]
+        val nextSong = songList[songIndex]
         nextSong.let {
-            musicInfos[songIndex].apply {
+            val m = musicInfos.find {
+                it.id == nextSong.id
+            }
+            m?.apply {
                 repository.getMusicUrl(this)
+            }
+            if (m != null) {
+                songList[songIndex] = m.transSong()
             }
         }
         if (fetchNext){
             val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
-                songs.size - 1
+                songList.size - 1
             }else {
                 songIndex - 1
             }
-            val nextSongIndex= if ((songIndex + 1) == songs.size ){
+            val nextSongIndex= if ((songIndex + 1) == songList.size ){
                 0
             }else {
                 songIndex + 1
@@ -97,7 +107,7 @@ class MusicSource(
 
     fun getPreviousShuffleSong(currentIndex: Int): MediaMetadataCompat {
         var previousIndex: Int
-        val currentSong = songs[currentIndex]
+        val currentSong = songList[currentIndex]
         //看看现在播放的这首歌有没有播放过
         val index = playedSongs.indexOfFirst {
             currentSong.id == it.id
@@ -115,7 +125,7 @@ class MusicSource(
         }
     }
 
-    fun getShuffleSong(): Int {
+    /*fun getShuffleSong(): Int {
         if (songs.isEmpty()) {
             // 没有可播放的歌曲
             //return "No songs available"
@@ -135,13 +145,13 @@ class MusicSource(
         } while (playedSongs.contains(nextSong))
         playedSongs.add(nextSong)
         return randomIndex
-    }
+    }*/
 
     /*********** 随机播放相关结束 ***********/
 
     fun asMediaSource(dataSourceFactory: DefaultDataSourceFactory): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()
-        songs.forEach { song ->
+        songList.forEach { song ->
             var mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(song.mediaUri)
             concatenatingMediaSource.addMediaSource(mediaSource)
@@ -157,16 +167,18 @@ class MusicSource(
         return concatenatingMediaSource
     }
 
-    fun asMediaItems() = songs.map { song ->
-        val desc = MediaDescriptionCompat.Builder()
-            .setMediaUri(song.mediaUri)
-            .setTitle(song.description.title)
-            .setSubtitle(song.description.subtitle)
-            .setMediaId(song.description.mediaId)
-            .setIconUri(song.description.iconUri)
-            .build()
-        MediaBrowserCompat.MediaItem(desc, FLAG_PLAYABLE)
-    }.toMutableList()
+    fun asMediaItems(): MutableList<MediaBrowserCompat.MediaItem> {
+        return songList.map { song ->
+            val desc = MediaDescriptionCompat.Builder()
+                .setMediaUri(song.mediaUri)
+                .setTitle(song.description.title)
+                .setSubtitle(song.description.subtitle)
+                .setMediaId(song.description.mediaId)
+                .setIconUri(song.description.iconUri)
+                .build()
+            MediaBrowserCompat.MediaItem(desc, FLAG_PLAYABLE)
+        }.toMutableList()
+    }
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 

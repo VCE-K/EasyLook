@@ -1,6 +1,7 @@
 package cn.vce.easylook.feature_music.exoplayer.callbacks
 
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.utils.LogE
@@ -12,7 +13,6 @@ import kotlinx.coroutines.*
 //用于监听播放器的各种状态和事件，如播放状态变化、加载状态变化、播放错误、播放位置变化等
 class MusicPlayerEventListener(
     private val musicService: MusicService,
-    private val playerPrepared: (MediaMetadataCompat?) -> Unit,
     private val updatePlayQueue: () -> Unit
 ) :  Player.Listener {
 
@@ -21,8 +21,7 @@ class MusicPlayerEventListener(
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
-
-
+    private var repeatMode: Int = 0
     private var playIndex: Int = 0
     override fun onPositionDiscontinuity(reason: Int) {
         /*DISCONTINUITY_REASON_PERIOD_TRANSITION=0: 进入新的时间段（period或track）。
@@ -34,24 +33,26 @@ class MusicPlayerEventListener(
         super.onPositionDiscontinuity(reason)
     }
 
+    /*override fun onRepeatModeChanged(repeatMode: Int) {
+        super.onRepeatModeChanged(repeatMode)
+        updatePlayQueue()
+    }*/
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+    }
+
     private var isFirstIdle = false
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
         when (playbackState) {
             Player.STATE_IDLE -> {
                 LogE("Music", "空闲状态" + musicService.exoPlayer.contentPosition / 1000)
-                /*if (playIndex != musicService.exoPlayer.currentMediaItemIndex){
-
-                }*/
                 if (!isFirstIdle){
                     musicSource.whenReady {
                         serviceScope.launch {
                             playIndex = musicService.exoPlayer.currentMediaItemIndex
-                            /*if (playMode == MusicConfigManager.PLAY_MODE_RANDOM) {
-                                playIndex = musicSource.getShuffleSong()
-                            }*/
                             musicSource.fetchSongUrl(playIndex, false)
-                            /*playerPrepared(musicSource.songs[playIndex])*/
                             updatePlayQueue()
                             isFirstIdle = true
                         }
@@ -59,7 +60,6 @@ class MusicPlayerEventListener(
                 }else{
                     isFirstIdle = false
                 }
-
             }
             Player.STATE_BUFFERING ->
                 LogE("Music","加载中"+musicService.exoPlayer.contentPosition/1000)

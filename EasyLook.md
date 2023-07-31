@@ -31,7 +31,7 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 </center>
 
 
-### 动漫区
+### 视频区
 <center class="half">
     <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/19.jpg" width="200px" />
     <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/20.jpg" width="200px" />

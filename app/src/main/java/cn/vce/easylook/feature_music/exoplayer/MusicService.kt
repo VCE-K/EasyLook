@@ -91,7 +91,7 @@ class MusicService : MediaBrowserServiceCompat() {
         val musicPlaybackPreparer = MusicPlaybackPreparer(musicSource) {
             curPlayingSong = it
             preparePlayer(
-                musicSource.songs,
+                musicSource.songList,
                 it,
                 true
             )
@@ -103,16 +103,9 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator())
         mediaSessionConnector.setPlayer(exoPlayer)
 
-        musicPlayerEventListener = MusicPlayerEventListener(this, {
-            curPlayingSong = it
-            preparePlayer(
-                musicSource.songs,
-                it,
-                true
-            )
-        }, {
+        musicPlayerEventListener = MusicPlayerEventListener(this) {
             updatePlayQueue()
-        })
+        }
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
     }
@@ -125,39 +118,37 @@ class MusicService : MediaBrowserServiceCompat() {
 
         //确保当用户通过媒体控制器（如前进，后退，手动选择）从媒体序列中选择文件时，系统会提供正确的元数据和标签，这对于用户在应用程序中导航和使用提供良好的体验。
         override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
-            return musicSource.songs[windowIndex].description
+            return musicSource.songList[windowIndex].description
         }
 
         //上一首
         override fun onSkipToPrevious(player: Player) {
-            if (MusicConfigManager.getPlayMode() == MusicConfigManager.PLAY_MODE_RANDOM){
+            /*if (MusicConfigManager.getPlayMode() == MusicConfigManager.PLAY_MODE_RANDOM){
                 val previousMedia = musicSource.getPreviousShuffleSong(player.currentMediaItemIndex)
-                preparePlayer( musicSource.songs, previousMedia, true)
+                preparePlayer( musicSource.songList, previousMedia, true)
             }else{
                 val previousIndex = player.previousMediaItemIndex
                 val itemToPlay = if (previousIndex == -1){
-                    musicSource.songs[musicSource.songs.size - 1]
+                    musicSource.songList[musicSource.songList.size - 1]
                 }else{
-                    musicSource.songs[previousIndex]
+                    musicSource.songList[previousIndex]
                 }
-                preparePlayer( musicSource.songs, itemToPlay, true)
+                preparePlayer( musicSource.songList, itemToPlay, true)
+            }*/
+            val previousWindowIndex = if (player.previousMediaItemIndex == -1){
+                musicSource.songList.size - 1
+            }else{
+                player.previousMediaItemIndex
             }
+            val itemToPlay = musicSource.songList[previousWindowIndex]
+            preparePlayer( musicSource.songList, itemToPlay, true)
         }
 
         //下一首
         override fun onSkipToNext(player: Player) {
-            if (MusicConfigManager.getPlayMode() == MusicConfigManager.PLAY_MODE_RANDOM){
-                val playIndex = musicSource.getShuffleSong()
-                preparePlayer(
-                    musicSource.songs,
-                    musicSource.songs[playIndex],
-                    true
-                )
-            }else{
-                val nextWindowIndex = player.nextMediaItemIndex
-                val itemToPlay = musicSource.songs[nextWindowIndex]
-                preparePlayer( musicSource.songs, itemToPlay, true)
-            }
+            val nextWindowIndex = player.nextMediaItemIndex
+            val itemToPlay = musicSource.songList[nextWindowIndex]
+            preparePlayer( musicSource.songList, itemToPlay, true)
         }
     }
 
@@ -173,7 +164,6 @@ class MusicService : MediaBrowserServiceCompat() {
                 metadata.id == itemToPlay?.id
             }
         }
-
         serviceScope.launch {
             exoPlayer.playWhenReady = false // 暂停播放器，等待当前曲目完全播放结束
             musicSource.fetchSongUrl(curSongIndex, false)
@@ -212,8 +202,8 @@ class MusicService : MediaBrowserServiceCompat() {
                 val resultsSent = musicSource.whenReady { isInitialized ->
                     if(isInitialized) {
                         result.sendResult(musicSource.asMediaItems())
-                        if(!isPlayerInitialized && musicSource.songs.isNotEmpty()) {
-                            preparePlayer(musicSource.songs, musicSource.songs[0], false)
+                        if(!isPlayerInitialized && musicSource.songList.isNotEmpty()) {
+                            preparePlayer(musicSource.songList, musicSource.songList[0], false)
                             isPlayerInitialized = true
                         }
                     } else {

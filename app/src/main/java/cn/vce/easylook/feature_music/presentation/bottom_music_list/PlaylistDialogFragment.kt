@@ -26,7 +26,6 @@ class PlaylistDialogFragment: BaseBottomSheetDialogFragment<FragmentPlaylistDial
     override fun getLayoutId(): Int? = R.layout.fragment_playlist_dialog
 
 
-
     override fun initActivityViewModel() {
         mainVM = getActivityViewModel()
     }
@@ -36,24 +35,15 @@ class PlaylistDialogFragment: BaseBottomSheetDialogFragment<FragmentPlaylistDial
     }
 
     override fun observe() {
-        mainVM.mediaItems.observe(viewLifecycleOwner){ result ->
-            when(result.status) {
-                Status.SUCCESS -> {
-                    binding.apply {
-                        result.data?.let { songs ->
-                            when (val adapter = bottomSheetRv.adapter) {
-                                is BindingAdapter -> {
-                                    adapter.models = songs
-                                }
-                            }
+        mainVM.songList.observe(viewLifecycleOwner){ result ->
+            binding.apply {
+                result?.let { songs ->
+                    when (val adapter = bottomSheetRv.adapter) {
+                        is BindingAdapter -> {
+                            adapter.models = songs
                         }
                     }
                 }
-                /*Status.ERROR -> binding.page.showError()
-                Status.LOADING -> {
-                    binding.page.showLoading()
-                }*/
-                else -> {}
             }
         }
         mainVM.playMode.observe(viewLifecycleOwner){ playMode ->

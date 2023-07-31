@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
@@ -279,4 +281,14 @@ fun getTimeParam(offset: Int): String {
     val calendar = Calendar.getInstance()
     calendar.add(Calendar.DAY_OF_YEAR, 1 - offset) //1 for 时区
     return sdf.format(calendar.time)?:""
+}
+
+/**
+ * 解析xml布局
+ *
+ * @param parent 父布局
+ * @param attachToRoot 是否依附到父布局
+ */
+fun Int.inflate(parent: ViewGroup, attachToRoot: Boolean = false): View {
+    return LayoutInflater.from(parent.context).inflate(this, parent, attachToRoot)
 }

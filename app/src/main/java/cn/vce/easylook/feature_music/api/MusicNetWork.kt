@@ -152,28 +152,6 @@ object MusicNetWork {
     suspend fun getLyricInfo(vendor: String = type.toLowerCase(), mid: String): String {
         LogE("getMusicUrl $vendor $mid")
         return suspendCoroutine { continuation ->
-            /*BaseApiImpl.getLyricInfo(vendor, mid) {
-                if (it.status) {
-                    val lyricInfo = it.data.lyric
-                    val lyric = StringBuilder()
-                    lyricInfo.forEach {
-                        lyric.append(it)
-                        lyric.append("\n")
-                    }
-                    it.data.translate.forEach {
-                        lyric.append(it)
-                        lyric.append("\n")
-                    }
-                    //保存文件
-                    val save = FileUtils.writeText(mLyricPath, lyric.toString())
-                    LogUtil.e("保存网络歌词：$save")
-                    Observable.fromArray(lyric)
-                    result.onNext(lyric.toString())
-                    result.onComplete()
-                } else {
-                    result.onError(Throwable(it.msg))
-                }
-            }*/
             BaseApiImpl.getLyricInfo(vendor, mid) {
                 if (it.status) {
                     val lyricInfo = it.data.lyric

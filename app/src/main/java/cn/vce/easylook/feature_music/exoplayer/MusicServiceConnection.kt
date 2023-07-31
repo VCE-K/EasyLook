@@ -7,10 +7,12 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.PlaylistType
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
 import cn.vce.easylook.feature_music.other.Event
@@ -39,6 +41,9 @@ class MusicServiceConnection(
 
     private val _curPlayingSong = MutableLiveData<MediaMetadataCompat?>()
     val curPlayingSong: LiveData<MediaMetadataCompat?> = _curPlayingSong
+
+    private val _songList = MutableLiveData<List<MusicInfo>>()
+    val songList: LiveData<List<MusicInfo>> = _songList
     
     lateinit var mediaController: MediaControllerCompat
 
@@ -111,6 +116,12 @@ class MusicServiceConnection(
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playbackState.postValue(state)
         }
+
+        override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
+            super.onQueueChanged(queue)
+            _songList.value = queue?.toMusicInfo()
+        }
+
 
         //当前媒体数据变更
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {

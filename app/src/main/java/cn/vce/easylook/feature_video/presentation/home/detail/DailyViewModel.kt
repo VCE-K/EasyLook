@@ -16,56 +16,80 @@
 
 package cn.vce.easylook.feature_video.presentation.home.detail
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.databinding.Bindable
+import androidx.lifecycle.*
 import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.base.BaseViewModel
+import cn.vce.easylook.base.ObservableViewModel
 import cn.vce.easylook.feature_video.models.Daily
 import cn.vce.easylook.feature_video.repository.MainPageRepository
 import cn.vce.easylook.utils.LogE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 
-class DailyViewModel: BaseViewModel() {
+class DailyViewModel: ObservableViewModel() {
 
-    fun loadData(
-        callback: (List<Daily.Item>) -> Unit
+    private val dataList = MutableLiveData<List<Daily.Item>>()
+
+    val dataFollowList = dataList.switchMap { dataList ->
+        liveData {
+            val data = mutableListOf<Daily.Item>()
+            dataList.forEach {
+                when (it.type) {
+                    "followCard" -> {
+                        when (it.data.dataType) {
+                            "FollowCard" -> {
+                                data.add(it)
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+            emit(data)
+        }
+    }
+
+
+    private fun loadData(
     ) = DailyRepo.getDaily()
         .catch { LogE("catch... when searching", t = it, tag = TAG) }
-        .onEach { callback.invoke(it.itemList) }
+        .onEach { dataList.value = it.itemList }
         .flowOn(Dispatchers.Main)
         .launchIn(viewModelScope)
 
     override fun onEvent(event: BaseEvent) {
         when(event) {
             is DailyEvent.Search -> {
-                DailyRepo.getDaily()
-                    .catch {
-                        LogE("catch... when searching", t = it, tag = TAG)
-
-                    }
-                    .onEach {
-                        LogE(it.toString(), tag = TAG)
-                        val dataList = mutableListOf<Daily.Item>()
-                        it.itemList.forEach {
-                            when (it.type) {
-                                "followCard" -> {
-                                    when (it.data.dataType) {
-                                        "FollowCard" -> {
-                                            dataList.add(it)
-                                        }
-                                        else -> {}
-                                    }
-                                }
-                            }
-                        }
-                        event.callback.invoke(dataList)
-                    }
-                    .flowOn(Dispatchers.Main)
-                    .launchIn(viewModelScope)
+                loadData()
             }
             else -> {}
         }
+    }
+
+    fun fetchData(){
+        DailyRepo.getDaily()
+            .catch {
+                LogE("catch... when searching", t = it, tag = TAG)
+            }
+            .onEach {
+                LogE(it.toString(), tag = TAG)
+                val dataList = mutableListOf<Daily.Item>()
+                it.itemList.forEach {
+                    when (it.type) {
+                        "followCard" -> {
+                            when (it.data.dataType) {
+                                "FollowCard" -> {
+                                    dataList.add(it)
+                                }
+                                else -> {}
+                            }
+                        }
+                    }
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(viewModelScope)
     }
 
 }
