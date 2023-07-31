@@ -62,15 +62,16 @@ class MusicLocalVM @Inject constructor(
             is MusicLocalEvent.SwitchPlaylist -> {
                 if (event.pid != pid.value){
                     launch {
+                        parentPosition.value = event.position
+                        pid.value = event.pid
                         if (event.pid == PlaylistType.LOCAL.toString()) {
                             onEvent(MusicLocalEvent.InitLocalMusic)
                         } else {
                             songs.value = emptyList()
-                            parentPosition.value = event.position
-                            pid.value = event.pid
                             val data = repository.getMusicInfos(event.pid)
                             songs.value = data
                         }
+
                         //一定要放launch最后面，不然有走getMusicInfos之前先走下面这句了
                         onEvent(MusicLocalEvent.TextChange)
                     }
@@ -141,9 +142,10 @@ class MusicLocalVM @Inject constructor(
                         songUrl = path, pid = PlaylistType.LOCAL.toString(), source = PlaylistType.LOCAL.toString())
                     musicList.add(music)
                 }
+
+                songs.value = musicList
                 // 释放资源
                 data.close()
-                songs.value = musicList
             }
         }
     }

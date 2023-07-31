@@ -1,24 +1,15 @@
 package cn.vce.easylook
 
-import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.database.Cursor
-import android.os.Build
-import android.os.Environment
-import android.provider.BaseColumns
-import android.provider.MediaStore
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.widget.Toast
 import androidx.lifecycle.*
 import cn.vce.easylook.base.BaseEvent
 import cn.vce.easylook.base.BaseViewModel
-import cn.vce.easylook.feature_music.api.MusicNetWork
 import cn.vce.easylook.feature_music.exoplayer.*
 import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.other.Constants
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_music.repository.MusicRepository
@@ -34,10 +25,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
 import java.text.NumberFormat
-import java.util.prefs.Preferences
 import javax.inject.Inject
 
 
@@ -71,6 +59,8 @@ class MainViewModel @Inject constructor(
     private val _playMode = MutableLiveData<Int>()
     val playMode = _playMode
 
+    private val _allGranted = MutableLiveData<Boolean>(false)
+    val allGranted = _allGranted
     //歌曲时长
     private val _curSongDuration = MutableLiveData<Long>()
     val curSongDuration: LiveData<Long> = _curSongDuration
@@ -83,15 +73,34 @@ class MainViewModel @Inject constructor(
     val initPlaylistFlag: LiveData<Boolean> = _initPlaylistFlag
 
     init {
-        var playMode: Int = if (MusicConfigManager.getPlayMode() > 2){
-            0
-        }else{
-            MusicConfigManager.getPlayMode()
-        }
-        _playMode.value = playMode
+        initConfig()
         updateCurrentPlayerPosition()
     }
 
+    private fun initConfig(){
+        var playMode: Int = if (musicRepository.getPlayMode() > 2){
+            0
+        }else{
+            musicRepository.getPlayMode()
+        }
+        _playMode.value = playMode
+
+        if (isAllGranted()){
+            _allGranted.value = getAllGranted()
+        }else{
+            saveAllGranted(false)
+        }
+        var allGranted: Boolean = getAllGranted()
+        _allGranted.value = allGranted
+    }
+    private fun isAllGranted() = musicRepository.isAllGranted()
+
+    private fun getAllGranted() = musicRepository.getAllGranted()
+
+    fun saveAllGranted(allGranted: Boolean) {
+        _allGranted.value = allGranted
+        MusicConfigManager.saveAllGranted(allGranted)
+    }
 
     override fun onEvent(event: BaseEvent) {
         when (event) {
@@ -147,7 +156,7 @@ class MainViewModel @Inject constructor(
             }
             is MainEvent.UpdatePlayMode -> {
                 //默认顺序播放
-                var playMode = _playMode.value?: MusicConfigManager.getPlayMode()
+                var playMode = _playMode.value?: musicRepository.getPlayMode()
                 if (playMode == PlaybackStateCompat.REPEAT_MODE_ALL){
                     playMode = 0
                 }else{
@@ -170,7 +179,7 @@ class MainViewModel @Inject constructor(
                     }
                     else -> {}
                 }
-                MusicConfigManager.savePlayMode(playMode)
+                musicRepository.savePlayMode(playMode)
                 _playMode.value = playMode
             }
             is MainEvent.AddQueueItem -> {
@@ -178,6 +187,11 @@ class MainViewModel @Inject constructor(
                     musicServiceConnection.mediaController.addQueueItem(event.description, event.index)
                 }else{
                     musicServiceConnection.mediaController.addQueueItem(event.description)
+                }
+            }
+            is MainEvent.DownloadMusic -> {
+                for (i in event.musicInfos.indices){
+                    downloadMusic(event.musicInfos[i])
                 }
             }
         }
@@ -210,9 +224,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun downloadMusic(m: MusicInfo){
+    private fun downloadMusic(m: MusicInfo){
         launch {
-
             toast("开始下载下载歌曲：${m.name}")
             val downloadMusic = musicRepository.downloadMusic(m)
             downloadMusic?.apply {

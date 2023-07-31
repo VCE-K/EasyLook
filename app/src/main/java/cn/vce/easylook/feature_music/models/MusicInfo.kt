@@ -74,7 +74,8 @@ data class MusicInfo(
          @ColumnInfo(name = "timestamp")
          val timestamp: Long = 0,
          @ColumnInfo(name = "source")
-         var source: String = "NETEASE"
+         var source: String = "NETEASE",
+         var songUrl: String? = ""
 ): Serializable, ItemExpand /*ItemSwipe*/ {
 
     @Ignore
@@ -91,11 +92,9 @@ data class MusicInfo(
         songUrl: String? = null,
         pid: String = "",
         source: String = "NETEASE"//BLIBLI和NETEASE
-    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid, System.currentTimeMillis(), source){
-        this.songUrl = songUrl
-    }
-    @Ignore
-    var songUrl: String? = ""
+    ) : this(id, songId, name, artists, album, vendor, dl, cp, quality,pid, System.currentTimeMillis(), source, songUrl)
+
+
     @Ignore
     override var itemGroupPosition: Int = 0
     @Ignore

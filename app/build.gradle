@@ -127,7 +127,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    // Timber
+    // Timber 日志
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
 
@@ -139,12 +139,11 @@ dependencies {
 
     //可能是最强大的RecyclerView框架
     implementation "com.github.liangjingkanji:BRV:$androidBRV"
-
     api "com.github.liangjingkanji:StateLayout:1.4.1"
     implementation 'com.github.liangjingkanji:Net:3.5.8'
     implementation 'com.github.liangjingkanji:Engine:0.0.71' // 快速开发基础库
     //使用SwipeRefreshLayout刷新列表
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$androidXLegacySupport"
+    //implementation "androidx.swiperefreshlayout:swiperefreshlayout:$androidXLegacySupport"
 
     //retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.6.1'
@@ -166,7 +165,6 @@ dependencies {
     implementation ('com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.3.5-release-jitpack'){
         exclude group: 'com.google.android.exoplayer'
     }
-
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     //透明状态栏

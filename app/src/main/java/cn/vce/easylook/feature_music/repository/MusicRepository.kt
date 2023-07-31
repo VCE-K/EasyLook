@@ -10,11 +10,9 @@ import cn.vce.easylook.EasyApp
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseRepository
 import cn.vce.easylook.feature_music.api.MusicNetWork
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.feature_music.db.MusicDatabase
-import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.models.MusicSourceType
-import cn.vce.easylook.feature_music.models.PlaylistInfo
-import cn.vce.easylook.feature_music.models.PlaylistWithMusicInfo
+import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.models.bli.download.Audio
 import cn.vce.easylook.feature_music.other.DownloadResult
 import cn.vce.easylook.feature_music.other.LRUCacheLyric
@@ -135,6 +133,9 @@ class MusicRepository(
     }
     suspend fun insertMusicInfo(m: MusicInfo) = withIO {
         val musicInfoCopy = m.copy(timestamp = System.currentTimeMillis())
+        if (musicInfoCopy.source != PlaylistType.LOCAL.toString()){//除了本地音乐，网易云音乐两个小时歌曲，B站一会就过期了
+            musicInfoCopy.songUrl = ""
+        }
         db.musicDao.insertMusicInfo(musicInfoCopy)
     }
     suspend fun deleteMusicInfo(m: MusicInfo) = withIO {
@@ -167,10 +168,10 @@ class MusicRepository(
                 values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC)
             } else {
                 values.put(MediaStore.MediaColumns.DATA,
-                    "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_DCIM}/$fileName")
+                    "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}/$fileName")
             }
+            //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI表明是音乐
             val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
-
             if (uri != null) {
                 val outputStream = contentResolver.openOutputStream(uri)
                 if (outputStream != null) {
@@ -201,5 +202,13 @@ class MusicRepository(
             emit(DownloadResult.error(e.message?:"下载异常"))
         }
     }.flowOn(Dispatchers.IO)
+
+    fun getPlayMode() = MusicConfigManager.getPlayMode()
+
+    fun savePlayMode(playMode: Int) = MusicConfigManager.savePlayMode(playMode)
+
+    fun isAllGranted() = MusicConfigManager.isAllGranted()
+    fun getAllGranted() = MusicConfigManager.getAllGranted()
+    fun saveAllGranted(allGranted: Boolean) = MusicConfigManager.saveAllGranted(allGranted)
 
 }

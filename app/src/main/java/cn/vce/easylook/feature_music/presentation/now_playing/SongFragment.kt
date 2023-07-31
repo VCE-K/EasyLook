@@ -1,6 +1,5 @@
 package cn.vce.easylook.feature_music.presentation.now_playing
 
-import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.SeekBar
@@ -10,12 +9,11 @@ import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentSongBinding
 import cn.vce.easylook.feature_music.exoplayer.toMusicInfo
 import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.feature_music.presentation.bottom_music_list.PlaylistDialogFragment
 import cn.vce.easylook.utils.ConvertUtils
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
-import me.wcy.lrcview.LrcView
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject

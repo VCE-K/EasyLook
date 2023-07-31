@@ -45,6 +45,9 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
     private var backPressTime = 0L
 
     private var isBackFlage = false
+
+
+    lateinit var childHandle: Handler
     override fun initViewModel() {
         mainViewModel = getActivityViewModel()
     }
@@ -57,7 +60,6 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
     override fun observe() {
         subscribeToObservers()
-        lateinit var childHandle: Handler
         Thread {
             Looper.prepare()//初始化，这里创建该线程的Looper,而Looper会自动初始化MessageQueue
             childHandle = Handler(Looper.myLooper()!!)
@@ -66,30 +68,34 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
         var count = 5
 
-        val mHandle = Handler(Looper.getMainLooper()).postDelayed({
-            childHandle.postDelayed(object: Runnable{
-                override fun run() {
-                    if(count >= 0) {
-                        //打印当前线程名
-                        LogE("count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
-                        count--
-                        //继续给子线程发消息
-                        childHandle .postDelayed(this,1000)
-                    }else if(count >= -10){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                            childHandle.looper.quitSafely()
-                        }else {
-                            childHandle.looper.quit()
+        val mHandle = Handler(Looper.getMainLooper())
+        mHandle.postDelayed({
+                childHandle.postDelayed(object: Runnable{
+                    override fun run() {
+                        if(count >= 0) {
+                            //打印当前线程名
+                            LogE("count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
+                            count--
+                            //继续给子线程发消息
+                            childHandle .postDelayed(this,1000)
+                        }else if(count >= -10){
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                childHandle.looper.quitSafely()
+                            }else {
+                                childHandle.looper.quit()
+                            }
+                            LogE("quit: count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
+                            count--
+                            //继续给子线程发消息,然后报错
+                            childHandle .postDelayed(this,1000)
                         }
-                        LogE("quit: count: ---> " + count+" ThreadName: "+Thread.currentThread().name)
-                        count--
-                        //继续给子线程发消息
-                        childHandle .postDelayed(this,1000)
                     }
-                }
 
+                }, 1000)
             }, 1000)
-        }, 1000)
+        val m: Message = Message()
+        m.what
+        mHandle.sendMessage(m)
     }
 
     override fun initView() {
@@ -146,13 +152,16 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                 .permissions(requestList)
                 .onExplainRequestReason { scope, deniedList ->
                     val message = "需要您同意以下权限才能正常使用"
-                    //scope.showRequestReasonDialog(deniedList, message, "Allow", "Deny")
                     scope.showRequestReasonDialog(deniedList, message, "允许", "拒绝")
                 }
                 .request { allGranted, grantedList, deniedList ->
                     if (allGranted) {
-                        Toast.makeText(this, "所有申请的权限都已通过", Toast.LENGTH_SHORT).show()
+                        if (mainViewModel.allGranted.value != true){
+                            mainViewModel.saveAllGranted(allGranted = true)
+                            Toast.makeText(this, "所有申请的权限都已通过", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
+                        mainViewModel.saveAllGranted(allGranted = false)
                         Toast.makeText(this, "您拒绝了如下权限：$deniedList", Toast.LENGTH_SHORT).show()
                     }
                 }

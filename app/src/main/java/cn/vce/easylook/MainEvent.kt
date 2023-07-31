@@ -17,10 +17,7 @@ sealed class MainEvent: BaseEvent() {
     object UpdatePlayMode: MainEvent()
 
     data class AddQueueItem(val description: MediaDescriptionCompat, val index: Int?): MainEvent()
+
+    data class DownloadMusic(val musicInfos: List<MusicInfo>): MainEvent()
 }
 
-
-fun main(){
-
-
-}

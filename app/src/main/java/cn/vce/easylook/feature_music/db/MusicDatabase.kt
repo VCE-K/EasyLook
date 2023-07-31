@@ -11,7 +11,7 @@ import cn.vce.easylook.feature_music.models.PlaylistType
 
 @Database(
     entities = [MusicInfo::class, PlaylistInfo::class],
-    version = 9
+    version = 10
 )
 @TypeConverters(Converters::class)
 abstract class MusicDatabase: RoomDatabase() {
@@ -167,11 +167,11 @@ abstract class MusicDatabase: RoomDatabase() {
             }
         }
 
-        /*val MIGRATION_9_10 = object : Migration(9, 10) {
+        val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("UPDATE MusicInfo SET source = ${MusicSourceType.BLIBLI} where source is null or source=''")
+                database.execSQL("ALTER TABLE MusicInfo ADD COLUMN songUrl TEXT DEFAULT ''")
             }
-        }*/
+        }
     }
 
 }

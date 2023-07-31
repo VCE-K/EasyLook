@@ -7,7 +7,7 @@ import androidx.databinding.BindingAdapter
 import cn.vce.easylook.R
 import cn.vce.easylook.extension.load
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 
 object ImageViewBinding {
     @JvmStatic

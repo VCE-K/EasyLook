@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import cn.vce.easylook.MainActivity
+import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseBottomSheetDialogFragment
 import cn.vce.easylook.databinding.DialogLayoutBinding
@@ -132,7 +133,7 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
 
                         }
                         R.string.popup_download -> {
-                            mainVM.downloadMusic(musicInfo)
+                            mainVM.onEvent(MainEvent.DownloadMusic(arrayListOf(musicInfo)))
                             this@BottomDialogFragment.hide()
                         }
                         R.string.popup_add_to_collection -> { //收藏

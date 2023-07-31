@@ -29,7 +29,7 @@ interface RankListService {
 
     @Streaming
     @GET
-    fun downloadMusic(@Url url: String? = "https://dldir1.qq.com/wework/work_weixin/wxwork_android_3.0.31.13637_100001.apk"): Call<ResponseBody>
+    fun downloadMusic(@Url url: String): Call<ResponseBody>
 
 
 }

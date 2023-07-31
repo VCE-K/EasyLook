@@ -3,12 +3,11 @@ package cn.vce.easylook.feature_music.presentation.bottom_music_list
 import android.os.Bundle
 import android.view.View
 import cn.vce.easylook.MainEvent
-import cn.vce.easylook.MainViewModel
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseBottomSheetDialogFragment
 import cn.vce.easylook.databinding.FragmentPlaylistDialogBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Status
 import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.linear

@@ -2,12 +2,8 @@ package cn.vce.easylook.feature_music.exoplayer.callbacks
 
 import android.support.v4.media.MediaMetadataCompat
 import cn.vce.easylook.feature_music.exoplayer.MusicService
-import cn.vce.easylook.feature_music.exoplayer.MusicSource
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.utils.LogE
-import cn.vce.easylook.utils.id
-import cn.vce.easylook.utils.toast
-import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import kotlinx.coroutines.*
@@ -22,9 +18,6 @@ class MusicPlayerEventListener(
 
 
     private val musicSource = musicService.musicSource
-
-    private val playMode: Int
-        get() = MusicConfigManager.getPlayMode()
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)

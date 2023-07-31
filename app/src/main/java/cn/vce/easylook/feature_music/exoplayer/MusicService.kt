@@ -10,16 +10,13 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
-import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlaybackPreparer
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerEventListener
 import cn.vce.easylook.feature_music.exoplayer.callbacks.MusicPlayerNotificationListener
 import cn.vce.easylook.feature_music.other.Constants.MEDIA_ROOT_ID
 import cn.vce.easylook.feature_music.other.Constants.NETWORK_ERROR
-import cn.vce.easylook.feature_music.other.MusicConfigManager
+import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.utils.id
-import cn.vce.easylook.utils.title
-import cn.vce.easylook.utils.toast
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -64,6 +61,7 @@ class MusicService : MediaBrowserServiceCompat() {
         var curSongDuration = 0L
             private set
     }
+
 
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate() {

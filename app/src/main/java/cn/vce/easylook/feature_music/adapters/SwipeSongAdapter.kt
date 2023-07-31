@@ -24,7 +24,6 @@ class SwipeSongAdapter : BaseSongAdapter<SwipeItemBinding>(R.layout.swipe_item) 
             }
         }
     }
-
 }
 
 
