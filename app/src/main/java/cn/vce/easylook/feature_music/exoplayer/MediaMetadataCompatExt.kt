@@ -11,22 +11,29 @@ import cn.vce.easylook.feature_music.models.MusicSourceType
 import cn.vce.easylook.feature_music.models.bli.AvData
 import cn.vce.easylook.feature_music.models.bli.HotSong
 import cn.vce.easylook.feature_music.repository.MusicRepository
-import cn.vce.easylook.utils.ConvertUtils
-import cn.vce.easylook.utils.mediaUri
+import cn.vce.easylook.utils.*
 
 
 //这个方法只是用于证明可以转化MusicInfo的
 fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
-    return description?.let {
+    return MusicInfo(
+        id = id ?: "",
+        name = title,
+        artists = arrayListOf(ArtistsItem(name = author?:"")),
+        quality = null,
+        album = Album(cover = displayIconUri.toString(),name = author),
+        songUrl = mediaUri.toString()
+    )
+/*description?.let {
         MusicInfo(
             id = it.mediaId ?: "",
             name = it.title.toString(),
-            artists = emptyList(),
+            artists = arrayListOf(ArtistsItem(name = author?:"")),
             quality = null,
             album = Album(cover = it.iconUri.toString(),name = it.subtitle.toString()),
             songUrl = it.mediaUri.toString()
         )
-    }
+    }*/
 }
 
 fun List<MediaSessionCompat.QueueItem>.toMusicInfo() = map { queueItem ->
@@ -34,7 +41,7 @@ fun List<MediaSessionCompat.QueueItem>.toMusicInfo() = map { queueItem ->
     MusicInfo(
         id = mDescription.mediaId ?: "",
         name = mDescription.title.toString(),
-        artists = arrayListOf(ArtistsItem(name = mDescription.subtitle as String)),
+        artists = emptyList(),
         quality = null,
         album = Album(cover = mDescription.iconUri.toString(),name = mDescription.subtitle.toString()),
         songUrl = mDescription.mediaUri.toString()
@@ -46,7 +53,7 @@ fun MutableList<MusicInfo>.transSongs(): MutableList<MediaMetadataCompat> {
         val artistNames = ConvertUtils.getArtist( musicInfo.artists)
         MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, musicInfo.album?.name)
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, musicInfo.songId?: musicInfo.id)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, musicInfo.id)
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, musicInfo.name)
             .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, musicInfo.name)
             .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, musicInfo.album?.cover ?: "")
@@ -63,7 +70,7 @@ fun MusicInfo.transSong(): MediaMetadataCompat {
     var artistNames = ConvertUtils.getArtist( this.artists)
     return MediaMetadataCompat.Builder()
         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, album?.name)
-        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId?: id)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, name)
         .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, name)
         .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, album?.cover ?: "")
@@ -98,7 +105,7 @@ fun HotSong.transMusicInfo(): MusicInfo? {
     return MusicInfo(
         id = id.toString(),
         name = title,
-        artists = emptyList(),
+        artists = arrayListOf(ArtistsItem(id = mid.toString(), name = author?:"")),
         quality = null,
         album = Album(cover = pic,name = title),
         songUrl = null,
@@ -111,7 +118,7 @@ fun List<HotSong>.transMusicInfos(): MutableList<MusicInfo> {
         MusicInfo(
             id = it.id.toString(),
             name = it.title,
-            artists = emptyList(),
+            artists = arrayListOf(ArtistsItem(id = it.mid.toString(), name = it.author?:"")),
             quality = null,
             album = Album(cover = "http:"+it.pic,name = it.title),
             songUrl = null,

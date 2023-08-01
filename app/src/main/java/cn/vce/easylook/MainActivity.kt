@@ -68,7 +68,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
         var count = 5
 
-        val mHandle = Handler(Looper.getMainLooper())
+        val mHandle = Handler(Looper.myLooper()!!)
         mHandle.postDelayed({
                 childHandle.postDelayed(object: Runnable{
                     override fun run() {

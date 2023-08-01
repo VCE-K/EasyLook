@@ -133,8 +133,8 @@ class SongFragment : BaseVmFragment<FragmentSongBinding>() {
 
 
     private fun updateTitleAndSongImage(musicInfo: MusicInfo) {
-        val artistName = ConvertUtils.getArtist(musicInfo.artists)
-        val title = "${musicInfo.name} - $artistName"
+        //val artistName = ConvertUtils.getArtist(musicInfo.artists)
+        val title = musicInfo.name
         binding.tvSongName.text = title
         glide.load(musicInfo.album?.cover).into(binding.ivSongImage)
     }

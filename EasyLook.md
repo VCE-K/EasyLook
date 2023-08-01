@@ -33,13 +33,11 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 
 ### 视频区
 <center class="half">
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/19.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/20.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/21.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/22.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/27.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/anime/28.jpg" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230801153427868.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230801153448670.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image/image-20230801153511069.png" width="200px" />
 </center>
+
 
 ### 搜索
 <center class="half">
