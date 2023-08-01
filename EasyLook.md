@@ -41,16 +41,12 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 
 ### 搜索
 <center class="half">
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/12.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/13.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/14.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/15.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/16.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/17.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/search/18.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/game/25.jpg" width="200px" />
-    <img src="https://mikochat.oss-ap-northeast-1.aliyuncs.com/Screenshoots/miko/game/26.jpg" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image\image-20230801154808714.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image\image-20230801154819763.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image\image-20230801154835999.png" width="200px" />
+    <img src="https://github.com/VCE-K/EasyLook/blob/main/image\image-20230801154851083.png" width="200px" />
 </center>
+
 
 ## 参与贡献
 1.  Fork 本仓库
