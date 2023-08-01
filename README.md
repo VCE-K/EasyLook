@@ -10,7 +10,7 @@ AI聊天-美图-视频（开源接口、B站接口，一些开放的短视频接
 
 音乐区使用网易云音乐和B站的API, UI为简易风格。<br>
 
-[点击下载体验](https://github.com/VCE-K/EasyLook/blob/main/app/release/app-release.apk)
+[测试版点击下载体验](https://github.com/VCE-K/EasyLook/blob/main/app/release/app-release.apk)
 <br/>
 
 ## 软件架构

@@ -21,7 +21,7 @@ fun MediaMetadataCompat.toMusicInfo(): MusicInfo? {
         name = title,
         artists = arrayListOf(ArtistsItem(name = author?:"")),
         quality = null,
-        album = Album(cover = displayIconUri.toString(),name = author),
+        album = Album(cover = description.iconUri.toString(),name = description.subtitle.toString()),
         songUrl = mediaUri.toString()
     )
 /*description?.let {
