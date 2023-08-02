@@ -1,11 +1,11 @@
 package cn.vce.easylook.feature_music.presentation.bottom_music_dialog
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import cn.vce.easylook.MainActivity
 import cn.vce.easylook.MainEvent
@@ -68,13 +68,16 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
             when(event){
                 is BottomDialogVM.UiEvent.SaveMusic -> {
                     lifecycleScope.launch {
-                        val rootView = (activity as MainActivity).findViewById<View>(R.id.drawer_layout)
-                        Snackbar.make(rootView, "${musicInfo.name}" + getString(R.string.popup_add_to_collection), Snackbar.LENGTH_SHORT)
+                        val rootView = mActivity.findViewById<View>(R.id.drawer_layout)
+                        val snackbar = Snackbar.make(rootView, "${musicInfo.name}" + getString(R.string.popup_add_to_collection), Snackbar.LENGTH_SHORT)
                             .setAction("Undo") {
                                 viewModel.onEvent(BottomDialogEvent.RestoreMusicToPlaylist(musicInfo))
                                 Toast.makeText(mActivity, "撤销${musicInfo.name}" + getString(R.string.popup_add_to_collection),
                                     Toast.LENGTH_SHORT).show()
-                            }.show()
+                            }
+                        val mView: View = snackbar.view
+                        mView.setBackgroundColor(mActivity.getColor(R.color.white))
+                        snackbar.show()
                         hide()
                     }
                 }

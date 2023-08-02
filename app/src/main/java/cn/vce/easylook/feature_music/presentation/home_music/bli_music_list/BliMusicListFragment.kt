@@ -1,6 +1,8 @@
 package cn.vce.easylook.feature_music.presentation.home_music.bli_music_list
 
 import android.os.Bundle
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
@@ -33,10 +35,11 @@ class BliMusicListFragment : BaseVmFragment<FragmentBliMusicListBinding>() {
         binding.v = this
         binding.tc = BliMusicListEvent.TextChange
 
-        val musicControlFrag = MusicControlBottomFragment()
+        /*val musicControlFrag = MusicControlBottomFragment()
         val fragmentTransaction = childFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.musicControl, musicControlFrag)
-        fragmentTransaction.commit()
+        fragmentTransaction.commit()*/
+
     }
 
     override fun getLayoutId(): Int? = R.layout.fragment_bli_music_list

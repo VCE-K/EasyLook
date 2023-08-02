@@ -16,6 +16,7 @@ import cn.vce.easylook.feature_music.models.*
 import cn.vce.easylook.feature_music.models.bli.download.Audio
 import cn.vce.easylook.feature_music.other.DownloadResult
 import cn.vce.easylook.feature_music.other.LRUCacheLyric
+import cn.vce.easylook.utils.getReadFileName
 import cn.vce.easylook.utils.getString
 import cn.vce.easylook.utils.title
 import cn.vce.easylook.utils.toast
@@ -146,6 +147,10 @@ class MusicRepository(
         getMusicUrl(m)
         m.songUrl?.let {
             val body = MusicNetWork.downloadMusic(it)
+            /*if (){
+                val type = it.substring(it.lastIndexOf("\\."))
+                m.name?:""
+            }*/
             return downloadMusicFile(body, m.name?:"")
         }?:return null
     }
@@ -169,6 +174,7 @@ class MusicRepository(
                 values.put(MediaStore.MediaColumns.DATA,
                     "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}/$fileName")
             }
+            //getReadFileName(fileName,)
             //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI表明是音乐
             val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
             if (uri != null) {

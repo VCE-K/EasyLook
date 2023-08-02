@@ -36,10 +36,10 @@ class ChartsFragment : BaseVmFragment<FragmentChartsBinding>() {
             v = this@ChartsFragment // 数据请求完成绑定点击事件
             tc = ChartsEvent.TextChange
         }
-        val musicControlFrag = MusicControlBottomFragment()
+        /*val musicControlFrag = MusicControlBottomFragment()
         val fragmentTransaction = childFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.musicControl, musicControlFrag)
-        fragmentTransaction.commit()
+        fragmentTransaction.commit()*/
 
     }
 

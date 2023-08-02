@@ -145,7 +145,7 @@ abstract class BaseVmFragment<BD : ViewDataBinding>() : BaseFragment(), View.OnC
     /**
      * fragment跳转
      */
-    protected fun nav(): NavController {
+    public fun nav(): NavController {
         return NavHostFragment.findNavController(this)
     }
 

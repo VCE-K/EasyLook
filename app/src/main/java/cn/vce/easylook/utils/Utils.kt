@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.content.res.TypedArray
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
@@ -24,6 +25,7 @@ import cn.vce.easylook.feature_music.models.MusicInfo
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.lang.reflect.Type
@@ -291,4 +293,17 @@ fun getTimeParam(offset: Int): String {
  */
 fun Int.inflate(parent: ViewGroup, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(parent.context).inflate(this, parent, attachToRoot)
+}
+
+
+//文件相关
+fun getReadFileName(filename: String, contentLength: Long){
+    val file = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}", filename)
+    var downloadLength = 0L
+    if (file.exists()) {
+        downloadLength = file.length()
+    }
+    while (downloadLength >= contentLength){
+
+    }
 }

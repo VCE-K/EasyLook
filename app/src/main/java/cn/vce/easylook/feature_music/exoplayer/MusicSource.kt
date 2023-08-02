@@ -74,18 +74,15 @@ class MusicSource(
             m?.apply {
                 repository.getMusicUrl(this)
             }
-            if (m != null) {
-                songList[songIndex] = m.transSong()
-            }
         }
         if (fetchNext){
-            if (previousIndex != null && previousIndex != -1) {
+            if (previousIndex != null && previousIndex != -1 && previousIndex < songList.size) {
                 fetchSongUrl(songIndex = previousIndex, fetchNext = false)
             }else if (previousIndex != null && previousIndex == -1) {
                 fetchSongUrl(songIndex = 0, fetchNext = false)
             }
 
-            if (nextIndex != null && nextIndex != -1) {
+            if (nextIndex != null && nextIndex != -1 && nextIndex < songList.size) {
                 fetchSongUrl(songIndex = nextIndex, fetchNext = false)
             }else if (nextIndex != null && nextIndex == -1) {
                 fetchSongUrl(songIndex = (songList.size - 1), fetchNext = false)

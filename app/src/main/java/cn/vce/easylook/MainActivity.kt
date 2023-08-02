@@ -1,6 +1,9 @@
 package cn.vce.easylook
 
+import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.*
 import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,21 +17,16 @@ import androidx.navigation.ui.setupWithNavController
 import cn.vce.easylook.base.BaseVmActivity
 import cn.vce.easylook.databinding.ActivityMainBinding
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
-import cn.vce.easylook.feature_music.exoplayer.isPrepared
 import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
+import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.toast
 import com.bumptech.glide.RequestManager
 import com.drake.statusbar.immersive
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import android.Manifest
-import android.content.ComponentName
-import android.content.ServiceConnection
-import cn.vce.easylook.utils.LogE
 
 @AndroidEntryPoint
 class MainActivity : BaseVmActivity<ActivityMainBinding>() {

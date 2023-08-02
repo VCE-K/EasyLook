@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_music_bottom"
+    app:startDestination="@+id/musicControlBottomFragment">
+
+    <fragment
+        android:id="@+id/musicControlBottomFragment"
+        android:name="cn.vce.easylook.feature_music.presentation.bottom_music_controll.MusicControlBottomFragment"
+        android:label="@string/music_title">
+    </fragment>
+
+</navigation>

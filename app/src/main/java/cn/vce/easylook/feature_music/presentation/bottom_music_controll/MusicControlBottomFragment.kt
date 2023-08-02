@@ -42,6 +42,7 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
 
     override fun init(savedInstanceState: Bundle?) {
         initView()
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.m = mainVM
         binding.adapter = swipeSongAdapter
     }
@@ -113,10 +114,15 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
                     putSerializable("musicInfo", it)
                     putString("title", it.name)
                 }
-                nav().navigate(
-                    R.id.globalActionToSongFragment,
-                    bundle
-                )
+                when (val pf = parentFragment?.parentFragment ){
+                    is BaseVmFragment<*> -> {
+                        pf.nav().navigate(
+                            R.id.globalActionToSongFragment,
+                            bundle
+                        )
+                    }
+                    else -> Unit
+                }
             }
         }
     }
@@ -134,10 +140,15 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
                         putSerializable("musicInfo", it)
                         putString("title", it.name)
                     }
-                    nav().navigate(
-                        R.id.globalActionToSongFragment,
-                        bundle
-                    )
+                    when (val pf = parentFragment?.parentFragment ){
+                        is BaseVmFragment<*> -> {
+                            pf.nav().navigate(
+                                R.id.globalActionToSongFragment,
+                                bundle
+                            )
+                        }
+                        else -> Unit
+                    }
                 }
             }
         }

@@ -56,7 +56,7 @@ class MusicPlayerEventListener(
                             val previousIndex = musicService.exoPlayer.previousMediaItemIndex
                             val playIndex = musicService.exoPlayer.currentMediaItemIndex
                             val nextIndex = musicService.exoPlayer.nextMediaItemIndex
-                            musicSource.fetchSongUrl(previousIndex, playIndex, nextIndex)
+                            musicSource.fetchSongUrl( songIndex = playIndex)
                             updatePlayQueue()
                             isFirstIdle = true
                         }
