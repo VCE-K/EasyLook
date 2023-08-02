@@ -7,7 +7,9 @@ import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.getString
+import cn.vce.easylook.utils.id
 import cn.vce.easylook.utils.toast
+import com.drake.net.utils.withIO
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import kotlinx.coroutines.*
@@ -16,7 +18,8 @@ import kotlinx.coroutines.*
 //用于监听播放器的各种状态和事件，如播放状态变化、加载状态变化、播放错误、播放位置变化等
 class MusicPlayerEventListener(
     private val musicService: MusicService,
-    private val updatePlayQueue: () -> Unit
+    //private val updatePlayQueue: () -> Unit,
+    private val playerPrepared: (MediaMetadataCompat?) -> Unit
 ) :  Player.Listener {
 
 
@@ -44,25 +47,32 @@ class MusicPlayerEventListener(
         super.onShuffleModeEnabledChanged(shuffleModeEnabled)
     }
 
-    private var isFirstIdle = false
+    private var isFirstIdle = true
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
         when (playbackState) {
             Player.STATE_IDLE -> {
                 LogE("Music", "空闲状态" + musicService.exoPlayer.contentPosition / 1000)
-                if (!isFirstIdle){
-                    musicSource.whenReady {
+                if (isFirstIdle){
+                    /*musicSource.whenReady {
                         serviceScope.launch {
                             val previousIndex = musicService.exoPlayer.previousMediaItemIndex
                             val playIndex = musicService.exoPlayer.currentMediaItemIndex
                             val nextIndex = musicService.exoPlayer.nextMediaItemIndex
-                            musicSource.fetchSongUrl( songIndex = playIndex)
+                            withIO { musicSource.fetchSongUrl( songIndex = playIndex) }
                             updatePlayQueue()
-                            isFirstIdle = true
+                            isFirstIdle = false
+                            musicService.exoPlayer.prepare()
+                            musicService.exoPlayer.play()
                         }
+                    }*/
+                    musicSource.whenReady {
+                        val playIndex = musicService.exoPlayer.currentMediaItemIndex
+                        val itemToPlay = musicSource.songList[playIndex]
+                        playerPrepared(itemToPlay)
                     }
                 }else{
-                    isFirstIdle = false
+                    isFirstIdle = true
                 }
             }
             Player.STATE_BUFFERING ->
@@ -84,7 +94,7 @@ class MusicPlayerEventListener(
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         /*toast(getString(R.string.unknown_error))*/
-        toast("加载失败")
+        //toast("加载失败")
     }
 
 }

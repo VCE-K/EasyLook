@@ -2,7 +2,12 @@ package cn.vce.easylook.feature_music.api
 
 import cn.vce.easylook.feature_music.models.bli.DynamicResponse
 import com.cyl.musicapi.netease.PersonalizedInfo
+import com.drake.net.utils.withIO
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
@@ -34,3 +39,12 @@ interface RankListService {
 
 }
 
+fun main(){
+    runBlocking {
+        withIO {
+            println(111)
+        }
+        println(222)
+    }
+    println(333)
+}

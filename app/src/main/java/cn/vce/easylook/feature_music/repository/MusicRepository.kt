@@ -147,11 +147,13 @@ class MusicRepository(
         getMusicUrl(m)
         m.songUrl?.let {
             val body = MusicNetWork.downloadMusic(it)
-            /*if (){
-                val type = it.substring(it.lastIndexOf("\\."))
+            val filename = if (it.lastIndexOf(".") >= 0){
+                val type = it.substring(it.lastIndexOf("."))
+                (m.name?:"") + type
+            } else {
                 m.name?:""
-            }*/
-            return downloadMusicFile(body, m.name?:"")
+            }
+            return downloadMusicFile(body, filename)
         }?:return null
     }
 

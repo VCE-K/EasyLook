@@ -104,7 +104,12 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlayer(exoPlayer)
 
         musicPlayerEventListener = MusicPlayerEventListener(this) {
-            updatePlayQueue()
+            curPlayingSong = it
+            preparePlayer(
+                musicSource.songList,
+                it,
+                true
+            )
         }
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
@@ -166,7 +171,7 @@ class MusicService : MediaBrowserServiceCompat() {
         }
         serviceScope.launch {
             exoPlayer.playWhenReady = false // 暂停播放器，等待当前曲目完全播放结束
-            musicSource.fetchSongUrl(exoPlayer.previousMediaItemIndex, curSongIndex, exoPlayer.nextMediaItemIndex)
+            musicSource.fetchSongUrl( songIndex = curSongIndex)
             exoPlayer.prepare(musicSource.asMediaSource(dataSourceFactory))
             exoPlayer.seekTo(curSongIndex, 0L)
             exoPlayer.playWhenReady = playNow
