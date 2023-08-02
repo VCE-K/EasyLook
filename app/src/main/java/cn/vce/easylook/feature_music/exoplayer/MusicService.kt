@@ -166,7 +166,7 @@ class MusicService : MediaBrowserServiceCompat() {
         }
         serviceScope.launch {
             exoPlayer.playWhenReady = false // 暂停播放器，等待当前曲目完全播放结束
-            musicSource.fetchSongUrl(curSongIndex, false)
+            musicSource.fetchSongUrl(exoPlayer.previousMediaItemIndex, curSongIndex, exoPlayer.nextMediaItemIndex)
             exoPlayer.prepare(musicSource.asMediaSource(dataSourceFactory))
             exoPlayer.seekTo(curSongIndex, 0L)
             exoPlayer.playWhenReady = playNow

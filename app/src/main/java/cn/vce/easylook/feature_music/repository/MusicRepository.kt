@@ -85,7 +85,7 @@ class MusicRepository(
             }else{
                 getString(R.string.unknown_error)
             }
-            toast(message)
+            //toast(message)
         }
     }
 
@@ -158,7 +158,6 @@ class MusicRepository(
             var currentLength = 0
             val contentLength = body.contentLength()
             val inputStream = body.byteStream()
-
             val bis = BufferedInputStream(inputStream)
 
             val values = ContentValues()

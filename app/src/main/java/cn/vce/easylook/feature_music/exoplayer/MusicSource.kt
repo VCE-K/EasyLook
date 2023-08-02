@@ -61,7 +61,9 @@ class MusicSource(
      * previousFlag： false继续往下更新， true往上更新
      */
     suspend fun fetchSongUrl(
+        previousIndex: Int? = null,
         songIndex: Int,
+        nextIndex: Int? = null,
         fetchNext: Boolean = true
     ){
         val nextSong = songList[songIndex]
@@ -77,7 +79,18 @@ class MusicSource(
             }
         }
         if (fetchNext){
-            val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
+            if (previousIndex != null && previousIndex != -1) {
+                fetchSongUrl(songIndex = previousIndex, fetchNext = false)
+            }else if (previousIndex != null && previousIndex == -1) {
+                fetchSongUrl(songIndex = 0, fetchNext = false)
+            }
+
+            if (nextIndex != null && nextIndex != -1) {
+                fetchSongUrl(songIndex = nextIndex, fetchNext = false)
+            }else if (nextIndex != null && nextIndex == -1) {
+                fetchSongUrl(songIndex = (songList.size - 1), fetchNext = false)
+            }
+            /*val previousIndex: Int = if ((songIndex - 1) < 0 ){//到达开头
                 songList.size - 1
             }else {
                 songIndex - 1
@@ -91,11 +104,11 @@ class MusicSource(
             if (songIndex == previousIndex && songIndex == nextSongIndex){
                 return
             }else if (previousIndex == nextSongIndex){
-                fetchSongUrl(nextSongIndex, false)
+                fetchSongUrl(songIndex = nextSongIndex,fetchNext = false)
             }else{
-                fetchSongUrl(previousIndex, false)
-                fetchSongUrl(nextSongIndex, false)
-            }
+                fetchSongUrl(songIndex =previousIndex, fetchNext = false)
+                fetchSongUrl(songIndex = nextSongIndex,  fetchNext = false)
+            }*/
         }
     }
 

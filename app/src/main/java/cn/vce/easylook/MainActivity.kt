@@ -26,6 +26,8 @@ import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import android.Manifest
+import android.content.ComponentName
+import android.content.ServiceConnection
 import cn.vce.easylook.utils.LogE
 
 @AndroidEntryPoint
@@ -48,6 +50,16 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
 
     lateinit var childHandle: Handler
+
+    private val connection = object: ServiceConnection{
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+
+        }
+    }
     override fun initViewModel() {
         mainViewModel = getActivityViewModel()
     }

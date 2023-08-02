@@ -2,9 +2,12 @@ package cn.vce.easylook.feature_music.exoplayer.callbacks
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import cn.vce.easylook.R
 import cn.vce.easylook.feature_music.exoplayer.MusicService
 import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.utils.LogE
+import cn.vce.easylook.utils.getString
+import cn.vce.easylook.utils.toast
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import kotlinx.coroutines.*
@@ -22,7 +25,6 @@ class MusicPlayerEventListener(
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
     private var repeatMode: Int = 0
-    private var playIndex: Int = 0
     override fun onPositionDiscontinuity(reason: Int) {
         /*DISCONTINUITY_REASON_PERIOD_TRANSITION=0: 进入新的时间段（period或track）。
         DISCONTINUITY_REASON_SEEK=1: 执行了媒体跳转操作。
@@ -51,8 +53,10 @@ class MusicPlayerEventListener(
                 if (!isFirstIdle){
                     musicSource.whenReady {
                         serviceScope.launch {
-                            playIndex = musicService.exoPlayer.currentMediaItemIndex
-                            musicSource.fetchSongUrl(playIndex, false)
+                            val previousIndex = musicService.exoPlayer.previousMediaItemIndex
+                            val playIndex = musicService.exoPlayer.currentMediaItemIndex
+                            val nextIndex = musicService.exoPlayer.nextMediaItemIndex
+                            musicSource.fetchSongUrl(previousIndex, playIndex, nextIndex)
                             updatePlayQueue()
                             isFirstIdle = true
                         }
@@ -79,8 +83,8 @@ class MusicPlayerEventListener(
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-
-        //toast(getString(R.string.unknown_error))
+        /*toast(getString(R.string.unknown_error))*/
+        toast("加载失败")
     }
 
 }
