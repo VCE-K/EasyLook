@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.*
+import android.util.Log
 import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -18,6 +19,7 @@ import cn.vce.easylook.base.BaseVmActivity
 import cn.vce.easylook.databinding.ActivityMainBinding
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
 import cn.vce.easylook.feature_music.other.Status
+import cn.vce.easylook.feature_music.service.DownloadService
 import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.toast
@@ -49,14 +51,21 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
     lateinit var childHandle: Handler
 
-    private val connection = object: ServiceConnection{
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 
+    lateinit var downloadBinder: DownloadService.DownloadBinder
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            downloadBinder = service as DownloadService.DownloadBinder
+            downloadBinder.startDownload()
+            downloadBinder.getProgress()
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d("MyService", "onServiceDisconnected")
         }
+
     }
     override fun initViewModel() {
         mainViewModel = getActivityViewModel()
@@ -179,7 +188,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
+        /*if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStack()
         } else {
             val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav) as NavHostFragment
@@ -189,7 +198,8 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                 }
             }
             processBackPressed()
-        }
+        }*/
+        super.onBackPressed()
     }
 
 

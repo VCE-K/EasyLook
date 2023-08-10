@@ -114,7 +114,7 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
                     putSerializable("musicInfo", it)
                     putString("title", it.name)
                 }
-                when (val pf = parentFragment?.parentFragment ){
+                when (val pf = requireParentFragment()?.parentFragment ){
                     is BaseVmFragment<*> -> {
                         pf.nav().navigate(
                             R.id.globalActionToSongFragment,
@@ -140,7 +140,7 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
                         putSerializable("musicInfo", it)
                         putString("title", it.name)
                     }
-                    when (val pf = parentFragment?.parentFragment ){
+                    when (val pf = requireParentFragment()?.parentFragment ){
                         is BaseVmFragment<*> -> {
                             pf.nav().navigate(
                                 R.id.globalActionToSongFragment,

@@ -143,18 +143,30 @@ class MusicRepository(
         db.musicDao.deleteMusicInfo(m)
     }
 
-    suspend fun downloadMusic(m: MusicInfo): Flow<DownloadResult<File>>? {
+    suspend fun downloadMusic(m: MusicInfo): Flow<DownloadResult<File>> = flow {
         getMusicUrl(m)
         m.songUrl?.let {
-            val body = MusicNetWork.downloadMusic(it)
+            val lengthBody = MusicNetWork.downloadMusic(url = it)//第一次访问是拿长度而已
             val filename = if (it.lastIndexOf(".") >= 0){
                 val type = it.substring(it.lastIndexOf("."))
                 (m.name?:"") + type
             } else {
                 m.name?:""
             }
-            return downloadMusicFile(body, filename)
-        }?:return null
+            var fileNameOther: String
+            var currentLength: Long
+            getReadFileName(filename, lengthBody.contentLength()).let {
+                fileNameOther = it.name?:filename
+                currentLength = it.currentLength!!
+            }
+            //range表示下载范围
+            val range = "bytes="+ currentLength + "-" + lengthBody.contentLength()
+            val body = MusicNetWork.downloadMusic(range,it)
+            lengthBody.close()
+            downloadMusicFile(body, fileNameOther)
+        }?: flow {
+            emit(DownloadResult.error("${m.name}歌曲获取链接无效，下载失败"))
+        }
     }
 
 
@@ -176,7 +188,6 @@ class MusicRepository(
                 values.put(MediaStore.MediaColumns.DATA,
                     "${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}/$fileName")
             }
-            //getReadFileName(fileName,)
             //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI表明是音乐
             val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
             if (uri != null) {
@@ -192,10 +203,11 @@ class MusicRepository(
 
                         currentLength += bytes
                         emit(
-                            DownloadResult.loading(
+                            DownloadResult.loading<File>(
                                 currentLength.toLong(),
                                 contentLength,
-                                currentLength.toFloat() / contentLength.toFloat()
+                                currentLength.toFloat() / contentLength.toFloat(),
+                                fileName
                             )
                         )
                     }

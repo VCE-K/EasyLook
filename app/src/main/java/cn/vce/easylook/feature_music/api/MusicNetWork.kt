@@ -46,7 +46,7 @@ object MusicNetWork {
     suspend fun personalizedPlaylist() = rankListService.personalizedPlaylist().await()
 
 
-    suspend fun downloadMusic(url: String) = rankListService.downloadMusic(url).await()
+    suspend fun downloadMusic(range: String? = null, url: String) = rankListService.downloadMusic(range, url).await()
 
 
     private const val type: String = "NETEASE"

@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 
 private const val SERVICE_TAG = "MusicService"
@@ -66,7 +67,6 @@ class MusicService : MediaBrowserServiceCompat() {
     @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate() {
         super.onCreate()
-
         val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
             val pendingIntent = PendingIntent.getActivity(
                 this, 0, sessionIntent,

@@ -1,5 +1,6 @@
 package cn.vce.easylook.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.content.res.TypedArray
@@ -12,6 +13,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
@@ -20,8 +22,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import cn.vce.easylook.EasyApp
 import cn.vce.easylook.feature_music.models.MusicInfo
+import cn.vce.easylook.feature_music.models.bli.download.DownloadInfoResponse
+import cn.vce.easylook.feature_music.other.DownloadResult
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -297,13 +302,44 @@ fun Int.inflate(parent: ViewGroup, attachToRoot: Boolean = false): View {
 
 
 //文件相关
-fun getReadFileName(filename: String, contentLength: Long){
-    val file = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}", filename)
+fun getReadFileName(filename: String, contentLength: Long): DownloadResult<File> {
+    var file = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}", filename)
     var downloadLength = 0L
     if (file.exists()) {
         downloadLength = file.length()
     }
-    while (downloadLength >= contentLength){
+    var index = 0
+    var filenameOther = ""
+    while(downloadLength >= contentLength){
+        val doIndex = filename.lastIndexOf(".")
+        if (doIndex == -1){
+            filenameOther = filename + "(${index})"
+        }else{
+            var mime = filename.substring(doIndex)
+            if (".mp4" == mime){
+                mime = ".mp3"
+            }
+            filenameOther = filename.substring(0, doIndex) + "(${index})" + mime
+        }
+        val newFile = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}", filenameOther)
+        downloadLength = newFile.length()
+        file = newFile
+        index++
+    }
+    return DownloadResult.loading<File>(
+        downloadLength,
+        contentLength,
+        downloadLength.toFloat() / contentLength.toFloat(),
+        file.name
+    )
+}
 
+
+fun Activity.hideSoftInput() {
+    currentFocus?.let {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+    } ?: let {
+        ViewCompat.getWindowInsetsController(window.decorView)?.hide(WindowInsetsCompat.Type.ime())
     }
 }

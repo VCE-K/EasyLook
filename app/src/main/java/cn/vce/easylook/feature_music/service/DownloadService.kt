@@ -38,12 +38,13 @@ class DownloadService: Service() {
         Log.d("MyService", "onCreate executed")
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("my_service", "前台Service通知", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel("down_service", "前台Service通知", NotificationManager.IMPORTANCE_DEFAULT)
             manager.createNotificationChannel(channel)
         }
         val intent = Intent(this, MainActivity::class.java)
         val pi = PendingIntent.getActivity(this, 0, intent, 0)
-        val notification = NotificationCompat.Builder(this, "my_service")
+        val builder = NotificationCompat.Builder(this, "down_service")
+        val notification = builder
             .setContentTitle("This is content title")
             .setContentText("This is content text")
             .setSmallIcon(R.drawable.logo_no_fill)
@@ -51,6 +52,12 @@ class DownloadService: Service() {
             .setContentIntent(pi)
             .build()
         startForeground(1, notification)
+
+        // 更新进度
+        builder.setProgress(1, 1, false)
+        thread {
+            stopSelf()
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {

@@ -45,4 +45,12 @@
         android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.InvisibleFragment"
         android:label="@string/music_title">
     </fragment>
+
+
+
+    <fragment
+        android:id="@+id/nav_chat_room"
+        android:name="cn.vce.easylook.feature_chatroom.ChatRoomFragment"
+        android:label="WebSocket">
+    </fragment>
 </navigation>

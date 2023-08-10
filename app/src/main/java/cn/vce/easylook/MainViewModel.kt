@@ -227,10 +227,9 @@ class MainViewModel @Inject constructor(
 
     private fun downloadMusic(m: MusicInfo){
         launch {
-            toast("开始下载下载歌曲：${m.name}")
+            toast("开始下载歌曲：${m.name}")
             val downloadMusic = musicRepository.downloadMusic(m)
-            downloadMusic?.apply {
-                this.catch { LogE("catch... when searching", t = it) }
+            downloadMusic.catch { LogE("catch... when searching", t = it) }
                 .onEach {
                     when(it.status){
                         Status.SUCCESS -> {
@@ -244,13 +243,12 @@ class MainViewModel @Inject constructor(
                                     num.format(it.process))
                         }
                         Status.ERROR -> {
-                            toast("下载歌曲：${m.name}失败")
+                            toast(it.message!!)
                         }
                     }
                 }
                 .flowOn(Dispatchers.Main)
                 .launchIn(viewModelScope)
-            }?:toast(getString(R.string.error_connection))
         }
     }
 

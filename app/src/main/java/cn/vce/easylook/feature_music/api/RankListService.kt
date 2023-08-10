@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Query
 import retrofit2.http.Streaming
 import retrofit2.http.Url
@@ -34,17 +35,7 @@ interface RankListService {
 
     @Streaming
     @GET
-    fun downloadMusic(@Url url: String): Call<ResponseBody>
+    fun downloadMusic(@Header("RANGE") range: String?, @Url url: String): Call<ResponseBody>
 
 
-}
-
-fun main(){
-    runBlocking {
-        withIO {
-            println(111)
-        }
-        println(222)
-    }
-    println(333)
 }

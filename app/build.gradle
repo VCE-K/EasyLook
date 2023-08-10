@@ -176,4 +176,7 @@ dependencies {
     implementation 'me.wcy:lrcview:2.2'
     //权限控件
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
+
+    //WebSocket
+    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
 }

@@ -27,6 +27,11 @@
             android:id="@id/nav_image"
             android:icon="@drawable/ic_image"
             android:title="@string/image_title" />
+
+        <item
+            android:id="@id/nav_chat_room"
+            android:icon="@drawable/ic_image"
+            android:title="WebSocket" />
     </group>
 
     <item android:title="@string/menu_other">

@@ -53,7 +53,7 @@ class MusicPlayerEventListener(
         when (playbackState) {
             Player.STATE_IDLE -> {
                 LogE("Music", "空闲状态" + musicService.exoPlayer.contentPosition / 1000)
-                if (isFirstIdle){
+                if (isFirstIdle && playWhenReady){
                     /*musicSource.whenReady {
                         serviceScope.launch {
                             val previousIndex = musicService.exoPlayer.previousMediaItemIndex

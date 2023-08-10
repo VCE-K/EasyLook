@@ -44,7 +44,7 @@
         smallestScreenSize：屏幕可用最小尺寸发生改变。-->
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustNothing"
+            android:windowSoftInputMode="adjustResize"
             android:launchMode="singleInstance"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="portrait"
