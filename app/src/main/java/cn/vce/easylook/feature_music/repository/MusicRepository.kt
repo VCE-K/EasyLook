@@ -95,8 +95,6 @@ class MusicRepository(
     suspend fun getLyricInfo(mid: String): String {
         //先去缓存进行查找
         return LRUCacheLyric.getInstance()[mid]?:MusicNetWork.getLyricInfo(mid = mid).also {
-            //放入缓存
-            LRUCacheLyric.getInstance().put(mid, it)
             val lrcText = it
             val array: Array<String> =
                 lrcText.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
@@ -116,6 +114,8 @@ class MusicRepository(
                     }
                 }
             }
+            //没有就放入缓存
+            LRUCacheLyric.getInstance().put(mid, sb.toString())
             return sb.toString()
         }
     }
