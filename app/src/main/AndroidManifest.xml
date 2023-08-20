@@ -9,9 +9,12 @@
 
     <!--音频文件-->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-
+    <!--读写-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
 
     <!--不想进行作用域存储的适配requestLegacyExternalStorage==true-->
@@ -35,6 +38,20 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+        <service
+            android:name=".feature_music.service.DownloadService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DownloadMusic" />
+            </intent-filter>
+        </service>
+
+        <!--
+       //当用户每次离开APP 任务栈时，系统都将会将此APP栈中的所有Activity销毁,返回此任务栈时重新创建根栈
+       android:finishOnTaskLaunch="true"
+       //当用户离开此APP任务栈时，请求系统尽可能的保留所有任务的状态
+       android:alwaysRetainTaskState="true"
+           -->
        <!-- keyboard：键盘的可用性发生改变；
         keyboardHidden：键盘是否隐藏的可用性发生改变；
         orientation：屏幕方向发生改变；
@@ -42,10 +59,12 @@
         screenLayout：屏幕布局发生改变；
         uiMode：UI模式发生改变，如，夜间模式的开关；
         smallestScreenSize：屏幕可用最小尺寸发生改变。-->
+        <!--android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"-->
         <activity
             android:name=".MainActivity"
+            android:alwaysRetainTaskState="true"
             android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="portrait"
             android:exported="true">

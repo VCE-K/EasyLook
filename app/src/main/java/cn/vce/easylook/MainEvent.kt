@@ -17,5 +17,7 @@ sealed class MainEvent: BaseEvent() {
     data class AddQueueItem(val description: MediaDescriptionCompat, val index: Int?): MainEvent()
 
     data class DownloadMusic(val musicInfos: List<MusicInfo>): MainEvent()
+
+
 }
 

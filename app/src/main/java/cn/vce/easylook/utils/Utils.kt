@@ -31,14 +31,13 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-const val DEFAULT_TAG = "atri_tag"
 
 //region Get value from XML
 fun Context.getDimenInt(@DimenRes resId: Int): Int = resources.getDimension(resId).toInt()
@@ -108,6 +107,19 @@ val Int.px2Dp: Int
         val density = Resources.getSystem().displayMetrics.density
         return (this / density + 0.5).toInt()
     }
+val Int.dp2Px: Int
+    get() {
+        return (this * Resources.getSystem().displayMetrics.density).toInt()
+    }
+
+fun getScreenWidth(): Int {
+    return Resources.getSystem().displayMetrics.widthPixels
+}
+
+fun getXScreenWidth(x: Int): Int {
+    val mScreenWidth = getScreenWidth()
+    return (mScreenWidth - x.dp2Px) * 9 / 16
+}
 //endregion
 
 //region Common tools
@@ -122,10 +134,6 @@ val Int.px2Dp: Int
  */
 fun getString(resId: Int): String = EasyApp.context.resources.getString(resId)
 
-/*fun String.toast(duration: Int = Toast.LENGTH_SHORT) {
-    if (TextUtils.isEmpty(this))return
-    EasyApp.context.toast(this, duration)
-}*/
 
 fun toast(content: String, duration: Int = Toast.LENGTH_SHORT) {
     if (TextUtils.isEmpty(content))return
@@ -168,45 +176,6 @@ fun InputStream.convertToString(): String {
     }
     return s
 }
-
-// about views
-fun View.setShadowBackground(bgDrawable: Drawable) {
-    setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-    ViewCompat.setBackground(this, bgDrawable)
-}
-
-inline fun <R> TypedArray.safeUse(block: TypedArray.() -> R): R? {
-    return try {
-        block()
-    } catch (e: Exception) {
-        Log.e(DEFAULT_TAG, "Error occurred while use typed array...${e.message}")
-        null
-    } finally {
-        recycle()
-    }
-}
-
-// ConstraintSet apply 到同一个 view 上
-inline fun ConstraintSet.applyToTheSame(
-    view: ConstraintLayout,
-    block: ConstraintSet.() -> Unit
-) {
-    this.apply { clone(view) }.apply {
-        block()
-    }.applyTo(view)
-}
-
-fun <T> unlockLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.PUBLICATION, initializer)
-//endregion
-
-//region About list
-fun <T> MutableList<T>.swap(first: Int, second: Int) {
-    val tmp = this[first]
-    this[first] = this[second]
-    this[second] = tmp
-}
-
-
 
 fun Any.LogE(msg: String, tag: String? = null, t: Throwable? = null) {
     Log.e(tag ?: javaClass.simpleName, msg ?: "", t)
@@ -316,9 +285,6 @@ fun getReadFileName(filename: String, contentLength: Long): DownloadResult<File>
             filenameOther = filename + "(${index})"
         }else{
             var mime = filename.substring(doIndex)
-            if (".mp4" == mime){
-                mime = ".mp3"
-            }
             filenameOther = filename.substring(0, doIndex) + "(${index})" + mime
         }
         val newFile = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}", filenameOther)

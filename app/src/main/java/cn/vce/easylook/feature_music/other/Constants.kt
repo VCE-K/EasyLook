@@ -12,4 +12,7 @@ object Constants {
 
     const val NOTIFICATION_CHANNEL_ID = "music"
     const val NOTIFICATION_ID = 1
+
+    const val DOWN_NOTIFICATION_CHANNEL_ID = "download"
+    const val DOWN_NOTIFICATION_ID = 2
 }

@@ -48,7 +48,6 @@ object ViewPager2Binding {
                     }
                     if (newItemIndex != -1) {
                         view.setCurrentItem(newItemIndex, false)
-                        LogE("vpage2.currentItem::${newItemIndex} - ${view.currentItem}")
                     }
                 }
             }

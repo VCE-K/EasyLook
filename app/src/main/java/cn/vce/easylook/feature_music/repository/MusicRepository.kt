@@ -4,8 +4,7 @@ import android.content.ContentValues
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.core.net.toFile
 import cn.vce.easylook.EasyApp
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseRepository
@@ -18,16 +17,17 @@ import cn.vce.easylook.feature_music.other.DownloadResult
 import cn.vce.easylook.feature_music.other.LRUCacheLyric
 import cn.vce.easylook.utils.getReadFileName
 import cn.vce.easylook.utils.getString
-import cn.vce.easylook.utils.title
 import cn.vce.easylook.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.ResponseBody
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
 
 class MusicRepository(
     private val db: MusicDatabase
@@ -86,7 +86,7 @@ class MusicRepository(
             }else{
                 getString(R.string.unknown_error)
             }
-            //toast(message)
+            toast(message)
         }
     }
 
@@ -143,7 +143,7 @@ class MusicRepository(
         db.musicDao.deleteMusicInfo(m)
     }
 
-    suspend fun downloadMusic(m: MusicInfo): Flow<DownloadResult<File>> = flow {
+    fun downloadMusic(m: MusicInfo): Flow<DownloadResult<File>> = flow<DownloadResult<File>> {
         getMusicUrl(m)
         m.songUrl?.let {
             val lengthBody = MusicNetWork.downloadMusic(url = it)//第一次访问是拿长度而已
@@ -160,14 +160,12 @@ class MusicRepository(
                 currentLength = it.currentLength!!
             }
             //range表示下载范围
-            val range = "bytes="+ currentLength + "-" + lengthBody.contentLength()
-            val body = MusicNetWork.downloadMusic(range,it)
+            val range = "bytes=$currentLength-" /*+ lengthBody.contentLength()*/
             lengthBody.close()
-            downloadMusicFile(body, fileNameOther)
-        }?: flow {
-            emit(DownloadResult.error("${m.name}歌曲获取链接无效，下载失败"))
-        }
-    }
+            val body = MusicNetWork.downloadMusic(range,it)
+            emitAll(downloadMusicFile(body, fileNameOther))
+        }?: emit(DownloadResult.error("${m.name}歌曲获取链接无效，下载失败"))
+    }.flowOn(Dispatchers.IO)
 
 
     private fun downloadMusicFile(body: ResponseBody, fileName: String) = flow {
@@ -178,7 +176,7 @@ class MusicRepository(
             val contentLength = body.contentLength()
             val inputStream = body.byteStream()
             val bis = BufferedInputStream(inputStream)
-
+            //分区失败
             val values = ContentValues()
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
             values.put(MediaStore.MediaColumns.MIME_TYPE, mediaType.toString())
@@ -190,8 +188,10 @@ class MusicRepository(
             }
             //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI表明是音乐
             val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
-            if (uri != null) {
-                val outputStream = contentResolver.openOutputStream(uri)
+            /*if (uri != null) {//这种写法不能写入append同一个文件
+                val musicFile = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}/$fileName")
+                val outputStream = contentResolver.openOutputStream(uri, "wa")
+                    //FileOutputStream(musicFile, true)
                 if (outputStream != null) {
                     val bos = BufferedOutputStream(outputStream)
                     val buffer = ByteArray(1024)
@@ -200,7 +200,6 @@ class MusicRepository(
                         bos.write(buffer, 0 , bytes)
                         bos.flush()
                         bytes = bis.read(buffer)
-
                         currentLength += bytes
                         emit(
                             DownloadResult.loading<File>(
@@ -213,6 +212,30 @@ class MusicRepository(
                     }
                     bos.close()
                 }
+                emit(DownloadResult.success<File>())
+                bis.close()
+            }*/
+            val musicFile = File("${Environment.getExternalStorageDirectory().path}/${Environment.DIRECTORY_MUSIC}/$fileName")
+            val outputStream = FileOutputStream(musicFile, true)
+            if (outputStream != null) {
+                val bos = BufferedOutputStream(outputStream)
+                val buffer = ByteArray(1024)
+                var bytes = bis.read(buffer)
+                while (bytes >= 0) {
+                    bos.write(buffer, 0 , bytes)
+                    bos.flush()
+                    bytes = bis.read(buffer)
+                    currentLength += bytes
+                    emit(
+                        DownloadResult.loading<File>(
+                            currentLength.toLong(),
+                            contentLength,
+                            currentLength.toFloat() / contentLength.toFloat(),
+                            fileName
+                        )
+                    )
+                }
+                bos.close()
             }
             emit(DownloadResult.success<File>())
             bis.close()
@@ -220,7 +243,7 @@ class MusicRepository(
             e.printStackTrace()
             emit(DownloadResult.error(e.message?:"下载异常"))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     fun getPlayMode() = MusicConfigManager.getPlayMode()
 

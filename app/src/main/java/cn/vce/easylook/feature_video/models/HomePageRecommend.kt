@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.eyepetizer.android.logic.model
-
-import cn.vce.easylook.feature_video.models.*
+package cn.vce.easylook.feature_video.models
 
 /**
  * 首页-推荐列表，响应实体类。
@@ -26,7 +24,7 @@ import cn.vce.easylook.feature_video.models.*
  */
 data class HomePageRecommend(val itemList: List<Item>, val count: Int, val total: Int, val nextPageUrl: String?, val adExist: Boolean) : Model() {
 
-    data class Item(val `data`: Data, val type: String, val tag: Any?, val id: Int = 0, val adIndex: Int)
+    data class Item(val data: Data, val type: String, val tag: Any?, val id: Int = 0, val adIndex: Int)
 
     data class Data(
         val actionUrl: String?,
@@ -63,7 +61,9 @@ data class HomePageRecommend(val itemList: List<Item>, val count: Int, val total
         val ifPgc: Boolean,
         val ifShowNotificationIcon: Boolean,
         val image: String,
+
         val itemList: List<ItemX>,
+
         val label: Label?,
         val labelList: List<Label>,
         val lastViewTime: Any,
@@ -124,8 +124,10 @@ data class HomePageRecommend(val itemList: List<Item>, val count: Int, val total
         val time: Long,
         val title: String
     )
+    data class ItemX(val adIndex: Int, val `data`: Data, val id: Int, val tag: Any, val type: String)
 
-    data class ItemX(val adIndex: Int, val `data`: DataXX, val id: Int, val tag: Any, val type: String)
+
+   /* data class ItemX(val adIndex: Int, val `data`: DataXX, val id: Int, val tag: Any, val type: String)*/
 
     data class Subtitle(val type: String, val url: String)
 

@@ -1,19 +1,17 @@
 package cn.vce.easylook.feature_music.presentation.music_search
 
 import android.os.Bundle
-import android.view.*
-import android.widget.EditText
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuItemCompat
-import androidx.core.view.isVisible
 import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentMusicSearchBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
-import cn.vce.easylook.feature_music.other.Status
 import com.bumptech.glide.RequestManager
-import com.drake.brv.BindingAdapter
 import com.drake.brv.utils.bindingAdapter
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup

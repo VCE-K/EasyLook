@@ -4,14 +4,37 @@
     android:id="@+id/nav_video.xml"
     app:startDestination="@id/video_fragment_dest">
     <!--视频相关跳转 -->
+   <!--
     <fragment
+        android:id="@+id/videoDetailFragment"
+        android:name="cn.vce.easylook.feature_video.presentation.home.video_detail.VideoDetailFragment">
+        <argument
+            android:name="video_params"
+            app:argType="com.video.player.lib.bean.VideoParams"
+            app:nullable="false"/>
+        <argument
+            android:name="video_playing"
+            app:argType="boolean"
+            android:defaultValue="true"/>
+    </fragment>-->
+
+    <fragment
+        android:id="@+id/video_fragment_dest"
+        android:name="cn.vce.easylook.feature_video.presentation.home.VideoHomeFragment"
+        android:label="@string/video_title">
+        <action
+            android:id="@+id/action_video_fragment_dest_to_VideoDetailFragment"
+            app:destination="@id/VideoDetailFragment" />
+    </fragment>
+
+<!--    <fragment
         android:id="@+id/video_fragment_dest"
         android:name="cn.vce.easylook.feature_video.presentation.home.detail.DetailFragment"
         android:label="@string/video_title">
         <action
             android:id="@+id/action_video_fragment_dest_to_VideoDetailFragment"
             app:destination="@id/VideoDetailFragment" />
-    </fragment>
+    </fragment>-->
 
     <fragment
         android:id="@+id/VideoDetailFragment"

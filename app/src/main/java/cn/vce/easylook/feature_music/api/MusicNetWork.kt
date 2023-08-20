@@ -7,17 +7,10 @@ import cn.vce.easylook.utils.convertList
 import cn.vce.easylook.utils.convertObject
 import cn.vce.easylook.utils.getString
 import com.cyl.musicapi.BaseApiImpl
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Query
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine

@@ -35,7 +35,7 @@ interface RankListService {
 
     @Streaming
     @GET
-    fun downloadMusic(@Header("RANGE") range: String?, @Url url: String): Call<ResponseBody>
+    fun downloadMusic(@Header("Range") range: String?, @Url url: String): Call<ResponseBody>
 
 
 }

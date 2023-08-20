@@ -1,20 +1,23 @@
 package cn.vce.easylook.feature_music.presentation.bottom_music_dialog
 
+import android.content.ComponentName
 import android.content.Context
-import android.graphics.Color
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import cn.vce.easylook.MainActivity
-import cn.vce.easylook.MainEvent
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseBottomSheetDialogFragment
 import cn.vce.easylook.databinding.DialogLayoutBinding
 import cn.vce.easylook.databinding.ItemDialogBinding
 import cn.vce.easylook.feature_music.models.MusicInfo
 import cn.vce.easylook.feature_music.models.PlaylistType
+import cn.vce.easylook.feature_music.service.DownloadService
 import cn.vce.easylook.utils.ConvertUtils
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.setup
@@ -46,7 +49,20 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
 
     private lateinit var musicInfo: MusicInfo
 
-    val data = mutableListOf<PopupItemBean>()
+    private val data = mutableListOf<PopupItemBean>()
+
+
+    private lateinit var downloadBinder: DownloadService.DownloadBinder
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            downloadBinder = service as DownloadService.DownloadBinder
+            downloadBinder.startDownload(musicInfo)
+        }
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d("MyService", "onServiceDisconnected")
+        }
+    }
 
 
     override fun getLayoutId(): Int? = R.layout.dialog_layout
@@ -136,8 +152,11 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
 
                         }
                         R.string.popup_download -> {
-                            mainVM.onEvent(MainEvent.DownloadMusic(arrayListOf(musicInfo)))
-                            this@BottomDialogFragment.hide()
+                            //mainVM.onEvent(MainEvent.DownloadMusic(arrayListOf(musicInfo)))
+                            val intent = Intent(mActivity, DownloadService::class.java)
+                            intent.action = "android.intent.action.DownloadMusic"
+                            mActivity.bindService(intent, connection,  Context.BIND_AUTO_CREATE)
+                            //mActivity.unbindService(connection)
                         }
                         R.string.popup_add_to_collection -> { //收藏
                             musicInfo.apply {
@@ -146,6 +165,7 @@ class BottomDialogFragment : BaseBottomSheetDialogFragment<DialogLayoutBinding>(
                             }
                         }
                     }
+                    this@BottomDialogFragment.hide()
                 }
             }.models = data
         }

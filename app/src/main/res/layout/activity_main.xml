@@ -17,7 +17,7 @@
         tools:openDrawer="start">
 
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -30,7 +30,7 @@
                 app:lottie_autoPlay="true"
                 app:lottie_loop="false"/>-->
 
-            <androidx.appcompat.widget.Toolbar
+            <!--<androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_56"
@@ -38,27 +38,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:subtitleTextAppearance="@style/ToolbarSubtitle" />
+                app:subtitleTextAppearance="@style/ToolbarSubtitle" />-->
 
-
-           <fragment
-                android:id="@+id/nav"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_main" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!--<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appBar"
                 android:layout_width="match_parent"
@@ -68,17 +49,22 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white" />
+                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    android:background=" @color/white"
+                    app:subtitleTextAppearance="@style/ToolbarSubtitle" />
             </com.google.android.material.appbar.AppBarLayout>
 
-            <fragment
+          <fragment
                 android:id="@+id/nav"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/nav_main" />
-        </LinearLayout>-->
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>>
+
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"

@@ -16,16 +16,19 @@
 
 package cn.vce.easylook.feature_video.presentation.home.detail
 
-import androidx.databinding.Bindable
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import cn.vce.easylook.base.BaseEvent
-import cn.vce.easylook.base.BaseViewModel
 import cn.vce.easylook.base.ObservableViewModel
 import cn.vce.easylook.feature_video.models.Daily
-import cn.vce.easylook.feature_video.repository.MainPageRepository
 import cn.vce.easylook.utils.LogE
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class DailyViewModel: ObservableViewModel() {
 

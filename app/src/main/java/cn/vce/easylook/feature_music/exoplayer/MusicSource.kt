@@ -165,14 +165,6 @@ class MusicSource(
             var mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(song.mediaUri)
             concatenatingMediaSource.addMediaSource(mediaSource)
-            val file = File(song.mediaUri.toString())
-            if (file.canRead()) {
-                // 文件可读，执行相关操作
-                LogE("可读:"+ song.mediaUri.toString())
-            } else {
-                // 文件不可读，可能是由于权限问题
-                LogE("不可读:"+ song.mediaUri.toString())
-            }
         }
         return concatenatingMediaSource
     }

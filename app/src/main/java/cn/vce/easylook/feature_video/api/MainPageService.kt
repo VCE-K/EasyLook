@@ -19,6 +19,7 @@ package cn.vce.easylook.feature_video.api
 import cn.vce.easylook.feature_video.models.*
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 /**
@@ -31,42 +32,49 @@ interface MainPageService {
 
 
     /**
+     * 首页-推荐列表
+     */
+    @GET("api/v5/index/tab/allRec")
+    fun getAllRec(@Query("page") page: String, @Query("udid") udid: String): Call<HomePageRecommend>
+
+    /**
      * 首页-日报列表
      */
     @GET("api/v5/index/tab/feed")
     fun getDaily(): Call<Daily>
 
 
-    companion object {
 
-        /**
+    /*companion object {
+
+        *//**
          * 首页-发现列表
-         */
+         *//*
         const val DISCOVERY_URL = "${ServiceCreator.BASE_URL}api/v7/index/tab/discovery"
 
-        /**
+        *//**
          * 首页-推荐列表
-         */
+         *//*
         const val HOMEPAGE_RECOMMEND_URL = "${ServiceCreator.BASE_URL}api/v5/index/tab/allRec"
 
-        /**
+        *//**
          * 首页-日报列表
-         */
+         *//*
         const val DAILY_URL = "${ServiceCreator.BASE_URL}api/v5/index/tab/feed"
 
-        /**
+        *//**
          * 社区-推荐列表
-         */
+         *//*
         const val COMMUNITY_RECOMMEND_URL = "${ServiceCreator.BASE_URL}api/v7/community/tab/rec"
 
-        /**
+        *//**
          * 社区-关注列表
-         */
+         *//*
         const val FOLLOW_URL = "${ServiceCreator.BASE_URL}api/v6/community/tab/follow"
 
-        /**
+        *//**
          * 通知-推送列表
-         */
+         *//*
         const val PUSHMESSAGE_URL = "${ServiceCreator.BASE_URL}api/v3/messages"
-    }
+    }*/
 }

@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+<!--    <resources>
+        &lt;!&ndash;应用基础色&ndash;&gt;
+        <color name="colorPrimary">#111111</color>
+        <color name="colorPrimaryDark">#111111</color>
+        <color name="colorAccent">#ff5722</color>
+        <color name="window_background">#1C1C1C</color>
 
+        &lt;!&ndash;文字主色调&ndash;&gt;
+        <color name="text">#ffffff</color>
+        <color name="textSecond">#c8ffffff</color>
+
+        <color name="white">#ffffff</color>
+        <color name="black">#000000</color>
+
+    </resources>-->
 
     <!--应用基础色-->
     <color name="colorPrimary">#FF6200EE</color>

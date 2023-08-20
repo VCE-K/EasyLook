@@ -30,8 +30,21 @@
 
     <fragment
         android:id="@+id/nav_image"
-        android:name="cn.vce.easylook.feature_music.presentation.invisible_fragment.InvisibleFragment"
+        android:name="cn.vce.easylook.feature_image.presentation.ImageFragment"
         android:label="@string/music_title">
+        <action
+            android:id="@+id/action_nav_image_to_imageDetailFragment"
+            app:destination="@id/imageDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/imageDetailFragment"
+        android:name="cn.vce.easylook.feature_image.presentation.ImageDetailFragment"
+        android:label="@string/music_title">
+        <argument
+            android:name="image"
+            app:argType="cn.vce.easylook.feature_image.presentation.Image"
+            app:nullable="false"/>
     </fragment>
 
     <fragment

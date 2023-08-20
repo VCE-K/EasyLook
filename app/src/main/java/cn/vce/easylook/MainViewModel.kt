@@ -13,6 +13,8 @@ import cn.vce.easylook.feature_music.db.MusicConfigManager
 import cn.vce.easylook.feature_music.other.Resource
 import cn.vce.easylook.feature_music.other.Status
 import cn.vce.easylook.feature_music.repository.MusicRepository
+import cn.vce.easylook.feature_video.other.VideoConfigManager
+import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailRepo
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.getString
 import cn.vce.easylook.utils.id
@@ -98,6 +100,13 @@ class MainViewModel @Inject constructor(
         var allGranted: Boolean = getAllGranted()
         _allGranted.value = allGranted
     }
+
+    fun isNeedMuteSaved() = VideoConfigManager.isNeedMuteSaved()
+
+    fun getSavedIsNeedMute() = VideoConfigManager.getSavedIsNeedMute()
+
+    fun saveIsNeedMuteSaved(isNeedMuteSaved: Boolean) = VideoConfigManager.saveIsNeedMuteSaved(isNeedMuteSaved)
+
     private fun isAllGranted() = musicRepository.isAllGranted()
 
     private fun getAllGranted() = musicRepository.getAllGranted()
@@ -226,30 +235,28 @@ class MainViewModel @Inject constructor(
     }
 
     private fun downloadMusic(m: MusicInfo){
-        launch {
-            toast("开始下载歌曲：${m.name}")
-            val downloadMusic = musicRepository.downloadMusic(m)
-            downloadMusic.catch { LogE("catch... when searching", t = it) }
-                .onEach {
-                    when(it.status){
-                        Status.SUCCESS -> {
-                            LogE("下载文件:$it")
-                            toast("下载歌曲：${m.name}成功")
-                        }
-                        Status.LOADING -> {
-                            val num = NumberFormat.getPercentInstance()
-                            num.maximumFractionDigits = 2
-                            LogE("下载歌曲${m.name}进度:"+
-                                    num.format(it.process))
-                        }
-                        Status.ERROR -> {
-                            toast(it.message!!)
-                        }
+        toast("开始下载歌曲：${m.name}")
+        val downloadMusic = musicRepository.downloadMusic(m)
+        downloadMusic.catch { LogE("catch... when searching", t = it) }
+            .onEach {
+                when(it.status){
+                    Status.SUCCESS -> {
+                        LogE("下载文件:$it")
+                        toast("下载歌曲：${m.name}成功")
+                    }
+                    Status.LOADING -> {
+                        val num = NumberFormat.getPercentInstance()
+                        num.maximumFractionDigits = 2
+                        LogE("下载歌曲${m.name}进度:"+
+                                num.format(it.process))
+                    }
+                    Status.ERROR -> {
+                        toast(it.message!!)
                     }
                 }
-                .flowOn(Dispatchers.Main)
-                .launchIn(viewModelScope)
-        }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(viewModelScope)
     }
 
     private fun updateCurrentPlayerPosition() {

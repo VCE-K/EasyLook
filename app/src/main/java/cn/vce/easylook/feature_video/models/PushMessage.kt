@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.eyepetizer.android.logic.model
+package cn.vce.easylook.feature_video.models
 
-import cn.vce.easylook.feature_video.models.Model
 import com.google.gson.annotations.SerializedName
 
 /**

@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import android.view.View
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.FragmentChatRoomBinding
 import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG
-import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_BIND
+import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_BING
 import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_EMPTY
 import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_HEART
 import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_IMG
@@ -18,6 +19,7 @@ import cn.vce.easylook.feature_chatroom.ChatRoomFragment.MType.MSG_INIT
 import cn.vce.easylook.feature_chatroom.model.ChatMessage
 import cn.vce.easylook.feature_chatroom.model.ChatModel
 import cn.vce.easylook.utils.hideSoftInput
+import cn.vce.easylook.utils.toast
 import com.drake.brv.utils.addModels
 import com.drake.brv.utils.setup
 import com.google.android.material.snackbar.Snackbar
@@ -39,7 +41,7 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
 
         const val MSG_IMG = 4
         const val MSG_INIT = 5
-        const val MSG_BIND = 6
+        const val MSG_BING = 6
     }
     private val model = ChatModel()
     private var webSocketConnectNumber: Int = 0
@@ -84,7 +86,7 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
                     binding.rv.addModels(listOf(ChatMessage(content, userId)), index = 0) // 添加一条消息
                     binding.rv.scrollToPosition(0) // 保证最新一条消息显示
                 }
-                MSG_BIND -> {
+                MSG_BING -> {
                     /*"type","bing"
                     "msg", url
                     "sendUser","系统消息"
@@ -112,6 +114,8 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
                     }
                 }
                 MSG_EMPTY -> {
+                    Log.d(javaClass.simpleName,"失败次数：$webSocketConnectNumber")
+                    toast("失败次数：$webSocketConnectNumber")
                     if (webSocketConnectNumber <= 10) {
                         if (!webSocketClient.isOpen) {
                             webSocketClient.reconnect()
@@ -171,7 +175,7 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
 
                 //这里是为了open马上拿到当前用户ID
                 val result: MutableMap<String, String> = HashMap()
-                result["type"] = "bind"
+                result["type"] = "bing"
                 result["msg"] = model.input
                 result["sendUser"] = model.currentUserId
                 /*var json = JSONObject(result as Map<*, *>?)
@@ -186,11 +190,12 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
                     message,
                     object : TypeToken<HashMap<String?, String?>?>() {}.type
                 )
-                val type = when(map["type"]){
+                val msgType = map["type"]
+                val type = when(msgType){
                     "msg" -> MSG
                     "init" -> MSG_INIT
                     "img" -> MSG_IMG
-                    "bind" -> MSG_BIND
+                    "bing" -> MSG_BING
                     else -> -1
                 }
                 val handlerMessage = Message.obtain()
@@ -250,6 +255,10 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
         binding.run {
             when (v) {
                 binding.btnSend -> {
+                    if (model.input.length >= 8000){
+                        toast("文本太长了，少写一点吧\uD83D\uDE2D")
+                        return
+                    }
                     val result: MutableMap<String, String> = HashMap()
                     result["type"] = "msg"
                     result["msg"] = model.input
@@ -258,6 +267,10 @@ class ChatRoomFragment : BaseVmFragment<FragmentChatRoomBinding>() {
                     webSocketClient.send(json.toString())
                     val str = Gson().toJson(result)
                     webSocketClient.send(str)*/
+                    if (webSocketClient.isClosing || webSocketClient.isClosed){
+                        toast("连接关闭，正在重新连接")
+                        return
+                    }
                     webSocketClient.send(Map2Json(result))
 
                     binding.rv.addModels(model.getMessages(), index = 0) // 添加一条消息

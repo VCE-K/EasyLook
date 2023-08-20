@@ -10,8 +10,10 @@ import kotlin.coroutines.suspendCoroutine
 
 object MainPageNetWork {
 
-    private val mainPageService = ServiceCreator.create<MainPageService>()
+    private const val udid = "a53873ffaa4430bbb41ea178c1187e97c4b3c4a"
 
+    private val mainPageService = ServiceCreator.create<MainPageService>()
+    suspend fun getAllRec(page: String) = mainPageService.getAllRec(page, udid).await()
     suspend fun getDaily() = mainPageService.getDaily().await()
 
 

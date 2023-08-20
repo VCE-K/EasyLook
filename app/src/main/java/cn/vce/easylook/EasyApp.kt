@@ -27,8 +27,6 @@ class EasyApp: Application(){
 
     override fun onCreate() {
         super.onCreate()
-
-
         context = applicationContext
 
         // 初始化BindingAdapter的默认绑定ID

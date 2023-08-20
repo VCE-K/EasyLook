@@ -1,16 +1,12 @@
 package cn.vce.easylook
 
 import android.Manifest
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.*
-import android.util.Log
 import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -19,8 +15,6 @@ import cn.vce.easylook.base.BaseVmActivity
 import cn.vce.easylook.databinding.ActivityMainBinding
 import cn.vce.easylook.feature_music.exoplayer.isPlaying
 import cn.vce.easylook.feature_music.other.Status
-import cn.vce.easylook.feature_music.service.DownloadService
-import cn.vce.easylook.feature_video.presentation.video_detail.VideoDetailFragment
 import cn.vce.easylook.utils.LogE
 import cn.vce.easylook.utils.toast
 import com.bumptech.glide.RequestManager
@@ -51,22 +45,6 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
 
     lateinit var childHandle: Handler
 
-
-    lateinit var downloadBinder: DownloadService.DownloadBinder
-
-    private val connection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            downloadBinder = service as DownloadService.DownloadBinder
-            downloadBinder.startDownload()
-            downloadBinder.getProgress()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Log.d("MyService", "onServiceDisconnected")
-        }
-
-    }
     override fun initViewModel() {
         mainViewModel = getActivityViewModel()
     }
@@ -162,9 +140,11 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
         val requestList = ArrayList<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestList.add(Manifest.permission.READ_MEDIA_AUDIO)
+            requestList.add(Manifest.permission.POST_NOTIFICATIONS)
         }else{
             requestList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestList.add(Manifest.permission.POST_NOTIFICATIONS)
         }
         if (requestList.isNotEmpty()) {
             PermissionX.init(this)
@@ -228,6 +208,7 @@ class MainActivity : BaseVmActivity<ActivityMainBinding>() {
                 setStatusBarBackground(R.color.colorPrimaryDark)
             }
     }
+
 
 
     private fun subscribeToObservers() {

@@ -6,7 +6,6 @@ import android.widget.ImageView
 import cn.vce.easylook.R
 import cn.vce.easylook.base.BaseVmFragment
 import cn.vce.easylook.databinding.ListVideoItemNormalBinding
-import cn.vce.easylook.feature_music.models.PlaylistInfo
 import cn.vce.easylook.extension.load
 import cn.vce.easylook.ui.SampleCoverVideo
 import com.shuyu.gsyvideoplayer.GSYVideoManager
@@ -31,6 +30,9 @@ class VideoDetailFragment: BaseVmFragment<ListVideoItemNormalBinding>() {
         viewModel = getFragmentViewModel()
     }
 
+    override fun initActivityViewModel() {
+        mainVM = getActivityViewModel()
+    }
     companion object {
         val TAG = javaClass.simpleName
     }
@@ -40,20 +42,13 @@ class VideoDetailFragment: BaseVmFragment<ListVideoItemNormalBinding>() {
 
     override fun initView() {
         binding.apply {
-            val dataList = mutableListOf<PlaylistInfo>()
-            for (i in 0..18) {
-                dataList.add(PlaylistInfo())
-            }
             viewModel.videoInfo.observe(viewLifecycleOwner) {
                 val data = it
-                //(id, playUrl, title, description, category, library, consumption, cover, author, webUrl
                 val gsyVideoPlayer = videoItemPlayer
                 val url: String = data.playUrl
                 val title: String = data.title
                 //val layoutPosition = 1
 
-                /*val header: MutableMap<String, String> = HashMap()
-                header["ee"] = "33"*/
                 //防止错位，离开释放
                 //gsyVideoPlayer.initUIState();
                 gsyVideoOptionBuilder
@@ -82,7 +77,7 @@ class VideoDetailFragment: BaseVmFragment<ListVideoItemNormalBinding>() {
 
                         override fun onEnterFullscreen(url: String, vararg objects: Any) {
                             super.onEnterFullscreen(url, objects)
-                            GSYVideoManager.instance().isNeedMute = false
+                            needMuteConfig(gsyVideoPlayer)
                             gsyVideoPlayer.currentPlayer.titleTextView.text = objects[0] as String
                         }
                     }).build(gsyVideoPlayer)
@@ -96,7 +91,7 @@ class VideoDetailFragment: BaseVmFragment<ListVideoItemNormalBinding>() {
                     .setOnClickListener {
                         resolveFullBtn(gsyVideoPlayer)
                     }
-                gsyVideoPlayer.loadCoverImage(data.cover.detail, R.mipmap.xxx2)
+                gsyVideoPlayer.loadCoverImage(data.cover.detail)
             }
         }
     }
@@ -131,27 +126,27 @@ class VideoDetailFragment: BaseVmFragment<ListVideoItemNormalBinding>() {
     private fun needMuteConfig(gsyVideoPlayer: SampleCoverVideo){
         if (!gsyVideoPlayer.isIfCurrentIsFullscreen) {
             //看用户选择是否竖屏静音
-            val isNeedMute = if (viewModel.isNeedMuteSaved()){
-                viewModel.getSavedIsNeedMute()
+            val isNeedMute = if (mainVM.isNeedMuteSaved()){
+                mainVM.getSavedIsNeedMute()
             }else{
-                viewModel.saveIsNeedMuteSaved(isNeedMuteSaved = true)
+                mainVM.saveIsNeedMuteSaved(isNeedMuteSaved = true)
                 true
             }
             GSYVideoManager.instance().isNeedMute = isNeedMute
             val needMuteImageImage = requireActivity().findViewById<View>(R.id.needMute) as ImageView
             val res = if (isNeedMute) {
-                R.drawable.ic_yes_needmute
-            } else {
                 R.drawable.ic_no_needmute
+            } else {
+                R.drawable.ic_yes_needmute
             }
             needMuteImageImage.load(res, 0f)
             needMuteImageImage.setOnClickListener {
-                viewModel.saveIsNeedMuteSaved(!viewModel.getSavedIsNeedMute())
-                GSYVideoManager.instance().isNeedMute = viewModel.getSavedIsNeedMute()
+                mainVM.saveIsNeedMuteSaved(!mainVM.getSavedIsNeedMute())
+                GSYVideoManager.instance().isNeedMute = mainVM.getSavedIsNeedMute()
                 val res = if (GSYVideoManager.instance().isNeedMute) {
-                    R.drawable.ic_yes_needmute
-                } else {
                     R.drawable.ic_no_needmute
+                } else {
+                    R.drawable.ic_yes_needmute
                 }
                 needMuteImageImage.load(res, 0f)
             }

@@ -38,7 +38,7 @@ class MusicControlBottomFragment() : BaseVmFragment<FragmentMusicControlBottomBi
     @Inject
     lateinit var glide: RequestManager
 
-    lateinit var curPlayingMusic: MusicInfo
+    var curPlayingMusic: MusicInfo? = null
 
     override fun init(savedInstanceState: Bundle?) {
         initView()

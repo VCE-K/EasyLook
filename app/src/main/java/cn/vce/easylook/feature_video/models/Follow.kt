@@ -103,3 +103,9 @@ data class PlayInfo(val height: Int, val name: String, val type: String, val url
 data class Url(val name: String, val size: Int, val url: String)
 
 data class Label(val actionUrl: String?, val text: String?, val card: String, val detail: Any?): Serializable
+
+fun FollowCard.toVideoInfo(): VideoInfo{
+    apply {
+        return VideoInfo(id, playUrl, title, description, category, library, consumption, cover, author, webUrl)
+    }
+}

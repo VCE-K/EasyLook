@@ -30,9 +30,5 @@ class VideoDetailVM @Inject constructor(
     }
 
 
-    fun isNeedMuteSaved() = VideoDetailRepo.isNeedMuteSaved()
 
-    fun getSavedIsNeedMute() = VideoDetailRepo.getSavedIsNeedMute()
-
-    fun saveIsNeedMuteSaved(isNeedMuteSaved: Boolean) = VideoDetailRepo.saveIsNeedMuteSaved(isNeedMuteSaved)
 }
